@@ -9,6 +9,13 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
+int	ft_isvalidchar(char c)
+{
+	if (c == '.' || c == '/' || ft_isalpha(c))
+		return (1);
+	return (0);
+}
+
 t_token	*token_new(t_token_type type, void *content)
 {
 	t_token *token;
@@ -83,10 +90,12 @@ void	treat_token(char *token, t_token **token_lst)
 		tokenaddback(token_lst, token_new(pipe_op, (void *)token));
 	else if (ft_isalpha(token[0]) && last && last->type == redirection)
 		tokenaddback(token_lst, token_new(file_path, (void *)token));
-	else if (ft_isalpha(token[0]) && last && last->type != command)
-		tokenaddback(token_lst, token_new(command, (void *)token));
-	else if (token[0] == '-' && last && last->type == command)
+	else if (ft_isalnum(token[0]) && last && (last->type == command || last->type == option || last->type == argument))
+		tokenaddback(token_lst, token_new(argument, (void *)token));
+	else if (token[0] == '-' && last &&(last->type == command || last->type == argument || last->type == option))
 		tokenaddback(token_lst, token_new(option, (void *)token));
+	else if (ft_isvalidchar(token[0]) && (!last || (last && last->type != command)))
+		tokenaddback(token_lst, token_new(command, (void *)token));
 }
 
 void	parse_input(char *input, t_token **token_lst)
@@ -158,8 +167,8 @@ int	main(void)
 		{
 			add_history(input);
 			parse_input(input, &token_lst);
-			revstr(input);
-			printf("%s\n", input);
+			// revstr(input);
+			// printf("%s\n", input);
 			token_node = token_lst;
 			while (token_node)
 			{
@@ -167,6 +176,7 @@ int	main(void)
 				token_node = token_node->next;
 			}
 		}
+		token_lst = NULL;
 		free(input);
 	}
 }
