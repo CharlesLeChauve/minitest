@@ -77,10 +77,12 @@ void	treat_token(char *token, t_token **token_lst)
 	t_token	*last;
 
 	last = token_last(*token_lst);
-	if (token[0] == '>' || token[0] == '>')
+	if (token[0] == '>' || token[0] == '<')
 		tokenaddback(token_lst, token_new(redirection, (void *)token));
 	else if (token[0] == '|' && token[1] == 0)
-		tokenaddback(token_lst, token_new(pipe_op, NULL));
+		tokenaddback(token_lst, token_new(pipe_op, (void *)token));
+	else if (ft_isalpha(token[0]) && last && last->type == redirection)
+		tokenaddback(token_lst, token_new(file_path, (void *)token));
 	else if (ft_isalpha(token[0]) && last && last->type != command)
 		tokenaddback(token_lst, token_new(command, (void *)token));
 	else if (token[0] == '-' && last && last->type == command)
@@ -104,27 +106,31 @@ void	parse_input(char *input, t_token **token_lst)
 void print_token_type(t_token *token) {
     switch (token->type) {
         case command:
-            printf("Type: command\n");
+            printf("Type: command\t");
             break;
         case argument:
-            printf("Type: argument\n");
+            printf("Type: argument\t");
             break;
         case option:
-            printf("Type: option\n");
+            printf("Type: option\t");
             break;
         case redirection:
-            printf("Type: redirection\n");
+            printf("Type: redir\t");
             break;
         case pipe_op:
-            printf("Type: pipe_op\n");
+            printf("Type: pipe_op\t");
             break;
         case fd:
-            printf("Type: fd\n");
+            printf("Type: fd\t");
+            break;
+	case file_path:
+            printf("Type: file_path\t");
             break;
         default:
-            printf("Unknown type\n");
+            printf("Unknown type\t");
             break;
     }
+    printf("Content : [%s]\n", token->text);
 }
 
 int	main(void)
