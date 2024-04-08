@@ -1,0 +1,37 @@
+Grammar :
+
+Grammar describes the way we can construct language. It is a set of rules to be followed by the language user to be understood.
+
+Here is a try to sum up the shell's grammar rules :
+
+<RedirectionOperator>	:=	'>'
+						|	'<'
+						|	'>>'
+						|	'&>'
+						|	'>&'
+
+<Path>	:=	/[a-zA-Z0-9_\-./]+/
+
+<Alnum>	:=	/^[a-zA-Z0-9]+$/
+
+<OptionValue>	:=	<Alnum>
+
+<SimpleOption>	:=	/^--?[a-zA-Z0-9\-]+$/
+
+<Option>	:=	<SimpleOption>
+			|	<SimpleOption> ' = ' <OptionValue>
+
+<Command>	:=	<Command>													// $> ls
+			|	<Command> ' ' <Option>										// $> ls -l
+			|	<Command> ' ' <Argument>									// $> grep lines
+			|	<Command> 
+
+<Redirection>	:=	<RedirectionOperator> ' ' <Filename>					// $> >> file.txt
+				|	<RedirectionOperator> ' ' <FileDesc>					// $> 
+				|	<FileDesc> ' ' <RedirectionOperator>
+
+<PipeCommand>	:=	<Command> ' | ' <Command>											// $> ls -l | cat
+				|	<Redirection> ' ' <Command> ' | ' <Command>							// $> > file wc -l | cat
+				|	<Command> ' | ' <Command> ' ' <Redirection> 						// $> ls -l | cat > file
+				|	<Command> ' | ' <Redirection>										// $> ls -l | > file
+				|	<Redirection> ' ' <Command> ' | ' <Command> ' ' <Redirection>		// $> > file1 wc -l | cat > file2
