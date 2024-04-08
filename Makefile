@@ -1,6 +1,6 @@
 CC		=	gcc
 
-CFLAGS	=	-Wall -Wextra -Werror -g -lreadline
+CFLAGS	=	-Wall -Wextra -Werror -g
 
 LK_FLAG	=	-fsanitize=address -fsanitize=leak
 
@@ -18,7 +18,7 @@ all		:	${NAME}
 
 ${NAME}	:	${OBJS}
 			@${MAKE} -C libft
-			@${CC} ${CFLAGS} ${OBJS} -o ${NAME} -L./libft/ -lft
+			@${CC} ${CFLAGS} ${OBJS} -o ${NAME} -lreadline -L./libft/ -lft
 			@echo "\033[92mProgram Compiled Successfully\033[0m"
 
 bonus	:	${BNS_OBJ}
