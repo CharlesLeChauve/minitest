@@ -83,7 +83,7 @@ void	treat_token(char *token, t_token **token_lst)
 		tokenaddback(token_lst, token_new(pipe_op, (void *)token));
 	else if (ft_isalpha(token[0]) && last && last->type == redirection)
 		tokenaddback(token_lst, token_new(file_path, (void *)token));
-	else if (ft_isalpha(token[0]) && last && last->type != command)
+	else if ((ft_isalpha(token[0])) && (!last || (last && last->type != command)))
 		tokenaddback(token_lst, token_new(command, (void *)token));
 	else if (token[0] == '-' && last && last->type == command)
 		tokenaddback(token_lst, token_new(option, (void *)token));

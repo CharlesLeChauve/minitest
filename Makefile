@@ -1,49 +1,51 @@
-CC		=	gcc
+CC      =   gcc
 
-CFLAGS	=	-Wall -Wextra -Werror -g
+CFLAGS  =   -Wall -Wextra -Werror -g -Iheaders/
+READLINE_INC = -I/opt/homebrew/opt/readline/include
+READLINE_LIB = -L/opt/homebrew/opt/readline/lib -lreadline
 
-LK_FLAG	=	-fsanitize=address -fsanitize=leak
+LK_FLAG =   -fsanitize=address -fsanitize=leak
 
-NAME	=	minishell
+NAME    =   minishell
 
-SRCS	=	parsing.c
+SRCS    =   parsing.c
 
-BNS_SRC	=	pipex_bonus.c utils.c utils_bonus.c
+BNS_SRC =   pipex_bonus.c utils.c utils_bonus.c
 
-OBJS	=	${SRCS:.c=.o}
+OBJS    =   ${SRCS:.c=.o}
 
-BNS_OBJ	=	${BNS_SRC:.c=.o}
+BNS_OBJ =   ${BNS_SRC:.c=.o}
 
-all		:	${NAME}
+all     :   ${NAME}
 
-${NAME}	:	${OBJS}
+${NAME} :   ${OBJS}
 			@${MAKE} -C libft
-			@${CC} ${CFLAGS} ${OBJS} -o ${NAME} -lreadline -L./libft/ -lft
+			@${CC} ${CFLAGS} ${OBJS} -o ${NAME} ${READLINE_INC} ${READLINE_LIB} -L./libft/ -lft
 			@echo "\033[92mProgram Compiled Successfully\033[0m"
 
-bonus	:	${BNS_OBJ}
+bonus   :   ${BNS_OBJ}
 			@${MAKE} -C libft
-			@${CC} ${CFLAGS} ${BNS_OBJ} -o ${NAME} -L./libft/ -lft
+			@${CC} ${CFLAGS} ${BNS_OBJ} -o ${NAME} ${READLINE_INC} ${READLINE_LIB} -L./libft/ -lft
 			@echo "\033[92mBonus program successfully compiled\033[0m"
 
-
-sanit	:	${OBJS}
+sanit   :   ${OBJS}
 			@${MAKE} -C libft
-			@${CC} ${CFLAGS} ${LK_FLAGS} ${OBJS} -o ${NAME} -L./libft/ -lft
+			# Correction de LK_FLAG en LK_FLAGS et ajout des flags pour Readline
+			@${CC} ${CFLAGS} ${LK_FLAG} ${OBJS} -o ${NAME} ${READLINE_INC} ${READLINE_LIB} -L./libft/ -lft
 
-%.o		:	%.c
-			@${CC} ${CFLAGS} -c $< -o $@
+%.o     :   %.c
+			@${CC} ${CFLAGS} ${READLINE_INC} -c $< -o $@
 
-clean	:
+clean   :
 			@${MAKE} -C libft clean
 			@rm -rf ${OBJS} ${BNS_OBJ}
 			@echo "\033[92mCleaned objects\033[0m"
 
-fclean	:	clean
+fclean  :   clean
 			@${MAKE} -C libft fclean
 			@rm -rf ${NAME}
 			@echo "\033[92mExecutable Removed\033[0m"
 
-re		:	fclean	all
+re      :   fclean all
 
-.PHONY	:	all clean fclean re
+.PHONY  :   all clean fclean re bonus sanit
