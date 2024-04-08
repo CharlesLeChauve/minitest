@@ -1,12 +1,12 @@
 CC		=	gcc
 
-CFLAGS	=	-Wall -Wextra -Werror -g 
+CFLAGS	=	-Wall -Wextra -Werror -g -lreadline
 
 LK_FLAG	=	-fsanitize=address -fsanitize=leak
 
-NAME	=	pipex
+NAME	=	minishell
 
-SRCS	=	main.c	utils.c
+SRCS	=	parsing.c
 
 BNS_SRC	=	pipex_bonus.c utils.c utils_bonus.c
 
