@@ -74,13 +74,16 @@ void	revstr(char *str)
 
 void	treat_token(char *token, t_token **token_lst)
 {
+	t_token	*last;
+
+	last = token_last(*token_lst);
 	if (token[0] == '>' || token[0] == '>')
 		tokenaddback(token_lst, token_new(redirection, (void *)token));
 	else if (token[0] == '|' && token[1] == 0)
 		tokenaddback(token_lst, token_new(pipe_op, NULL));
-	else if (ft_isalpha(token[0]) && (token_last(*token_lst))->type != command)
+	else if (ft_isalpha(token[0]) && last && last->type != command)
 		tokenaddback(token_lst, token_new(command, (void *)token));
-	else if (token[0] == '-' && ((token_last(*token_lst))->type == command))
+	else if (token[0] == '-' && last && last->type == command)
 		tokenaddback(token_lst, token_new(option, (void *)token));
 }
 
@@ -134,6 +137,7 @@ int	main(void)
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
+	token_lst = NULL;
 	if (sigaction(SIGINT, &sa, NULL) == -1)
 	{
 		perror("sigaction");
