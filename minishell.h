@@ -9,7 +9,7 @@
 #include "./libft/libft.h"
 
 typedef enum {
-	command, argument, option, redirection, pipe_op, fd
+	command, argument, option, redirection, pipe_op, fd, file_path
 }	t_token_type;
 
 typedef struct s_token
