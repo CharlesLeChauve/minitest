@@ -27,9 +27,7 @@ void	revstr(char *str)
 		swap_char(&str[i], &str[size]);
 }
 
-
-
-void	parse_input(char *input, t_token **token_lst)
+void	parse_input(char *input, t_token_lst **token_lst)
 {
 	char	**input_tab;
 	int	i;
@@ -43,14 +41,13 @@ void	parse_input(char *input, t_token **token_lst)
 	}
 }
 
-
-
 int	main(void)
 {
 	char			*input;
 	struct sigaction	sa;
-	t_token			*token_lst;
-	t_token			*token_node;
+	t_token_lst			*token_lst;
+	t_token_lst			*token_node;
+	Tok
 
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
@@ -70,6 +67,7 @@ int	main(void)
 		{
 			add_history(input);
 			parse_input(input, &token_lst);
+
 			// revstr(input);
 			// printf("%s\n", input);
 			token_node = token_lst;

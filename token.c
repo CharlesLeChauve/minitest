@@ -1,10 +1,10 @@
 #include "minishell.h"
 
-t_token	*token_new(t_token_type type, void *content)
+t_token_lst	*token_new(t_token_type type, void *content)
 {
-	t_token *token;
+	t_token_lst *token;
 
-	token = (t_token *)malloc(sizeof(t_token));
+	token = (t_token_lst *)malloc(sizeof(t_token_lst));
 	token->next = NULL;
 	token->type = type;
 	if (content == NULL)
@@ -16,9 +16,9 @@ t_token	*token_new(t_token_type type, void *content)
 	return(token);
 }
 
-void	tokenaddback(t_token **lst, t_token *node)
+void	tokenaddback(t_token_lst **lst, t_token_lst *node)
 {
-	t_token	*act;
+	t_token_lst	*act;
 
 	if (!*lst)
 	{
@@ -31,9 +31,9 @@ void	tokenaddback(t_token **lst, t_token *node)
 	act->next = node;
 }
 
-t_token *token_last(t_token *token_lst)
+t_token_lst *token_last(t_token_lst *token_lst)
 {
-	t_token *node;
+	t_token_lst *node;
 
 	node = token_lst;
 	if (!node)
@@ -43,9 +43,9 @@ t_token *token_last(t_token *token_lst)
 	return (node);
 }
 
-void	treat_token(char *token, t_token **token_lst)
+void	treat_token(char *token, t_token_lst **token_lst)
 {
-	t_token	*last;
+	t_token_lst	*last;
 
 	last = token_last(*token_lst);
 	if (token[0] == '>' || token[0] == '<')
@@ -62,7 +62,7 @@ void	treat_token(char *token, t_token **token_lst)
 		tokenaddback(token_lst, token_new(command, (void *)token));
 }
 
-void print_token_type(t_token *token){
+void print_token_type(t_token_lst *token){
     switch (token->type) {
         case command:
             printf("Type: command\t");

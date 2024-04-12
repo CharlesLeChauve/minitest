@@ -16,7 +16,7 @@ typedef enum
 	command, argument, option, redirection, pipe_op, fd, file_path
 }	t_token_type;
 
-typedef struct s_token
+typedef struct s_token_lst
 {
 	t_token_type type;
 	union
@@ -24,25 +24,25 @@ typedef struct s_token
 		char	*text;
 		int		fd;
 	};
-	struct s_token	*next;
-}	t_token;
+	struct s_token_lst	*next;
+}	t_token_lst;
 
 // utils
 void		swap_char(char *c1, char *c2);
 void		revstr(char *str);
 
 // lexing
-void		lexer(char	*input, t_token **tokens);
-t_token		*token_new(t_token_type type, void *content);
-t_token 	*token_last(t_token *token_lst);
-void		tokenaddback(t_token **lst, t_token *node);
-void		treat_token(char *token, t_token **token_lst);
-void		print_token_type(t_token *token);
+void		lexer(char	*input, t_token_lst **tokens);
+t_token_lst	*token_new(t_token_type type, void *content);
+t_token_lst 	*token_last(t_token_lst *token_lst);
+void		tokenaddback(t_token_lst **lst, t_token_lst *node);
+void		treat_token(char *token, t_token_lst **token_lst);
+void		print_token_type(t_token_lst *token);
 
 // parsing
-void		parser(t_token *tokens);
-int			ft_isvalidchar(char c);
-void		parse_input(char *input, t_token **token_lst);
+void		parser(t_token_lst *tokens);
+int		ft_isvalidchar(char c);
+void		parse_input(char *input, t_token_lst **token_lst);
 
 // signal
 void		setup_signal_handlers(void);
@@ -51,6 +51,8 @@ void		handle_sigint(int sig);
 // execution (faut la faire mdr)
 
 // memory
-void		free_tokens(t_token	*token);
+void		free_tokens(t_token_lst	*token);
+
+
 
 #endif
