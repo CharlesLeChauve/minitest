@@ -46,8 +46,7 @@ int	main(void)
 	char			*input;
 	struct sigaction	sa;
 	t_token_lst			*token_lst;
-	t_token_lst			*token_node;
-	Tok
+	t_ast_node			*ast;
 
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
@@ -67,15 +66,10 @@ int	main(void)
 		{
 			add_history(input);
 			parse_input(input, &token_lst);
-
+			ast = parse_tokens(token_lst);
+			print_tree(ast);
 			// revstr(input);
 			// printf("%s\n", input);
-			token_node = token_lst;
-			while (token_node)
-			{
-				print_token_type(token_node);
-				token_node = token_node->next;
-			}
 		}
 		token_lst = NULL;
 		free(input);

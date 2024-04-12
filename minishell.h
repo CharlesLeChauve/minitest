@@ -13,8 +13,23 @@
 
 typedef enum
 {
-	command, argument, option, redirection, pipe_op, fd, file_path
+	command, argument, option, redirection, pipe_op, fd, file_path, and_op, or_op
 }	t_token_type;
+
+typedef enum {
+    COMMAND,
+    PIPE,
+    AND,
+    OR
+} NodeType;
+
+// Définition des types de redirection
+typedef enum {
+    NO_REDIRECTION,
+    INPUT_REDIRECTION,
+    OUTPUT_REDIRECTION,
+    APPEND_REDIRECTION
+} RedirectionType;
 
 typedef struct s_token_lst
 {
@@ -26,6 +41,17 @@ typedef struct s_token_lst
 	};
 	struct s_token_lst	*next;
 }	t_token_lst;
+
+// Mise à jour de la structure Node pour inclure des informations sur les redirections
+typedef struct s_ast_node {
+    t_token_type type;
+	t_token_lst		*command_tokens;
+    char *value;
+    RedirectionType redirection_type; // Type de redirection associée à la commande
+    char *redirection_file; // Nom du fichier de redirection
+    struct s_ast_node *left;
+    struct s_ast_node *right;
+} t_ast_node;
 
 // utils
 void		swap_char(char *c1, char *c2);
@@ -52,7 +78,7 @@ void		handle_sigint(int sig);
 
 // memory
 void		free_tokens(t_token_lst	*token);
-
-
+t_ast_node *parse_tokens(t_token_lst *tokens);
+void print_tree(t_ast_node *root); 
 
 #endif
