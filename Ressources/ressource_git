@@ -1,0 +1,64 @@
+
+Fiche Pratique pour Gérer les Branches avec Git
+
+Créer et Pousser une Nouvelle Branche
+Pour travailler efficacement en équipe, il est pratique que chaque collaborateur travaille sur sa propre branche. Voici comment créer et pousser une nouvelle branche pour vos propres développements.
+
+Créer et basculer sur une nouvelle branche:
+
+
+
+git checkout -b nom_de_votre_branche
+Cela crée une nouvelle branche à partir de la branche actuellement active et bascule dessus.
+
+Faire des modifications et les valider:
+
+
+
+git add .
+git commit -m "Description des modifications"
+Pousser la nouvelle branche sur le dépôt distant pour la première fois:
+
+
+
+git push --set-upstream origin nom_de_votre_branche
+Ceci configure automatiquement votre branche locale pour qu'elle suive sa contrepartie distante, ce qui simplifie les futures commandes push et pull.
+
+Travailler Avec des Branches
+Il est important de rester synchronisé avec le dépôt distant et les branches de vos collègues.
+
+Récupérer les dernières mises à jour du dépôt distant:
+
+
+
+git fetch origin
+Basculer entre les branches locales:
+
+
+
+git checkout nom_de_la_branche
+Fusionner les changements d'une branche, par exemple master, dans votre branche de travail:
+
+git checkout nom_de_votre_branche
+git merge master
+Assurez-vous de résoudre tous les conflits si nécessaire.
+
+Fusionner les Branches pour la Revue de Code
+Lorsque vous êtes prêts à fusionner vos modifications dans la branche principale (master), il est recommandé de faire une revue de code.
+
+Créer une Pull Request (PR) ou Merge Request (MR):
+
+Utilisez l'interface de GitHub, GitLab ou Bitbucket pour ouvrir une PR/MR de votre branche vers master.
+Invitez votre collègue à réviser les modifications.
+Réviser la PR/MR, apporter des modifications si nécessaire:
+
+Basé sur les commentaires, il se peut que vous deviez faire des ajustements.
+Après la révision, fusionner la PR/MR:
+
+Si tout est en ordre, fusionnez la PR/MR.
+La branche master sera maintenant à jour avec vos modifications.
+Conseils Utiles
+Restez synchronisé: Assurez-vous de tirer (pull) régulièrement les mises à jour de la branche master ou de la branche de développement principal pour éviter des conflits majeurs.
+Utilisez des messages de commit clairs et descriptifs: Cela facilite la compréhension de l'historique des modifications.
+Testez avant de pousser: Assurez-vous que votre code fonctionne comme prévu avant de pousser vos modifications ou de demander une fusion.
+Ces étapes et conseils devraient vous aider à travailler efficacement avec Git dans un contexte collaboratif, en maintenant une bonne organisation et en facilitant le suivi des modifications au sein de votre projet.
