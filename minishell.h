@@ -13,7 +13,7 @@
 
 typedef enum
 {
-	command, argument, option, redirection, pipe_op, fd, file_path, and_op, or_op, eol
+	command, argument, option, redir_in, redir_out, redir_app, pipe_op, fd, file_path, and_op, or_op, eol
 }	t_token_type;
 
 typedef enum {
@@ -67,7 +67,7 @@ void		print_token_type(t_token_lst *token);
 
 // parsing
 void		parser(t_token_lst *tokens);
-int		ft_isvalidchar(char c);
+int		    ft_isvalidchar(char c);
 void		parse_input(char *input, t_token_lst **token_lst);
 
 // signal

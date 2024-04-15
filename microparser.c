@@ -97,25 +97,48 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 	{
 		while (ft_isalnum(*tkn_info->curr_char) || tkn_info->curr_char == '_'\
 				|| tkn_info->curr_char == '-' || *tkn_info->curr_char == '/')
+		{
 			ft_add_char_to_buffer(&text, *tkn_info->curr_char, ft_strlen(text));
+			tkn_info->curr_char++;
+		}
 		if (!last || last->type != command)
 			return (token_new(command, text));
 		if (last->type == command || last->type == argument || last->type == option)
 			return (token_new(argument, text));
-		if (last->type == redirection)
+		if (last->type == redir_out || last->type == redir_in || last->type == redir_app)
 			return (token_new(file_path, text));
-		if ()
 	}
+	else if (tkn_info->curr_char == '|')
+	{
+		tkn_info->curr_char++;
+		if (*tkn_info->curr_char == '|')
+		{
+			tkn_info->curr_char++;
+			return (token_new(or_op, NULL));
+		}
+		else
+			return (token_new(pipe_op, NULL));
+	}
+	else if (*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<')
+	{
+		return (redir_token(tkn_info));
+	}
+	else if (*tkn_info->curr_char == '<')
+	{
+		tkn_info->curr_char
+	}
+
 }
 
 void	tokenize(t_tkn_info *tkn_info)
 {
-	while (token_last(tkn_info->token_lst) != eol)
+	t_token_lst	*last;
+
+	last = token_last(tkn_info->token_lst);
+	while (last && last->type != eol)
 	{
 		tokenaddback(&tkn_info->token_lst, next_token(tkn_info));
 	}
-
-	
 }
 
 t_token_lst *parse_input_char(char *input)
