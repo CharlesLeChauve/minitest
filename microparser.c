@@ -4,43 +4,45 @@ typedef enum e_symbol
 {
 	alpha, num, redir, pipe_op, and_op, or_op, semicolon,\
 	dash, dot, backslash, dollar, slash, wildcard, unknown,\
-	quote, dquotes
+	quote, dquotes, eol
 }   t_symbol;
 
 void    next_symbol(t_symbol *symbol, char *input)
 {
 	if (ft_isalpha(**input))
-		*symbol = e_alpha;
+		*symbol = alpha;
 	else if (ft_isalnum(**input))
-		*symbol = e_num;
+		*symbol = num;
 	else if (**input == '<' || **input == '>')
-		*symbol = e_redir;
+		*symbol = redir;
 	else if (**input == '&' && **input + 1 == '&')
 	{
 		*input++;
-		*symbol = e_and_op;
+		*symbol = and_op;
 	}
 	else if (**input == '|' && **input + 1 == '|')
 	{
 		*input++;
-		*symbol = e_or_op;
+		*symbol = or_op;
 	}
 	else if (**input == '|')
-		*symbol = e_pipe_op;
+		*symbol = pipe_op;
 	else if (**input == ';')
-		*symbol = e_semicolon;
+		*symbol = semicolon;
 	else if (**input == '-')
-		*symbol = e_dash;
+		*symbol = dash;
 	else if (**input == '.')
-		*symbol = e_dot;
+		*symbol = dot;
 	else if (**input == '/')
-		*symbol = e_slash;
+		*symbol = slash;
 	else if (**input == '\\')
-		*symbol = e_backslash;
+		*symbol = backslash;
 	else if (**input == '$')
-		*symbol = e_dollar;
+		*symbol = dollar;
 	else if (**input == '?' || **input == '*')
-		*symbol = e_wildcard;
+		*symbol = wildcard;
+	else if (**input == '\0' || **input == '\n')
+		*symbol = eol;
 	*input++;
 }
 
@@ -59,7 +61,7 @@ void    command(t_symbol *current_symbol, char **input)
 	while ()
 }
 
-t_token_lst *token(t_symbol *sym, t_token_lst **token_lst, char **input)
+t_token_lst *tokenize(t_symbol *sym, t_token_lst **token_lst, char **input)
 {
 	t_token_lst *token;
 
@@ -77,6 +79,5 @@ t_token_lst *parse_input_char(char *input)
 
 	input_cpy = ft_strdup(input);
 	symbol = e_unknown;
-	next_symbol(&symbol, &input);
-	token(&symbol, &token_lst, &input);
+	tokenize(&symbol, &token_lst, &input);
 }
