@@ -82,6 +82,12 @@ int accept(t_symbol expected, t_tkn_info *tkn_info)
 	return (0);
 }
 
+t_token_lst	*redir_token(t_tkn_info *tkn_info)
+{
+	t_token_lst	*new_token;
+	
+}
+
 t_token_lst	*next_token(t_tkn_info *tkn_info)
 {
 	char		*text;
@@ -120,13 +126,7 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 			return (token_new(pipe_op, NULL));
 	}
 	else if (*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<')
-	{
 		return (redir_token(tkn_info));
-	}
-	else if (*tkn_info->curr_char == '<')
-	{
-		tkn_info->curr_char
-	}
 
 }
 
