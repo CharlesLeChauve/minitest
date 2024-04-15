@@ -79,6 +79,6 @@ void		handle_sigint(int sig);
 // memory
 void		free_tokens(t_token_lst	*token);
 t_ast_node *parse_tokens(t_token_lst *tokens);
-void print_tree(t_ast_node *root); 
+void print_tree(t_ast_node *root);
 
 #endif

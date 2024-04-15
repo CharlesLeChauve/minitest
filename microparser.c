@@ -14,7 +14,7 @@ typedef	struct	s_tkn_info
 	char		*input;
 }	t_tkn_info;
 
-void    next_symbol(t_symbol *symbol, char *input)
+void    next_symbol(t_symbol *symbol, char **input)
 {
 	if (ft_isalpha(**input))
 		*symbol = alpha;
@@ -72,10 +72,10 @@ t_token_lst *tokenize(t_symbol *sym, t_token_lst **token_lst, char **input)
 {
 	t_token_lst *token;
 
-	token = (t_token_lst *)malloc(sizeof)
-	if (accept(e_alpha))
+	token = (t_token_lst *)malloc(sizeof(token));
+	if (accept(alpha))
 		command(sym, input);
-	
+
 }
 
 t_token_lst *parse_input_char(char *input)
@@ -83,7 +83,7 @@ t_token_lst *parse_input_char(char *input)
 	t_tkn_info	tkn_info;
 
 	tkn_info.input = ft_strdup(input);
-	tkn_info.symbol = e_unknown;
+	tkn_info.symbol = unknown;
 	tkn_info.token_lst = NULL:
 	tokenize(tkn_info);
 }
