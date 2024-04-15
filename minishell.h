@@ -11,9 +11,9 @@
 #include <readline/history.h>
 #include "./libft/libft.h"
 
-typedef enum
+typedef enum e_token_type
 {
-	command, argument, option, redir_in, redir_out, redir_app, pipe_op, fd, file_path, and_op, or_op, eol
+	command, argument, option, redir_in, redir_out, redir_app, pipe_op, fd, file_path, and_op, or_op, eol, heredoc
 }	t_token_type;
 
 typedef enum {

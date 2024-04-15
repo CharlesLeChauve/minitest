@@ -84,8 +84,36 @@ int accept(t_symbol expected, t_tkn_info *tkn_info)
 
 t_token_lst	*redir_token(t_tkn_info *tkn_info)
 {
-	t_token_lst	*new_token;
-	
+	t_token_lst		*new_token;
+	t_token_type	type;
+	char			*text;
+
+	if (*tkn_info->curr_char == '>')
+	{
+		if (*tkn_info->curr_char == '>')
+		{
+			tkn_info->curr_char++;
+			type = redir_app;
+		}
+		else
+			type = redir_out;
+	}
+	else if (*tkn_info->curr_char == '<')
+	{
+		if (*tkn_info->curr_char == '<')
+		{
+			tkn_info->curr_char++;
+			type = heredoc;
+		}
+		else
+			type = redir_in;
+	}
+	tkn_info->curr_char++;
+	while (ft_isspace(*tkn_info->curr_char))
+		tkn_info->curr_char++;
+	while (ft_isalnum(*tkn_info->curr_char))
+		ft_add_char_to_buffer(&text, *tkn_info->curr_char, ft_strlen(text) + 1);
+	return (token_new(type, text));
 }
 
 t_token_lst	*next_token(t_tkn_info *tkn_info)
@@ -104,7 +132,7 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		while (ft_isalnum(*tkn_info->curr_char) || tkn_info->curr_char == '_'\
 				|| tkn_info->curr_char == '-' || *tkn_info->curr_char == '/')
 		{
-			ft_add_char_to_buffer(&text, *tkn_info->curr_char, ft_strlen(text));
+			ft_add_char_to_buffer(&text, *tkn_info->curr_char, ft_strlen(text) + 1);
 			tkn_info->curr_char++;
 		}
 		if (!last || last->type != command)
