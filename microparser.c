@@ -12,70 +12,110 @@ typedef	struct	s_tkn_info
 	t_symbol	symbol;
 	t_token_lst	*token_lst;
 	char		*input;
+	char		*curr_char;
 }	t_tkn_info;
 
-void    next_symbol(t_symbol *symbol, char **input)
+void    next_symbol(t_tkn_info *tkn_info)
 {
-	if (ft_isalpha(**input))
-		*symbol = alpha;
-	else if (ft_isalnum(**input))
-		*symbol = num;
-	else if (**input == '<' || **input == '>')
-		*symbol = redir;
-	else if (**input == '&' && **input + 1 == '&')
+	if (ft_isalpha(*(tkn_info->input)))
+		tkn_info->symbol = alpha;
+	else if (ft_isalnum(*(tkn_info->input)))
+		tkn_info->symbol = num;
+	else if (*(tkn_info->input) == '<' || *(tkn_info->input) == '>')
+		tkn_info->symbol = redir;
+	else if (*(tkn_info->input) == '&' && *(tkn_info->input + 1) == '&')
 	{
-		*input++;
-		*symbol = and_op;
+		tkn_info->input++;
+		tkn_info->symbol = and_op;
 	}
-	else if (**input == '|' && **input + 1 == '|')
+	else if (*(tkn_info->input) == '|' && *(tkn_info->input + 1) == '|')
 	{
-		*input++;
-		*symbol = or_op;
+		tkn_info->input++;
+		tkn_info->symbol = or_op;
 	}
-	else if (**input == '|')
-		*symbol = pipe_op;
-	else if (**input == ';')
-		*symbol = semicolon;
-	else if (**input == '-')
-		*symbol = dash;
-	else if (**input == '.')
-		*symbol = dot;
-	else if (**input == '/')
-		*symbol = slash;
-	else if (**input == '\\')
-		*symbol = backslash;
-	else if (**input == '$')
-		*symbol = dollar;
-	else if (**input == '?' || **input == '*')
-		*symbol = wildcard;
-	else if (**input == '\0' || **input == '\n')
-		*symbol = eol;
-	*input++;
+	else if (*(tkn_info->input) == '|')
+		tkn_info->symbol = pipe_op;
+	else if (*(tkn_info->input) == ';')
+		tkn_info->symbol = semicolon;
+	else if (*(tkn_info->input) == '-')
+		tkn_info->symbol = dash;
+	else if (*(tkn_info->input) == '.')
+		tkn_info->symbol = dot;
+	else if (*(tkn_info->input) == '/')
+		tkn_info->symbol = slash;
+	else if (*(tkn_info->input) == '\\')
+		tkn_info->symbol = backslash;
+	else if (*(tkn_info->input) == '$')
+		tkn_info->symbol = dollar;
+	else if (*(tkn_info->input) == '?' || *(tkn_info->input) == '*')
+		tkn_info->symbol = wildcard;
+	else if (*(tkn_info->input) == '\0' || *(tkn_info->input) == '\n')
+		tkn_info->symbol = eol;
+	tkn_info->input++;
 }
 
-int accept(t_symbol expected, t_symbol *current_symbol, char **input)
+void    ft_add_char_to_buffer(char **buffer, char c, size_t *len)
 {
-	if (*current_symbol == expected)
+    char    *new_buffer;
+
+    new_buffer = malloc(*len + 2);
+    if (!new_buffer)
+    {
+        ft_printf("Error: Allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    ft_memcpy(new_buffer, *buffer, *len);
+    new_buffer[*len] = c;
+    (*len)++;
+    new_buffer[*len] = '\0';
+    free(*buffer);
+    *buffer = new_buffer;
+}
+
+int accept(t_symbol expected, t_tkn_info *tkn_info)
+{
+	if (tkn_info->symbol == expected)
 	{
-		next_symbol(symbol, input);
+		next_symbol(tkn_info);
 		return (1);
 	}
 	return (0);
 }
 
-void    command(t_symbol *current_symbol, char **input)
+t_token_lst	*next_token(t_tkn_info *tkn_info)
 {
-	while ()
+	char		*text;
+	t_token_lst	*new_token;
+	t_token_lst	*last;
+
+	last = token_last(tkn_info->token_lst);
+	while (ft_isspace(*(tkn_info->curr_char)))
+		tkn_info->curr_char++;
+	if (*tkn_info->curr_char == '\0' || tkn_info->curr_char == '\n')
+		return (token_new(eol, NULL));
+	if (ft_isalpha(*tkn_info->curr_char) || *tkn_info->curr_char == '/' || *tkn_info->curr_char == '.')
+	{
+		while (ft_isalnum(*tkn_info->curr_char) || tkn_info->curr_char == '_'\
+				|| tkn_info->curr_char == '-' || *tkn_info->curr_char == '/')
+			ft_add_char_to_buffer(&text, *tkn_info->curr_char, ft_strlen(text));
+		if (!last || last->type != command)
+			return (token_new(command, text));
+		if (last->type == command || last->type == argument || last->type == option)
+			return (token_new(argument, text));
+		if (last->type == redirection)
+			return (token_new(file_path, text));
+		if ()
+	}
 }
 
-t_token_lst *tokenize(t_symbol *sym, t_token_lst **token_lst, char **input)
+void	tokenize(t_tkn_info *tkn_info)
 {
-	t_token_lst *token;
+	while (token_last(tkn_info->token_lst) != eol)
+	{
+		tokenaddback(&tkn_info->token_lst, next_token(tkn_info));
+	}
 
-	token = (t_token_lst *)malloc(sizeof(token));
-	if (accept(alpha))
-		command(sym, input);
-
+	
 }
 
 t_token_lst *parse_input_char(char *input)
@@ -83,7 +123,8 @@ t_token_lst *parse_input_char(char *input)
 	t_tkn_info	tkn_info;
 
 	tkn_info.input = ft_strdup(input);
+	tkn_info.curr_char = input;
 	tkn_info.symbol = unknown;
-	tkn_info.token_lst = NULL:
-	tokenize(tkn_info);
+	tkn_info.token_lst = NULL;
+	tokenize(&tkn_info);
 }

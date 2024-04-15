@@ -13,7 +13,7 @@
 
 typedef enum
 {
-	command, argument, option, redirection, pipe_op, fd, file_path, and_op, or_op
+	command, argument, option, redirection, pipe_op, fd, file_path, and_op, or_op, eol
 }	t_token_type;
 
 typedef enum {
