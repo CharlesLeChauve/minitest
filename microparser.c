@@ -7,6 +7,13 @@ typedef enum e_symbol
 	quote, dquotes, eol
 }   t_symbol;
 
+typedef	struct	s_tkn_info
+{
+	t_symbol	symbol;
+	t_token_lst	*token_lst;
+	char		*input;
+}	t_tkn_info;
+
 void    next_symbol(t_symbol *symbol, char *input)
 {
 	if (ft_isalpha(**input))
@@ -73,11 +80,10 @@ t_token_lst *tokenize(t_symbol *sym, t_token_lst **token_lst, char **input)
 
 t_token_lst *parse_input_char(char *input)
 {
-	t_symbol    symbol;
-	t_token_lst *token_lst;
-	char        *input_cpy;
+	t_tkn_info	tkn_info;
 
-	input_cpy = ft_strdup(input);
-	symbol = e_unknown;
-	tokenize(&symbol, &token_lst, &input);
+	tkn_info.input = ft_strdup(input);
+	tkn_info.symbol = e_unknown;
+	tkn_info.token_lst = NULL:
+	tokenize(tkn_info);
 }
