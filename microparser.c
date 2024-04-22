@@ -2,18 +2,12 @@
 
 typedef enum e_symbol
 {
-	alpha, num, redir, pipe_op, and_op, or_op, semicolon,\
-	dash, dot, backslash, dollar, slash, wildcard, unknown,\
+	alpha, num, redir, pipe_op, and_op, or_op,\
+	dash, dot, dollar, slash, wildcard, unknown,\
 	quote, dquotes, eol
 }   t_symbol;
 
-typedef	struct	s_tkn_info
-{
-	t_symbol	symbol;
-	t_token_lst	*token_lst;
-	char		*input;
-	char		*curr_char;
-}	t_tkn_info;
+
 
 void    next_symbol(t_tkn_info *tkn_info)
 {
@@ -35,16 +29,8 @@ void    next_symbol(t_tkn_info *tkn_info)
 	}
 	else if (*(tkn_info->input) == '|')
 		tkn_info->symbol = pipe_op;
-	else if (*(tkn_info->input) == ';')
-		tkn_info->symbol = semicolon;
-	else if (*(tkn_info->input) == '-')
-		tkn_info->symbol = dash;
 	else if (*(tkn_info->input) == '.')
 		tkn_info->symbol = dot;
-	else if (*(tkn_info->input) == '/')
-		tkn_info->symbol = slash;
-	else if (*(tkn_info->input) == '\\')
-		tkn_info->symbol = backslash;
 	else if (*(tkn_info->input) == '$')
 		tkn_info->symbol = dollar;
 	else if (*(tkn_info->input) == '?' || *(tkn_info->input) == '*')
@@ -144,7 +130,6 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 	}
 	else if (tkn_info->curr_char == '|')
 	{
-		tkn_info->curr_char++;
 		if (*tkn_info->curr_char == '|')
 		{
 			tkn_info->curr_char++;
@@ -175,7 +160,6 @@ t_token_lst *parse_input_char(char *input)
 
 	tkn_info.input = ft_strdup(input);
 	tkn_info.curr_char = input;
-	tkn_info.symbol = unknown;
 	tkn_info.token_lst = NULL;
 	tokenize(&tkn_info);
 }

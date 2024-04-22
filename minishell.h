@@ -11,25 +11,29 @@
 #include <readline/history.h>
 #include "./libft/libft.h"
 
+
+
 typedef enum e_token_type
 {
-	command, argument, option, redir_in, redir_out, redir_app, pipe_op, fd, file_path, and_op, or_op, eol, heredoc
+	command, redir_in, redir_out, redir_app, heredoc, pipe_op, fd, file_path, and_op, or_op, eol
 }	t_token_type;
 
-typedef enum {
-    COMMAND,
-    PIPE,
-    AND,
-    OR
-} NodeType;
+typedef enum e_redir_type
+{
+	in, out, append, heredoc
+}	t_redir_type;
 
-// Définition des types de redirection
+typedef enum e_state_machine
+{
+	reg, quote, dquote
+}	t_sm;
+
 typedef enum {
-    NO_REDIRECTION,
-    INPUT_REDIRECTION,
-    OUTPUT_REDIRECTION,
-    APPEND_REDIRECTION
-} RedirectionType;
+	COMMAND,
+	PIPE,
+	AND,
+	OR
+} NodeType;
 
 typedef struct s_token_lst
 {
@@ -42,15 +46,21 @@ typedef struct s_token_lst
 	struct s_token_lst	*next;
 }	t_token_lst;
 
+typedef	struct	s_tkn_info
+{
+	t_token_lst	*token_lst;
+	t_sm		state;
+	char		*input;
+	char		*curr_char;
+}	t_tkn_info;
+
 // Mise à jour de la structure Node pour inclure des informations sur les redirections
 typedef struct s_ast_node {
-    t_token_type type;
-	t_token_lst		*command_tokens;
-    char *value;
-    RedirectionType redirection_type; // Type de redirection associée à la commande
-    char *redirection_file; // Nom du fichier de redirection
-    struct s_ast_node *left;
-    struct s_ast_node *right;
+	t_token_type    type;
+	t_token_lst     *tokens;
+	char			*value;
+	struct s_ast_node *left;
+	struct s_ast_node *right;
 } t_ast_node;
 
 // utils
@@ -66,6 +76,7 @@ void		treat_token(char *token, t_token_lst **token_lst);
 void		print_token_type(t_token_lst *token);
 
 // parsing
+t_token_lst	*tokenize(char *input);
 void		parser(t_token_lst *tokens);
 int		    ft_isvalidchar(char c);
 void		parse_input(char *input, t_token_lst **token_lst);
@@ -78,7 +89,7 @@ void		handle_sigint(int sig);
 
 // memory
 void		free_tokens(t_token_lst	*token);
-t_ast_node *parse_tokens(t_token_lst *tokens);
-void print_tree(t_ast_node *root); 
+t_ast_node  *parse_tokens(t_token_lst *tokens);
+void        print_tree(t_ast_node *root); 
 
 #endif

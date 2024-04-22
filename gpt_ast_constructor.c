@@ -12,9 +12,9 @@ t_ast_node *create_node(t_token_type type, char *text, t_token_lst *tokens) {
     }
     node->type = type;
     if (type == command && tokens != NULL)
-        node->command_tokens = tokens;
+        node->tokens = tokens;
     else
-        node->command_tokens = NULL;
+        node->tokens = NULL;
     node->value = ft_strdup(text);
     node->left = NULL;
     node->right = NULL;
@@ -74,9 +74,9 @@ void print_tree(t_ast_node *root) {
     if (root == NULL) return;
     print_tree(root->left);
     printf("%s\n", root->value);
-    if (root->command_tokens)
+    if (root->tokens)
     {
-    token_node = root->command_tokens;
+    token_node = root->tokens;
 			while (token_node)
 			{
 				print_token_type(token_node);

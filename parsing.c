@@ -65,7 +65,7 @@ int	main(void)
 		if (input && *input)
 		{
 			add_history(input);
-			parse_input(input, &token_lst);
+			tokenize(input);
 			ast = parse_tokens(token_lst);
 			print_tree(ast);
 			// revstr(input);

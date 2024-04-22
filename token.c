@@ -42,17 +42,17 @@ t_token_lst *token_last(t_token_lst *token_lst)
 		node = node->next;
 	return (node);
 }
-
+/*
 void	treat_token(char *token, t_token_lst **token_lst)
 {
 	t_token_lst	*last;
 
 	last = token_last(*token_lst);
 	if (token[0] == '>' || token[0] == '<')
-		tokenaddback(token_lst, token_new(redirection, (void *)token));
+		tokenaddback(token_lst, token_new(redir, (void *)token));
 	else if (token[0] == '|' && token[1] == 0)
 		tokenaddback(token_lst, token_new(pipe_op, (void *)token));
-	else if (ft_isalpha(token[0]) && last && last->type == redirection)
+	else if (ft_isalpha(token[0]) && last && last->type == redir)
 		tokenaddback(token_lst, token_new(file_path, (void *)token));
 	else if (ft_isalnum(token[0]) && last && (last->type == command || last->type == option || last->type == argument))
 		tokenaddback(token_lst, token_new(argument, (void *)token));
@@ -60,20 +60,29 @@ void	treat_token(char *token, t_token_lst **token_lst)
 		tokenaddback(token_lst, token_new(option, (void *)token));
 	else if (ft_isvalidchar(token[0]) && (!last || (last && last->type != command)))
 		tokenaddback(token_lst, token_new(command, (void *)token));
-}
+}*/
 
 void print_token_type(t_token_lst *token){
     switch (token->type) {
         case command:
             printf("Type: command\t");
             break;
-        case argument:
-            printf("Type: argument\t");
+        // case argument:
+        //     printf("Type: argument\t");
+        //     break;
+        // case option:
+        //     printf("Type: option\t");
+        //     break;
+        case redir_in:
+            printf("Type: redir\t");
             break;
-        case option:
-            printf("Type: option\t");
+		case redir_out:
+            printf("Type: redir\t");
             break;
-        case redirection:
+		case redir_app:
+            printf("Type: redir\t");
+            break;
+		case heredoc:
             printf("Type: redir\t");
             break;
         case pipe_op:
