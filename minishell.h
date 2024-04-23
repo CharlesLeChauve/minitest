@@ -18,11 +18,6 @@ typedef enum e_token_type
 	command, redir_in, redir_out, redir_app, heredoc, pipe_op, fd, file_path, and_op, or_op, eol
 }	t_token_type;
 
-typedef enum e_redir_type
-{
-	in, out, append, heredoc
-}	t_redir_type;
-
 typedef enum e_state_machine
 {
 	reg, quote, dquote
@@ -72,7 +67,6 @@ void		lexer(char	*input, t_token_lst **tokens);
 t_token_lst	*token_new(t_token_type type, void *content);
 t_token_lst 	*token_last(t_token_lst *token_lst);
 void		tokenaddback(t_token_lst **lst, t_token_lst *node);
-void		treat_token(char *token, t_token_lst **token_lst);
 void		print_token_type(t_token_lst *token);
 
 // parsing

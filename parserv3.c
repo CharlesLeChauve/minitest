@@ -31,15 +31,11 @@ void	set_quotes_state(t_tkn_info *tkn_info)
 	{
 		if (tkn_info->state == reg)
 			tkn_info->state = quote;
-		else if (tkn_info->state == quote)
-			tkn_info->state = reg;
 	}
 	else if (*tkn_info->curr_char == '"' && (tkn_info->curr_char == tkn_info->input || *(tkn_info->curr_char - 1) != '\\'))
 	{
 		if (tkn_info->state == reg)
 			tkn_info->state = dquote;
-		else if (tkn_info->state == dquote)
-			tkn_info->state = reg;
 	}
 }
 
@@ -56,28 +52,33 @@ int		break_token(t_tkn_info *tkn_info)
 	t_sm	state;
 
 	state = tkn_info->state;
-	if (ft_isalnum(tkn_info->curr_char))
-		return (0);
-	if (state == reg)
-	{
-		if (ft_isshelloperator(tkn_info->curr_char))
-			return (1);
-	}
+	if (state == reg && ft_isshelloperator(*tkn_info->curr_char))
+		return (1);
+	else if ((state == quote && *tkn_info->curr_char == '\'') || (state == dquote && *tkn_info->curr_char == '"'))
+		return (1);
 	else
 		return (0);
 }
 
 void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 {
-	int		go;
+	int		i;
 	char	buffer[1024];
 
-	go = 1;
-	while (go)
+	i = 0;
+	ft_bzero(buffer, 1024);
+	while (*tkn_info->curr_char)
 	{
-		ft_strcat(buffer, tkn_info->curr_char);
 		if (break_token(tkn_info))
-			go = 0;
+			break;
+		buffer[i] = *tkn_info->curr_char;
+		tkn_info->curr_char++;
+		i++;
+	}
+	if (i > 0)
+	{
+		token->text = ft_strdup(buffer);
+		ft_bzero(buffer, 1024);
 	}
 }
 
@@ -111,14 +112,21 @@ t_token_lst	*redir_token(t_tkn_info *tkn_info)
 	}
 	space_quotes(tkn_info);
 	set_token_text(tkn_info, token);
+	return (token);
+}
+
+t_token_lst	*cmd_token(t_tkn_info *tkn_info)
+{
+	t_token_lst *token;
+
+	token = (t_token_lst *)malloc(sizeof(t_token_lst));
+	token->type = command;
+	set_token_text(tkn_info, token);
+	return (token);
 }
 
 t_token_lst *next_token(t_tkn_info *tkn_info)
 {
-	t_token_lst	*new_token;
-	t_token_lst	*last;
-
-	last = token_last(tkn_info->token_lst);
 	if (*tkn_info->curr_char == '\0' || *tkn_info->curr_char == '\n')
 		return (token_new(eol, NULL));
 	if (*tkn_info->curr_char == '|')
@@ -149,7 +157,7 @@ t_token_lst	*tokenize(char *input)
 	t_tkn_info	tkn_info;
 
 	tkn_info.input = ft_strdup(input);
-	tkn_info.curr_char = NULL;
+	tkn_info.curr_char = input;
 	tkn_info.token_lst = NULL;
 	tkn_info.state = reg;
 	tokenaddback(&tkn_info.token_lst, next_token(&tkn_info));

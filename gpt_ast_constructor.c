@@ -3,6 +3,13 @@
 #include <string.h>
 #include "minishell.h"
 
+int    is_redir(t_token_type type)
+{
+    if (type == redir_app || type == redir_in || type == redir_out || type == heredoc)
+        return (1);
+    return (0);
+}
+
 // Fonction pour créer un nouveau nœud
 t_ast_node *create_node(t_token_type type, char *text, t_token_lst *tokens) {
     t_ast_node *node = (t_ast_node *)malloc(sizeof(t_ast_node));
@@ -11,11 +18,16 @@ t_ast_node *create_node(t_token_type type, char *text, t_token_lst *tokens) {
         exit(EXIT_FAILURE);
     }
     node->type = type;
-    if (type == command && tokens != NULL)
+    if ((type == command || is_redir(type)) && tokens != NULL)
+    {
         node->tokens = tokens;
+        node->value = ft_strdup(text);
+    }
     else
+    {
         node->tokens = NULL;
-    node->value = ft_strdup(text);
+        node->value = NULL;
+    }
     node->left = NULL;
     node->right = NULL;
     return node;

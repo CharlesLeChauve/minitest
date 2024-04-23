@@ -27,19 +27,19 @@ void	revstr(char *str)
 		swap_char(&str[i], &str[size]);
 }
 
-void	parse_input(char *input, t_token_lst **token_lst)
-{
-	char	**input_tab;
-	int	i;
+// void	parse_input(char *input, t_token_lst **token_lst)
+// {
+// 	char	**input_tab;
+// 	int	i;
 
-	input_tab = ft_split(input, ' ');
-	i = 0;
-	while (input_tab[i])
-	{
-		treat_token(input_tab[i], token_lst);
-		i++;
-	}
-}
+// 	input_tab = ft_split(input, ' ');
+// 	i = 0;
+// 	while (input_tab[i])
+// 	{
+// 		treat_token(input_tab[i], token_lst);
+// 		i++;
+// 	}
+// }
 
 int	main(void)
 {
@@ -65,7 +65,7 @@ int	main(void)
 		if (input && *input)
 		{
 			add_history(input);
-			tokenize(input);
+			token_lst = tokenize(input);
 			ast = parse_tokens(token_lst);
 			print_tree(ast);
 			// revstr(input);
