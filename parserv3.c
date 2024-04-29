@@ -123,6 +123,7 @@ t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
 	token->type = command;
+	token->next = NULL;
 	set_token_text(tkn_info, token);
 	return (token);
 }

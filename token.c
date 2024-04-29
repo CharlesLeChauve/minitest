@@ -20,6 +20,8 @@ void	tokenaddback(t_token_lst **lst, t_token_lst *node)
 {
 	t_token_lst	*act;
 
+	if (!node)
+		return ;
 	if (!*lst)
 	{
 		*lst = node;
@@ -36,7 +38,7 @@ t_token_lst *token_last(t_token_lst *token_lst)
 	t_token_lst *node;
 
 	node = token_lst;
-	if (!node)
+	if (node == NULL)
 		return (NULL);
 	while (node->next)
 		node = node->next;
@@ -74,16 +76,16 @@ void print_token_type(t_token_lst *token){
         //     printf("Type: option\t");
         //     break;
         case redir_in:
-            printf("Type: redir\t");
+            printf("Type: redir in\t");
             break;
 		case redir_out:
-            printf("Type: redir\t");
+            printf("Type: redir out\t");
             break;
 		case redir_app:
-            printf("Type: redir\t");
+            printf("Type: redir app\t");
             break;
 		case heredoc:
-            printf("Type: redir\t");
+            printf("Type: heredoc\t");
             break;
         case pipe_op:
             printf("Type: pipe_op\t");
@@ -98,5 +100,6 @@ void print_token_type(t_token_lst *token){
             printf("Unknown type\t");
             break;
     }
-    printf("Content : [%s]\n", token->text);
+	if (token->type == command || token->type == redir_in || token->type == redir_out || token->type == redir_app || token->type == heredoc)
+	    printf("Content : [%s]\n", token->text);
 }
