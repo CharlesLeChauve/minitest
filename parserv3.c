@@ -75,6 +75,8 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 		tkn_info->curr_char++;
 		i++;
 	}
+	while (buffer[i] == ' ')
+		buffer[i--] = '\0';
 	if (i > 0)
 	{
 		token->text = ft_strdup(buffer);

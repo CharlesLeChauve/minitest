@@ -61,6 +61,7 @@ typedef struct s_ast_node {
 // utils
 void		swap_char(char *c1, char *c2);
 void		revstr(char *str);
+int			is_redir(t_token_type type);
 
 // lexing
 void		lexer(char	*input, t_token_lst **tokens);

@@ -91,7 +91,7 @@ void print_token_type(t_token_lst *token){
         case fd:
             printf("Type: fd\t");
             break;
-	case file_path:
+		case file_path:
             printf("Type: file_path\t");
             break;
         default:

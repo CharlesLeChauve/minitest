@@ -3,12 +3,6 @@
 #include <string.h>
 #include "minishell.h"
 
-int    is_redir(t_token_type type)
-{
-    if (type == redir_app || type == redir_in || type == redir_out || type == heredoc)
-        return (1);
-    return (0);
-}
 
 // Fonction pour créer un nouveau nœud
 t_ast_node *create_node(t_token_type type, char *text, t_token_lst *tokens) {
@@ -26,7 +20,12 @@ t_ast_node *create_node(t_token_type type, char *text, t_token_lst *tokens) {
     else
     {
         node->tokens = NULL;
-        node->value = NULL;
+        if (node->type == pipe_op)
+            node->value = "|";
+        if (node->type == and_op)
+            node->value = "&&";
+        if (node->type == or_op)
+            node->value = "||";
     }
     node->left = NULL;
     node->right = NULL;

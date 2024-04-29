@@ -8,7 +8,7 @@ LK_FLAG =   -fsanitize=address -fsanitize=leak
 
 NAME    =   minishell
 
-SRCS    =   parsing.c token.c signal.c gpt_ast_constructor.c parserv3.c
+SRCS    =   parsing.c token.c signal.c gpt_ast_constructor.c parserv3.c utils_check.c
 
 BNS_SRC =   pipex_bonus.c utils.c utils_bonus.c
 
