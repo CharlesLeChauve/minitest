@@ -89,6 +89,7 @@ t_token_lst	*redir_token(t_tkn_info *tkn_info)
 	t_token_lst *token;
 
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
+	token->next = NULL;
 	space_quotes(tkn_info);
 	if (*tkn_info->curr_char == '>')
 	{
