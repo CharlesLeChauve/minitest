@@ -27,3 +27,8 @@ void	ft_lstclear(t_list **lst, void (*del)(void *))
 	}
 	*lst = NULL;
 }
+
+void	ft_dlstclear(t_dlist **lst, void (*del)(void *))
+{
+	ft_lstclear((t_list **)lst, del);
+}
