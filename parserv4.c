@@ -75,7 +75,7 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 		tkn_info->curr_char++;
 		i++;
 	}
-    i--;
+	i--;
 	while (buffer[i] == ' ')
 		buffer[i--] = '\0';
 	if (i > 0)
@@ -85,12 +85,18 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	}
 }
 
-t_token_lst	*redir_token(t_tkn_info *tkn_info)
+t_token_lst *redir_token(t_tkn_info *tkn_info)
 {
 	t_token_lst *token;
+	char buffer[1024];
+	int	i = 0;
 
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
-	space_quotes(tkn_info);
+	if (!token)
+	{
+		perror("Allocation Failed");
+		exit(EXIT_FAILURE);
+	}
 	if (*tkn_info->curr_char == '>')
 	{
 		tkn_info->curr_char++;
@@ -113,10 +119,14 @@ t_token_lst	*redir_token(t_tkn_info *tkn_info)
 		else
 			token->type = redir_in;
 	}
-	space_quotes(tkn_info);
-	set_token_text(tkn_info, token);
+	while (*tkn_info->curr_char == ' ') tkn_info->curr_char++;
+	while (*tkn_info->curr_char && *tkn_info->curr_char != ' ' && *tkn_info->curr_char != '|')
+		buffer[i++] = *tkn_info->curr_char++;
+	buffer[i] = '\0';
+	token->text = strdup(buffer);
 	return (token);
 }
+
 
 t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 {
