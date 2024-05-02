@@ -94,7 +94,7 @@ void print_token_type(t_token_lst *token){
             printf("Type: file_path\t");
             break;
 		case eol:
-            printf("Type: eol\t");
+            printf("Type: eol\t\n");
             break;
         default:
             printf("Unknown type\t");
