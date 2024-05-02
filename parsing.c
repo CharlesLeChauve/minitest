@@ -43,9 +43,9 @@ void	revstr(char *str)
 
 int	main(void)
 {
-	char			*input;
+	char				*input;
 	struct sigaction	sa;
-	t_token_lst			*token_lst;
+	t_dlist				*token_lst;
 	t_ast_node			*ast;
 
 	sa.sa_handler = handle_sigint;
