@@ -5,7 +5,7 @@
 
 
 // Fonction pour créer un nouveau nœud
-t_ast_node *create_node(t_token_type type, char *text, t_token_lst *tokens) {
+t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
     t_ast_node *node = (t_ast_node *)malloc(sizeof(t_ast_node));
     if (node == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -42,13 +42,13 @@ void free_tree(t_ast_node *root) {
 }
 
 // Fonction récursive pour construire l'arbre syntaxique
-t_ast_node *parse_tokens(t_token_lst *tokens) {
+t_ast_node *parse_tokens(t_dlist *tokens) {
     if (tokens == NULL) return NULL;
 
     // Trouver le premier opérateur
-    t_token_lst *current = tokens, *previous = NULL;
+    t_dlist *current = tokens, *previous = NULL;
     while (current != NULL) {
-        if (current->type == pipe_op || current->type == and_op || current->type == or_op) {
+        if (((t_token_lst *)(current->content))->type == pipe_op || ((t_token_lst *)(current->content))->type == and_op || ((t_token_lst *)(current->content))->type == or_op) {
             break;
         }
         previous = current;
@@ -57,15 +57,15 @@ t_ast_node *parse_tokens(t_token_lst *tokens) {
 
     // Si aucun opérateur n'est trouvé, il s'agit d'une simple commande
     if (current == NULL) {
-        return create_node(command, tokens->text, tokens);
+        return create_node(command, ((t_token_lst *)(tokens->content))->text, tokens);
     }
 
     // Créer le nœud pour l'opérateur
-    t_ast_node *node = create_node(current->type, current->text, NULL);
+    t_ast_node *node = create_node(((t_token_lst *)(current->content))->type, ((t_token_lst *)(current->content))->text, NULL);
 
     // Séparer la liste de jetons en deux parties
-    t_token_lst *left_tokens = tokens;
-    t_token_lst *right_tokens = current->next;
+    t_dlist *left_tokens = tokens;
+    t_dlist *right_tokens = current->next;
 
     // Important: exclure l'opérateur de la liste de jetons pour éviter la récursivité infinie
     if (previous != NULL) {
@@ -79,18 +79,46 @@ t_ast_node *parse_tokens(t_token_lst *tokens) {
     return node;
 }
 
+void    print_logical_node(t_ast_node *node)
+{
+    switch (node->type) {
+        case pipe_op:
+            printf("Type: pipe |\t\n");
+            break;
+        case or_op:
+            printf("Type: or ||\t\n");
+            break;
+		case and_op:
+            printf("Type: and &&\t\n");
+            break;
+        default:
+            printf("Bwaaaargh\t\n");
+            break;
+    }
+}
+
+int is_logical(t_token_type type)
+{
+    if (type == pipe_op || type == or_op || type == and_op)
+        return (1);
+    return (0);
+}
+
 // Fonction de test pour afficher l'arbre syntaxique (à des fins de débogage)
 void print_tree(t_ast_node *root) {
-    t_token_lst *token_node;
-    if (root == NULL) return;
+    t_dlist *token_node;
+    if (root == NULL) 
+        return;
     print_tree(root->left);
-    printf("%s\n", root->value);
+    //printf("%s\n", root->value);
+    if (is_logical(root->type))
+        print_logical_node(root);
     if (root->tokens)
     {
     token_node = root->tokens;
 			while (token_node)
 			{
-				print_token_type(token_node);
+				print_token_type((t_token_lst *)token_node->content);
 				token_node = token_node->next;
 			}
     }

@@ -5,45 +5,42 @@ t_token_lst	*token_new(t_token_type type, void *content)
 	t_token_lst *token;
 
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
-	token->next = NULL;
 	token->type = type;
 	if (content == NULL)
 		return (token);
-	if (type == fd)
-		token->fd = *(int *)content;
 	else
 		token->text = ft_strdup((const char *)content);
 	return(token);
 }
 
-void	tokenaddback(t_token_lst **lst, t_token_lst *node)
-{
-	t_token_lst	*act;
+// void	tokenaddback(t_token_lst **lst, t_token_lst *node)
+// {
+// 	t_token_lst	*act;
 
-	if (!node)
-		return ;
-	if (!*lst)
-	{
-		*lst = node;
-		return ;
-	}
-	act = *lst;
-	while (act->next)
-		act = act->next;
-	act->next = node;
-}
+// 	if (!node)
+// 		return ;
+// 	if (!*lst)
+// 	{
+// 		*lst = node;
+// 		return ;
+// 	}
+// 	act = *lst;
+// 	while (act->next)
+// 		act = act->next;
+// 	act->next = node;
+// }
 
-t_token_lst *token_last(t_token_lst *token_lst)
-{
-	t_token_lst *node;
+// t_token_lst *token_last(t_token_lst *token_lst)
+// {
+// 	t_token_lst *node;
 
-	node = token_lst;
-	if (node == NULL)
-		return (NULL);
-	while (node->next)
-		node = node->next;
-	return (node);
-}
+// 	node = token_lst;
+// 	if (node == NULL)
+// 		return (NULL);
+// 	while (node->next)
+// 		node = node->next;
+// 	return (node);
+// }
 /*
 void	treat_token(char *token, t_token_lst **token_lst)
 {
@@ -95,6 +92,9 @@ void print_token_type(t_token_lst *token){
             break;
 		case file_path:
             printf("Type: file_path\t");
+            break;
+		case eol:
+            printf("Type: eol\t");
             break;
         default:
             printf("Unknown type\t");

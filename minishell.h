@@ -36,14 +36,13 @@ typedef struct s_token_lst
 	union
 	{
 		char	*text;
-		int		fd;
+		int		priority;
 	};
-	struct s_token_lst	*next;
 }	t_token_lst;
 
 typedef	struct	s_tkn_info
 {
-	t_token_lst	*token_lst;
+	t_dlist		*token_lst;
 	t_sm		state;
 	char		*input;
 	char		*curr_char;
@@ -52,7 +51,7 @@ typedef	struct	s_tkn_info
 // Mise à jour de la structure Node pour inclure des informations sur les redirections
 typedef struct s_ast_node {
 	t_token_type    type;
-	t_token_lst     *tokens;
+	t_dlist  	   *tokens;
 	char			*value;
 	struct s_ast_node *left;
 	struct s_ast_node *right;
@@ -71,7 +70,7 @@ void		tokenaddback(t_token_lst **lst, t_token_lst *node);
 void		print_token_type(t_token_lst *token);
 
 // parsing
-t_token_lst	*tokenize(char *input);
+t_dlist	*tokenize(char *input);
 void		parser(t_token_lst *tokens);
 int		    ft_isvalidchar(char c);
 void		parse_input(char *input, t_token_lst **token_lst);
@@ -84,7 +83,7 @@ void		handle_sigint(int sig);
 
 // memory
 void		free_tokens(t_token_lst	*token);
-t_ast_node  *parse_tokens(t_token_lst *tokens);
+t_ast_node  *parse_tokens(t_dlist *tokens);
 void        print_tree(t_ast_node *root); 
 
 #endif
