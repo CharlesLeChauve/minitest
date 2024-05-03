@@ -7,10 +7,19 @@ int		ft_isshelloperator(char c)
 	return (0);
 }
 
-void    ft_add_char_to_buffer(char **buffer, char c, size_t *len)
+void	ft_add_char_to_buffer(char **buffer, char c, size_t *len, t_tkn_info *tkn_info)
 {
-	char    *new_buffer;
+	char	*new_buffer;
 
+	if ((tkn_info->state == quote && c == '\'') || (tkn_info->state == dquote && c == '"'))
+	{
+		if (*len > 0 && (*buffer)[*len - 1] == c)
+		{
+			(*buffer)[*len - 1] = '\0';
+			(*len)--;
+		}
+		return ;
+	}
 	new_buffer = malloc(*len + 2);
 	if (!new_buffer)
 	{
@@ -60,36 +69,41 @@ int		break_token(t_tkn_info *tkn_info)
 		return (0);
 }
 
-void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
+void set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 {
-	int		i;
-	char	buffer[1024];
+	size_t		len;
+	char		*buffer;
 
-	i = 0;
-	ft_bzero(buffer, 1024);
+	len = 0;
+	buffer = NULL;
 	while (*tkn_info->curr_char)
 	{
 		if (break_token(tkn_info))
 			break;
-		buffer[i] = *tkn_info->curr_char;
+		if (ft_isspace(*tkn_info->curr_char))
+		{
+			char* peek = tkn_info->curr_char + 1;
+			while (ft_isspace(*peek))
+				peek++;
+			if (ft_isshelloperator(*peek) || *peek == '|' || *peek == '\0' || *peek == '\n')
+				break;
+		}
+		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
 		tkn_info->curr_char++;
-		i++;
 	}
-	i--;
-	while (buffer[i] == ' ')
-		buffer[i--] = '\0';
-	if (i > 0)
+	while (len > 0 && ft_isspace(buffer[len - 1]))
 	{
-		token->text = ft_strdup(buffer);
-		ft_bzero(buffer, 1024);
+		buffer[len - 1] = '\0';
+		len--;
 	}
+	token->text = buffer;
 }
 
 t_token_lst *redir_token(t_tkn_info *tkn_info)
 {
 	t_token_lst *token;
-	char buffer[1024];
-	int	i = 0;
+	char *buffer = NULL;
+	size_t len = 0;
 
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
 	if (!token)
@@ -119,14 +133,26 @@ t_token_lst *redir_token(t_tkn_info *tkn_info)
 		else
 			token->type = redir_in;
 	}
-	while (*tkn_info->curr_char == ' ') tkn_info->curr_char++;
+	while (*tkn_info->curr_char == ' ')
+		tkn_info->curr_char++;
 	while (*tkn_info->curr_char && *tkn_info->curr_char != ' ' && *tkn_info->curr_char != '|')
-		buffer[i++] = *tkn_info->curr_char++;
-	buffer[i] = '\0';
-	token->text = strdup(buffer);
+	{
+		if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && buffer == NULL)
+		{
+			tkn_info->curr_char++;
+			continue;
+		}
+		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
+		tkn_info->curr_char++;
+	}
+	if (len > 0 && (buffer[len - 1] == '"' || buffer[len - 1] == '\''))
+	{
+		buffer[len - 1] = '\0';
+		len--;
+	}
+	token->text = buffer;
 	return (token);
 }
-
 
 t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 {

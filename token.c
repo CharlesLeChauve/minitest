@@ -60,18 +60,21 @@ void	treat_token(char *token, t_token_lst **token_lst)
 	else if (ft_isvalidchar(token[0]) && (!last || (last && last->type != command)))
 		tokenaddback(token_lst, token_new(command, (void *)token));
 }*/
-
-void print_token_type(t_token_lst *token){
-    switch (token->type) {
-        case command:
-            printf("Type: command\t");
-            break;
         // case argument:
         //     printf("Type: argument\t");
         //     break;
         // case option:
         //     printf("Type: option\t");
         //     break;
+
+
+void print_token_type(t_token_lst *token)
+{
+    switch (token->type)
+	{
+        case command:
+            printf("Type: command\t");
+            break;
         case redir_in:
             printf("Type: redir in\t");
             break;
@@ -100,6 +103,9 @@ void print_token_type(t_token_lst *token){
             printf("Unknown type\t");
             break;
     }
-	if (token->type == command || token->type == redir_in || token->type == redir_out || token->type == redir_app || token->type == heredoc)
-	    printf("Content : [%s]\n", token->text);
+    if ((token->type == command || token->type == redir_in || token->type == redir_out ||
+         token->type == redir_app || token->type == heredoc) && token->text != NULL) {
+        printf("Content : [%s]\n", token->text);
+    }
 }
+
