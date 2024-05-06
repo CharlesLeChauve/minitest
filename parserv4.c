@@ -36,21 +36,26 @@ void set_quotes_state(t_tkn_info *tkn_info)
 {
     if (*tkn_info->curr_char == '\'' && (tkn_info->curr_char == tkn_info->input || *(tkn_info->curr_char - 1) != '\\'))
     {
-        if (tkn_info->state == reg)
+        if (tkn_info->state == reg || tkn_info->state == dquote) // Si le précédent état était régulier ou guillemets doubles, passe à l'état des guillemets simples
             tkn_info->state = quote;
-        else if (tkn_info->state == quote)
+        else if (tkn_info->state == quote && *(tkn_info->curr_char + 1) == '\'') // Si le précédent état était guillemets simples et le prochain caractère est une apostrophe, reste dans l'état des guillemets simples
+            tkn_info->curr_char++; // Avancez pour ignorer l'apostrophe suivante
+        else // Sinon, retourne à l'état régulier
             tkn_info->state = reg;
-        tkn_info->curr_char++; // Avancez uniquement après changer l'état
+        tkn_info->curr_char++; // Avancez uniquement après avoir changé l'état
     }
     else if (*tkn_info->curr_char == '"' && (tkn_info->curr_char == tkn_info->input || *(tkn_info->curr_char - 1) != '\\'))
     {
-        if (tkn_info->state == reg)
+        if (tkn_info->state == reg || tkn_info->state == quote) // Si le précédent état était régulier ou guillemets simples, passe à l'état des guillemets doubles
             tkn_info->state = dquote;
-        else if (tkn_info->state == dquote)
+        else if (tkn_info->state == dquote && *(tkn_info->curr_char + 1) == '"') // Si le précédent état était guillemets doubles et le prochain caractère est un guillemet, reste dans l'état des guillemets doubles
+            tkn_info->curr_char++; // Avancez pour ignorer le guillemet suivant
+        else // Sinon, retourne à l'état régulier
             tkn_info->state = reg;
-        tkn_info->curr_char++; // Avancez uniquement après changer l'état
+        tkn_info->curr_char++; // Avancez uniquement après avoir changé l'état
     }
 }
+
 
 void	space_quotes(t_tkn_info *tkn_info)
 {
@@ -60,15 +65,15 @@ void	space_quotes(t_tkn_info *tkn_info)
 	set_quotes_state(tkn_info);
 }
 
-int	break_token(t_tkn_info *tkn_info)
+int	break_token(t_tkn_info *tkn_info, int is_redir)
 {
 	t_sm	state;
 
 	state = tkn_info->state;
-	if (state == reg && ft_isshelloperator(*tkn_info->curr_char))
+	if (state == reg && (ft_isshelloperator(*tkn_info->curr_char)))
 		return (1);
-	else if ((state == quote && *tkn_info->curr_char == '\'') || \
-				(state == dquote && *tkn_info->curr_char == '"'))
+
+	else if ((state == quote && *tkn_info->curr_char == '\'') || (state == dquote && *tkn_info->curr_char == '"') && is_redir)
 		return (1);
 	else
 		return (0);
@@ -80,15 +85,23 @@ void set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
     char *buffer = NULL;
     while (*tkn_info->curr_char)
     {
-        if (break_token(tkn_info))
+        if (break_token(tkn_info, 0))
             break;
-        if (ft_isspace(*tkn_info->curr_char))
-        {
-            char *peek = tkn_info->curr_char + 1;
-            while (ft_isspace(*peek)) peek++;
-            if (ft_isshelloperator(*peek) || *peek == '|' || *peek == '\0' || *peek == '\n')
-                break;
-        }
+        // if (ft_isspace(*tkn_info->curr_char))
+        // {
+		// 	space_quotes(tkn_info);
+        //     char *peek = tkn_info->curr_char + 1;
+        //     while (ft_isspace(*peek))
+		// 		peek++;
+        //     if ((ft_isshelloperator(*peek) || *peek == '|' || *peek == '\0' || *peek == '\n') && tkn_info->state == reg)
+        //         break;
+        // }
+		if (*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'')
+		{
+			set_quotes_state(tkn_info);
+
+			continue;
+		}
         ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
         tkn_info->curr_char++;
     }
@@ -142,11 +155,10 @@ t_token_lst	*redir_token(t_tkn_info *tkn_info)
 	while (*tkn_info->curr_char && *tkn_info->curr_char != ' ' \
 			&& *tkn_info->curr_char != '|')
 	{
-		if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') \
-			&& buffer == NULL)
+		if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\''))
 		{
-			tkn_info->curr_char++;
-			continue;
+			set_quotes_state(tkn_info);
+			break ;
 		}
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
 		tkn_info->curr_char++;
@@ -176,10 +188,6 @@ t_token_lst *next_token(t_tkn_info *tkn_info)
     space_quotes(tkn_info);
     if (!*tkn_info->curr_char)  // Plus sécurisé pour les chaînes vides
         return token_new(eol, NULL);
-
-    // Ajouter des logs de débogage pourrait aider à comprendre le flux
-    printf("Processing token starting with: %c\n", *tkn_info->curr_char);
-
     if (*tkn_info->curr_char == '|') {
         tkn_info->curr_char++;
         if (*tkn_info->curr_char == '|') {
@@ -191,7 +199,7 @@ t_token_lst *next_token(t_tkn_info *tkn_info)
         tkn_info->curr_char += 2;
         return token_new(and_op, strdup("&&"));
     }
-    if (*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<')
+    if ((*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<') && tkn_info->state == reg)
         return redir_token(tkn_info);
 
     return cmd_token(tkn_info);

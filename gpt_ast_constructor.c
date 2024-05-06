@@ -5,6 +5,8 @@
 
 
 // Fonction pour créer un nouveau nœud
+#include <string.h> // Pour strdup
+
 t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
     t_ast_node *node = (t_ast_node *)malloc(sizeof(t_ast_node));
     if (node == NULL) {
@@ -15,7 +17,15 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
     if ((type == command || is_redir(type)) && tokens != NULL)
     {
         node->tokens = tokens;
-        node->value = ft_strdup(text);
+        if (text != NULL && text[0] != '\0') {
+            node->value = strdup(text);
+            if (node->value == NULL) {
+                fprintf(stderr, "Memory allocation failed\n");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            node->value = NULL; // Ou tout autre gestion appropriée pour une chaîne vide
+        }
     }
     else
     {
@@ -32,6 +42,7 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
     return node;
 }
 
+
 // Fonction pour libérer la mémoire de l'arbre
 void free_tree(t_ast_node *root) {
     if (root == NULL) return;
@@ -42,7 +53,8 @@ void free_tree(t_ast_node *root) {
 }
 
 // Fonction récursive pour construire l'arbre syntaxique
-t_ast_node *parse_tokens(t_dlist *tokens) {
+t_ast_node *parse_tokens(t_dlist *tokens)
+{
     if (tokens == NULL) return NULL;
 
     // Trouver le premier opérateur
@@ -107,7 +119,7 @@ int is_logical(t_token_type type)
 // Fonction de test pour afficher l'arbre syntaxique (à des fins de débogage)
 void print_tree(t_ast_node *root) {
     t_dlist *token_node;
-    if (root == NULL) 
+    if (root == NULL)
         return;
     print_tree(root->left);
     //printf("%s\n", root->value);
