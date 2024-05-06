@@ -61,15 +61,15 @@ int	main(void)
 	{
 		input = readline("Maxishell > ");
 		if (!input)
-			break;
+			break ;
 		if (input && *input)
 		{
 			add_history(input);
 			token_lst = tokenize(input);
+			if (!verify_tokens(token_lst))
+				return (fprintf(stderr, "Error: Syntax error in input\n"), 1);
 			ast = parse_tokens(token_lst);
 			print_tree(ast);
-			// revstr(input);
-			// printf("%s\n", input);
 		}
 		token_lst = NULL;
 		free(input);

@@ -61,6 +61,9 @@ typedef struct s_ast_node {
 void		swap_char(char *c1, char *c2);
 void		revstr(char *str);
 int			is_redir(t_token_type type);
+int			is_command(t_token_type type);
+int			is_operator(t_token_type type);
+int			verify_tokens(t_dlist *tokens);
 
 // lexing
 void		lexer(char	*input, t_token_lst **tokens);
@@ -70,6 +73,7 @@ void		tokenaddback(t_token_lst **lst, t_token_lst *node);
 void		print_token_type(t_token_lst *token);
 
 // parsing
+
 t_dlist	*tokenize(char *input);
 void		parser(t_token_lst *tokens);
 int		    ft_isvalidchar(char c);
@@ -84,6 +88,6 @@ void		handle_sigint(int sig);
 // memory
 void		free_tokens(t_token_lst	*token);
 t_ast_node  *parse_tokens(t_dlist *tokens);
-void        print_tree(t_ast_node *root); 
+void        print_tree(t_ast_node *root);
 
 #endif

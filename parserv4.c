@@ -1,51 +1,55 @@
 #include "minishell.h"
 
-int		ft_isshelloperator(char c)
+int	ft_isshelloperator(char c)
 {
 	if (c == '<' || c == '>' || c == '|' || c == '&')
 		return (1);
 	return (0);
 }
 
-void	ft_add_char_to_buffer(char **buffer, char c, size_t *len, t_tkn_info *tkn_info)
+void ft_add_char_to_buffer(char **buffer, char c, size_t *len, t_tkn_info *tkn_info)
 {
-	char	*new_buffer;
-
-	if ((tkn_info->state == quote && c == '\'') || (tkn_info->state == dquote && c == '"'))
-	{
-		if (*len > 0 && (*buffer)[*len - 1] == c)
-		{
-			(*buffer)[*len - 1] = '\0';
-			(*len)--;
-		}
-		return ;
-	}
-	new_buffer = malloc(*len + 2);
-	if (!new_buffer)
-	{
-		ft_printf("Error: Allocation failed\n");
-		exit(EXIT_FAILURE);
-	}
-	ft_memcpy(new_buffer, *buffer, *len);
-	new_buffer[*len] = c;
-	(*len)++;
-	new_buffer[*len] = '\0';
-	free(*buffer);
-	*buffer = new_buffer;
+    char *new_buffer;
+    if ((tkn_info->state == quote && c == '\'' && *len > 0 && (*buffer)[*len - 1] != '\\') ||
+        (tkn_info->state == dquote && c == '"' && *len > 0 && (*buffer)[*len - 1] != '\\'))
+    {
+        tkn_info->state = reg;
+        return;
+    }
+    new_buffer = malloc(*len + 2);
+    if (!new_buffer)
+    {
+        ft_printf("Error: Allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    if (*buffer) ft_memcpy(new_buffer, *buffer, *len);
+    new_buffer[*len] = c;
+    (*len)++;
+    new_buffer[*len] = '\0';
+    free(*buffer);
+    *buffer = new_buffer;
 }
 
-void	set_quotes_state(t_tkn_info *tkn_info)
+
+
+void set_quotes_state(t_tkn_info *tkn_info)
 {
-	if (*tkn_info->curr_char == '\'' && (tkn_info->curr_char == tkn_info->input || *(tkn_info->curr_char - 1) != '\\'))
-	{
-		if (tkn_info->state == reg)
-			tkn_info->state = quote;
-	}
-	else if (*tkn_info->curr_char == '"' && (tkn_info->curr_char == tkn_info->input || *(tkn_info->curr_char - 1) != '\\'))
-	{
-		if (tkn_info->state == reg)
-			tkn_info->state = dquote;
-	}
+    if (*tkn_info->curr_char == '\'' && (tkn_info->curr_char == tkn_info->input || *(tkn_info->curr_char - 1) != '\\'))
+    {
+        if (tkn_info->state == reg)
+            tkn_info->state = quote;
+        else if (tkn_info->state == quote)
+            tkn_info->state = reg;
+        tkn_info->curr_char++; // Avancez uniquement après changer l'état
+    }
+    else if (*tkn_info->curr_char == '"' && (tkn_info->curr_char == tkn_info->input || *(tkn_info->curr_char - 1) != '\\'))
+    {
+        if (tkn_info->state == reg)
+            tkn_info->state = dquote;
+        else if (tkn_info->state == dquote)
+            tkn_info->state = reg;
+        tkn_info->curr_char++; // Avancez uniquement après changer l'état
+    }
 }
 
 void	space_quotes(t_tkn_info *tkn_info)
@@ -56,14 +60,15 @@ void	space_quotes(t_tkn_info *tkn_info)
 	set_quotes_state(tkn_info);
 }
 
-int		break_token(t_tkn_info *tkn_info)
+int	break_token(t_tkn_info *tkn_info)
 {
 	t_sm	state;
 
 	state = tkn_info->state;
 	if (state == reg && ft_isshelloperator(*tkn_info->curr_char))
 		return (1);
-	else if ((state == quote && *tkn_info->curr_char == '\'') || (state == dquote && *tkn_info->curr_char == '"'))
+	else if ((state == quote && *tkn_info->curr_char == '\'') || \
+				(state == dquote && *tkn_info->curr_char == '"'))
 		return (1);
 	else
 		return (0);
@@ -71,40 +76,39 @@ int		break_token(t_tkn_info *tkn_info)
 
 void set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 {
-	size_t		len;
-	char		*buffer;
-
-	len = 0;
-	buffer = NULL;
-	while (*tkn_info->curr_char)
-	{
-		if (break_token(tkn_info))
-			break;
-		if (ft_isspace(*tkn_info->curr_char))
-		{
-			char* peek = tkn_info->curr_char + 1;
-			while (ft_isspace(*peek))
-				peek++;
-			if (ft_isshelloperator(*peek) || *peek == '|' || *peek == '\0' || *peek == '\n')
-				break;
-		}
-		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
-		tkn_info->curr_char++;
-	}
-	while (len > 0 && ft_isspace(buffer[len - 1]))
-	{
-		buffer[len - 1] = '\0';
-		len--;
-	}
-	token->text = buffer;
+    size_t len = 0;
+    char *buffer = NULL;
+    while (*tkn_info->curr_char)
+    {
+        if (break_token(tkn_info))
+            break;
+        if (ft_isspace(*tkn_info->curr_char))
+        {
+            char *peek = tkn_info->curr_char + 1;
+            while (ft_isspace(*peek)) peek++;
+            if (ft_isshelloperator(*peek) || *peek == '|' || *peek == '\0' || *peek == '\n')
+                break;
+        }
+        ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
+        tkn_info->curr_char++;
+    }
+    while (len > 0 && ft_isspace(buffer[len - 1]))
+    {
+        buffer[len - 1] = '\0';
+        len--;
+    }
+    token->text = buffer;  // Assurez-vous que buffer n'est pas NULL avant de l'utiliser
 }
 
-t_token_lst *redir_token(t_tkn_info *tkn_info)
-{
-	t_token_lst *token;
-	char *buffer = NULL;
-	size_t len = 0;
 
+t_token_lst	*redir_token(t_tkn_info *tkn_info)
+{
+	t_token_lst		*token;
+	char			*buffer;
+	size_t			len;
+
+	buffer = NULL;
+	len = 0;
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
 	if (!token)
 	{
@@ -135,9 +139,11 @@ t_token_lst *redir_token(t_tkn_info *tkn_info)
 	}
 	while (*tkn_info->curr_char == ' ')
 		tkn_info->curr_char++;
-	while (*tkn_info->curr_char && *tkn_info->curr_char != ' ' && *tkn_info->curr_char != '|')
+	while (*tkn_info->curr_char && *tkn_info->curr_char != ' ' \
+			&& *tkn_info->curr_char != '|')
 	{
-		if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && buffer == NULL)
+		if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') \
+			&& buffer == NULL)
 		{
 			tkn_info->curr_char++;
 			continue;
@@ -164,47 +170,55 @@ t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 	return (token);
 }
 
+
 t_token_lst *next_token(t_tkn_info *tkn_info)
 {
-	if (*tkn_info->curr_char == '\0' || *tkn_info->curr_char == '\n')
-		return (token_new(eol, NULL));
-	if (*tkn_info->curr_char == '|')
-	{
-		tkn_info->curr_char++;
-		if (*tkn_info->curr_char == '|')
-		{
-			tkn_info->curr_char++;
-			return (token_new(or_op, NULL));
-		}
-		else
-			return (token_new(pipe_op, NULL));
-	}
-	else if (*tkn_info->curr_char == '&' && *(tkn_info->curr_char + 1) == '&')
-	{
-		tkn_info->curr_char += 2;
-		return (token_new(and_op, NULL));
-	}
-	if (*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<')
-		return (redir_token(tkn_info));
-	space_quotes(tkn_info);
-	return (cmd_token(tkn_info));
+    space_quotes(tkn_info);
+    if (!*tkn_info->curr_char)  // Plus sécurisé pour les chaînes vides
+        return token_new(eol, NULL);
+
+    // Ajouter des logs de débogage pourrait aider à comprendre le flux
+    printf("Processing token starting with: %c\n", *tkn_info->curr_char);
+
+    if (*tkn_info->curr_char == '|') {
+        tkn_info->curr_char++;
+        if (*tkn_info->curr_char == '|') {
+            tkn_info->curr_char++;
+            return token_new(or_op, strdup("||"));
+        }
+        return token_new(pipe_op, strdup("|"));
+    } else if (*tkn_info->curr_char == '&' && *(tkn_info->curr_char + 1) == '&') {
+        tkn_info->curr_char += 2;
+        return token_new(and_op, strdup("&&"));
+    }
+    if (*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<')
+        return redir_token(tkn_info);
+
+    return cmd_token(tkn_info);
 }
 
-t_dlist	*tokenize(char *input)
+
+
+t_dlist *tokenize(char *input)
 {
-	t_dlist	*last;
-	t_tkn_info	tkn_info;
+    if (!input || !*input) {  // Vérifiez si l'input est NULL ou vide
+        return NULL;
+    }
 
-	tkn_info.input = ft_strdup(input);
-	tkn_info.curr_char = input;
-	tkn_info.token_lst = NULL;
-	tkn_info.state = reg;
-	ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(next_token(&tkn_info)));
-	last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
-	while (last && ((t_token_lst *)(last->content))->type != eol)
-	{
-		ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(next_token(&tkn_info)));
-		last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
-	}
-	return (tkn_info.token_lst);
+    t_dlist *last;
+    t_tkn_info tkn_info;
+
+    tkn_info.input = ft_strdup(input);
+    tkn_info.curr_char = tkn_info.input;  // Doit pointer sur la copie, pas sur l'original
+    tkn_info.token_lst = NULL;
+    tkn_info.state = reg;
+    ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(next_token(&tkn_info)));
+    last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
+    while (last && ((t_token_lst *)(last->content))->type != eol)
+    {
+        ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(next_token(&tkn_info)));
+        last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
+    }
+    return tkn_info.token_lst;
 }
+
