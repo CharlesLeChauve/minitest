@@ -67,7 +67,12 @@ int	main(void)
 			add_history(input);
 			token_lst = tokenize(input);
 			if (!verify_tokens(token_lst))
-				return (fprintf(stderr, "Error: Syntax error in input\n"), 1);
+			{
+				fprintf(stderr, "Error: Syntax error in input\n");
+				free(input);
+				continue ;
+			}
+
 			ast = parse_tokens(token_lst);
 			print_tree(ast);
 		}
