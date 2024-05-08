@@ -72,7 +72,6 @@ int	main(void)
 				free(input);
 				continue ;
 			}
-
 			ast = parse_tokens(token_lst);
 			print_tree(ast);
 		}
