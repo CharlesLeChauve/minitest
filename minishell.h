@@ -44,8 +44,10 @@ typedef	struct	s_tkn_info
 {
 	t_dlist		*token_lst;
 	t_sm		state;
+	int			quote_level;
 	char		*input;
 	char		*curr_char;
+	char		first_quote;
 }	t_tkn_info;
 
 // Mise à jour de la structure Node pour inclure des informations sur les redirections
