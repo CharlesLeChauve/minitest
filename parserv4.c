@@ -12,14 +12,6 @@ void	ft_add_char_to_buffer(char **buffer, char c, size_t *len,
 {
 	char	*new_buffer;
 
-	if ((tkn_info->state == quote && c == '\'' \
-		&& *len > 0 && (*buffer)[*len - 1] != '\\') \
-		|| (tkn_info->state == dquote && c == '"' && *len > 0 \
-		&& (*buffer)[*len - 1] != '\\'))
-	{
-		tkn_info->state = reg;
-		return ;
-	}
 	new_buffer = malloc(*len + 2);
 	if (!new_buffer)
 	{
@@ -35,31 +27,43 @@ void	ft_add_char_to_buffer(char **buffer, char c, size_t *len,
 	*buffer = new_buffer;
 }
 
+int	same_quote(t_tkn_info *tkn_info)
+{
+	if (tkn_info->first_quote == *tkn_info->curr_char)
+		return (1);
+	return (0);
+}
+
 void	set_quotes_state(t_tkn_info *tkn_info)
 {
-	if (*tkn_info->curr_char == '\'' \
-		&& (tkn_info->curr_char == tkn_info->input \
-		|| *(tkn_info->curr_char - 1) != '\\'))
+	int same;
+
+	same = 1;
+	if (tkn_info->quote_level == 0 && (*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\''))
 	{
-		if (tkn_info->state == reg || tkn_info->state == dquote)
-			tkn_info->state = quote;
-		else if (tkn_info->state == quote \
-				&& *(tkn_info->curr_char + 1) == '\'')
+			tkn_info->quote_level++;
+			tkn_info->first_quote = *tkn_info->curr_char;
+			if (*tkn_info->curr_char == '"')
+				tkn_info->state = dquote;
+			else
+				tkn_info->state = quote;
 			tkn_info->curr_char++;
-		else
-			tkn_info->state = reg;
-		tkn_info->curr_char++;
+			while ((*tkn_info->curr_char == '\"' || *tkn_info->curr_char == '\'') && same)
+			{
+				same = same_quote(tkn_info);
+				tkn_info->curr_char++;
+				tkn_info->quote_level++;
+			}
 	}
-	else if (*tkn_info->curr_char == '"' \
-			&& (tkn_info->curr_char == tkn_info->input \
-			|| *(tkn_info->curr_char - 1) != '\\'))
+	else if (same_quote(tkn_info))
 	{
-		if (tkn_info->state == reg || tkn_info->state == quote)
-			tkn_info->state = dquote;
-		else if (tkn_info->state == dquote && *(tkn_info->curr_char + 1) == '"')
-			tkn_info->curr_char++;
-		else
+		if (tkn_info->quote_level == 1)
+		{
 			tkn_info->state = reg;
+			tkn_info->quote_level--;
+		}
+		else
+			tkn_info->quote_level--;
 		tkn_info->curr_char++;
 	}
 }
@@ -76,11 +80,9 @@ int	break_token(t_tkn_info *tkn_info, int is_redir)
 {
 	t_sm	state;
 
+	set_quotes_state(tkn_info);
 	state = tkn_info->state;
 	if (state == reg && (ft_isshelloperator(*tkn_info->curr_char)))
-		return (1);
-	else if ((state == quote && *tkn_info->curr_char == '\'') \
-			|| (state == dquote && *tkn_info->curr_char == '"') && is_redir)
 		return (1);
 	else
 		return (0);
@@ -95,13 +97,9 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	buffer = NULL;
 	while (*tkn_info->curr_char)
 	{
+		set_quotes_state(tkn_info);
 		if (break_token(tkn_info, 0))
 			break ;
-		if (*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'')
-		{
-			set_quotes_state(tkn_info);
-			continue ;
-		}
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
 		tkn_info->curr_char++;
 	}
@@ -151,21 +149,13 @@ t_token_lst	*redir_token(t_tkn_info *tkn_info)
 	}
 	while (*tkn_info->curr_char == ' ')
 		tkn_info->curr_char++;
-	while (*tkn_info->curr_char && *tkn_info->curr_char != ' ' \
-			&& *tkn_info->curr_char != '|')
+	while (*tkn_info->curr_char && !(*tkn_info->curr_char == ' ') \
+			&& !ft_isshelloperator(*tkn_info->curr_char))
 	{
-		if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\''))
-		{
-			set_quotes_state(tkn_info);
-			break ;
-		}
+		set_quotes_state(tkn_info);
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
 		tkn_info->curr_char++;
-	}
-	if (len > 0 && (buffer[len - 1] == '"' || buffer[len - 1] == '\''))
-	{
-		buffer[len - 1] = '\0';
-		len--;
+		set_quotes_state(tkn_info);
 	}
 	token->text = buffer;
 	return (token);
@@ -218,6 +208,7 @@ t_dlist	*tokenize(char *input)
 	tkn_info.curr_char = tkn_info.input;
 	tkn_info.token_lst = NULL;
 	tkn_info.state = reg;
+	tkn_info.quote_level = 0;
 	ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(next_token(&tkn_info)));
 	last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
 	while (last && ((t_token_lst *)(last->content))->type != eol)
