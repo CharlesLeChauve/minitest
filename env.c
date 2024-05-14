@@ -2,17 +2,8 @@
 #include <stdio.h>
 #include "libft/libft.h"
 #include "env.h"
+#include "minishell.h"
 #include <stdlib.h>
-
-int		ft_strcmp(char *s1, char *s2)
-{
-	int i;
-
-	i = 0;
-	while (s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
-		++i;
-	return (s1[i] - s2[i]);
-}
 
 void	ft_sort_wordtab(char **tab)
 {
@@ -69,66 +60,21 @@ char	*get_env_var(char **env, char *var_id)
 	int		id_len;
 
 	id_len = ft_strlen(var_id);
+	env_var = NULL;
 	i = -1;
 	while (env[++i])
 	{
 		if (!ft_strncmp(env[i], var_id, id_len))
+		{
+			env_var = env[i];
 			break ;
+		}
 	}
-	return (env[i]);
+	if (env_var)
+		return (env[i]);
+	return (NULL);
 }
 
-char	*get_cwd(void)
-{
-	size_t  buffer_size;
-	char	*path;
-
-	buffer_size = CWD_BUFF;
-	path = (char *)malloc(CWD_BUFF);
-	while (!getcwd(path, buffer_size))
-	{
-		path = ft_realloc(path, buffer_size, buffer_size + buffer_size);
-		buffer_size += buffer_size;
-	}
-
-	return (path);
-}
-
-void	pwd(void)
-{
-	char	*wd;
-
-	wd = get_cwd();
-	printf("%s\n", wd);
-	free(wd);
-}
-
-void	act_env_pwd(char **env)
-{
-	char *pwd;
-	char *new_pwd;
-	char *tmp;
-
-	new_pwd = ft_strdup("PWD=");
-	pwd = get_env_var(env, "PWD");
-	while (*env != pwd)
-		env++;
-	tmp = ft_strjoin_free(new_pwd, get_cwd(), 0);
-	free(*env);
-	*env = tmp;
-}
-
-int    change_directory(char *path, char **env)
-{
-	if (chdir(path))
-	{
-		perror("chdir() error\n");
-		return (1);
-	}
-	else
-		act_env_pwd(env);
-	return (0);
-}
 
 void	print_export_env(char **env)
 {
@@ -166,6 +112,58 @@ void	add_vars_to_env(char **arg, char ***env)
 	(*env)[env_size + i] = NULL;
 }
 
+void	replace_var(char ***env, char *new_var, char *old_var)
+{
+	int	i;
+
+	i = 0;
+	while (ft_strcmp((*env)[i], old_var))
+		i++;
+	free((*env)[i]);
+	(*env)[i] = ft_strdup(new_var);
+}
+
+void remove_arg(char ***arg, int index)
+{
+	char **temp;
+
+    if (arg == NULL || *arg == NULL || (*arg)[index] == NULL)
+        return ;
+
+    temp = *arg;
+
+    int i = index;
+    while (temp[i + 1])
+    {
+        temp[i] = temp[i + 1];
+        i++;
+    }
+    temp[i] = NULL;
+
+    *arg = temp; 
+}
+
+void	replace_existing_vars(char ***arg, char ***env)
+{
+	int		i;
+	char	*var;
+
+	i = 0;
+	var = NULL;
+	while ((*arg)[i])
+	{
+		var = get_env_var(*env, (*arg)[i]);
+		if (var)
+		{
+			replace_var(env, (*arg)[i], var);
+			remove_arg(arg, i);
+		}
+		else
+			i++;
+		var = NULL;
+	}
+}
+
 //export OK
 //Usage : Premier argument est un pointeur vers les tableau de chaines de caracteres env
 // Deuxieme argument un tableau NULL termine de chaines de caracteres NULL terminees listant les variables a ajouter;
@@ -180,14 +178,10 @@ void    export(char ***env, char **arg)
     while ((*env)[i])
         i++;
     env_cpy = (char **)malloc((i + 1) * sizeof(char *));
-    i = 0;
-    while ((*env)[i])
-    {
+    i = -1;
+    while ((*env)[++i])
         env_cpy[i] = ft_strdup((*env)[i]);
-        i++;
-    }
     env_cpy[i] = NULL;
-
     if (arg == NULL)
     {
         ft_sort_wordtab(env_cpy);
@@ -195,35 +189,44 @@ void    export(char ***env, char **arg)
     }
     else
     {
+		replace_existing_vars(&arg, &env_cpy);
         add_vars_to_env(arg, &env_cpy);
     }
-    free(*env);
     *env = env_cpy;
 }
 
-int main(int argc, char *argv[], char *envp[])
-{
-    char    **env;
-    char    *env_pwd;
-    char    *args[] = {"ARG=\"fuck\"", "FUCK=\"arg\"", NULL};
-    int     i;
+// void	unset(char ***env, char **args)
+// {
+// 	char	**new_env;
 
-    i = 0;
-    while (envp[i])
-        i++;
-    env = (char **)malloc(sizeof(char *) * (i + 1));
-    i = 0;
-    while (envp[i])
-    {
-        env[i] = ft_strdup(envp[i]);
-        i++;
-    }
-    env[i] = NULL;
-	pwd();
-    if (change_directory("/home/", env))
-    {
-        printf("cd failed\n");
-    }
-    export(&env, args);
-    export(&env, NULL);
-    }
+// }
+
+// int main(int argc, char *argv[], char *envp[])
+// {
+//     char    **env;
+//     char    *env_pwd;
+//     char    *args[] = {"ARG=\"fuck\"", "FUCK=\"arg\"", NULL};
+// 	char    *args2[] = {"ARG=\"arg\"", "FUCK=\"fuck\"", NULL};
+//     int     i;
+
+//     i = 0;
+//     while (envp[i])
+//         i++;
+//     env = (char **)malloc(sizeof(char *) * (i + 1));
+//     i = 0;
+//     while (envp[i])
+//     {
+//         env[i] = ft_strdup(envp[i]);
+//         i++;
+//     }
+//     env[i] = NULL;
+// 	pwd();
+//     if (change_directory("/home/", env))
+//     {
+//         printf("cd failed\n");
+//     }
+//     export(&env, args);
+//     export(&env, NULL);
+// 	export(&env, args2);
+// 	export(&env, NULL);
+// }
