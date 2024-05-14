@@ -2,6 +2,26 @@
 #include <stdio.h>
 #include "libft/libft.h"
 #include "env.h"
+#include <stdlib.h>
+
+void    ft_putstr(char *str)
+{
+    while (*str)
+    {
+        write(1, str, 1);
+        str++;
+    }
+}
+
+void    print_str_tab(char **tab)
+{
+    while (*tab)
+    {
+        ft_putstr(*tab);
+        write(1, "\n", 1);
+        tab++;
+    }
+}
 
 
 int		ft_strcmp(char *s1, char *s2)
@@ -58,7 +78,9 @@ void    *ft_realloc(void *ptr, size_t old_size, size_t new_size)
 		copy_size = new_size;
 	ft_memcpy(new_ptr, ptr, copy_size);
 	free(ptr);
+	return (new_ptr);
 }
+
 
 char	*get_env_var(char **env, char *var_id)
 {
@@ -85,7 +107,7 @@ char	*get_cwd(void)
 	path = (char *)malloc(CWD_BUFF);
 	while (!getcwd(path, buffer_size))
 	{
-		ft_realloc(path, buffer_size, buffer_size + buffer_size);
+		path = ft_realloc(path, buffer_size, buffer_size + buffer_size);
 		buffer_size += buffer_size;
 	}
 	return (path);
@@ -119,57 +141,111 @@ int    change_directory(char *path, char **env)
 
 void	print_export_env(char **env)
 {
-	while (*env)
-	{
-		ft_printf("declare -x %s\n", *env);
-		env++;
-	}
-}
-
-void	export(char **env, char *arg)
-{
-	//char	**new_vars;
-	char **env_cpy;
 	int	i;
 
 	i = 0;
 	while (env[i])
 	{
+		ft_printf("declare -x %s\n", env[i]);
 		i++;
 	}
-	env_cpy = (char **)malloc((i + 1) * sizeof (char *));
-	i = 0;
-	while (env[i])
-	{
-		env_cpy[i] = ft_strdup(env[i]);
-		i++;
-	}
-	ft_sort_wordtab(env_cpy);
-	if (arg == NULL)
-		print_export_env(env_cpy);
-	// else
-	// {
-
-	// }
 }
 
-int main(int argc, char *argv[], char **env)
+void	add_vars_to_env(char **arg, char ***env)
 {
-	char	*path;
-	char	*env_pwd;
+	int	i;
+	int	env_size;
+	int	total_size;
+	int	arg_size;
 
-	(void)argc;
-	(void)argv;
-	path = get_cwd();
-	env_pwd = get_env_var(env, "PWD");
-	printf("cwd : %s\tenv : %s\n", path, env_pwd);
-	if (change_directory("/home/", env))
+	arg_size = 0;
+	env_size = 0;
+	i = 0;
+	while ((*env)[env_size])
+		env_size++;
+	while (arg[arg_size])
 	{
-		printf("cd failed\n");
+		printf("arg[%d] = %s\n", i, arg[i]);
+		arg_size++;
 	}
-	free(path);
-	get_cwd();
-	env_pwd = get_env_var(env, "PWD");
-	printf("cwd : %s\tenv : %s\n", path, env_pwd);
-	export(env, NULL);
+	total_size = env_size + arg_size;
+	*env = realloc(*env, (total_size + 1) * sizeof (char *));
+	while (i < arg_size)
+	{
+		(*env)[env_size + i] = ft_strdup(arg[i]);
+		i++;
+	}
+	(*env)[env_size + i] = NULL;
 }
+
+//export OK
+//Usage : Premier argument est un pointeur vers les tableau de chaines de caracteres env
+// Deuxieme argument un tableau NULL termine de chaines de caracteres NULL terminees listant les variables a ajouter;
+
+void    export(char ***env, char **arg)
+{
+    char    **new_vars;
+    char    **env_cpy;
+    int     i;
+
+    i = 0;
+    while ((*env)[i])
+        i++;
+    env_cpy = (char **)malloc((i + 1) * sizeof(char *));
+    i = 0;
+    while ((*env)[i])
+    {
+        env_cpy[i] = ft_strdup((*env)[i]);
+        i++;
+    }
+    env_cpy[i] = NULL;
+
+    if (arg == NULL)
+    {
+        ft_sort_wordtab(env_cpy);  // Supposé trier les variables pour l'affichage
+        print_export_env(env_cpy); // Supposé imprimer les variables d'environnement
+    }
+    else
+    {
+        add_vars_to_env(arg, &env_cpy);  // Modifié pour potentiellement ajuster la taille de env_cpy
+    }
+    free(*env);  // Libérer l'ancien environnement
+    *env = env_cpy;  // Mettre à jour le pointeur d'environnement original
+}
+
+int main(int argc, char *argv[], char *envp[])
+{
+    char    *path;
+    char    **env;
+    char    *env_pwd;
+    char    *args[] = {"ARG=\"fuck\"", "FUCK=\"arg\"", NULL};
+    int     i;
+
+    i = 0;
+    while (envp[i])
+        i++;
+    env = (char **)malloc(sizeof(char *) * (i + 1));
+    i = 0;
+    while (envp[i])
+    {
+        env[i] = ft_strdup(envp[i]);
+        i++;
+    }
+    env[i] = NULL;
+
+    path = get_cwd();  // Supposé récupérer le chemin actuel
+    env_pwd = get_env_var(env, "PWD");
+    printf("cwd : %s\tenv : %s\n", path, env_pwd);
+    if (change_directory("/home/", env))  // Modifié pour passer l'adresse de env
+    {
+        printf("cd failed\n");
+    }
+    path = get_cwd();  // Rafraîchir path après le changement de répertoire
+    env_pwd = get_env_var(env, "PWD");
+    printf("cwd : %s\tenv : %s\n", path, env_pwd);
+    export(&env, NULL);
+    export(&env, args);
+    export(&env, NULL);
+
+    free(path);
+    }

@@ -58,7 +58,7 @@ void	do_pipe(int iter, char *av[], char **env)
 }
 
 
-int	main(int ac, char *av[], char **env)
+int	execute_pipeline(int ac, char *av[], char **env)
 {
 	int	i;
 
