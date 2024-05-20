@@ -64,7 +64,7 @@ void parse_command_option(char *token, t_cmd_block *block)
 	if (ptr > token)
 	{
 		block->commande = ft_strndup(token, ptr - token);
-		printf("Command set: %s\n", block->commande);
+		// printf("Command set: %s\n", block->commande);
 	}
 	while (*ptr)
 	{
@@ -80,7 +80,7 @@ void parse_command_option(char *token, t_cmd_block *block)
 			{
 				new_opt = ft_lstnew(sub_token);
 				ft_lstadd_back(&(block->option), new_opt);
-				printf("Option added: %s\n", sub_token);
+				// printf("Option added: %s\n", sub_token);
 				continue ;
 			}
 			if (sub_token[0] == '>' || sub_token[0] == '<')
@@ -95,7 +95,7 @@ void parse_command_option(char *token, t_cmd_block *block)
 			{
 				new_arg = ft_lstnew(sub_token);
 				ft_lstadd_back(&(block->arg), new_arg);
-				printf("Argument added: %s\n", sub_token);
+				// printf("Argument added: %s\n", sub_token);
 			}
 			free(sub_token);
 		}
@@ -139,45 +139,61 @@ void fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 			parse_command_option(token_text, block);
 		current = current->next;
 	}
-	// Print the final cmd_block structure for debugging
-	printf("Command: %s\n", block->commande);
-	if (block->option)
-	{
-		opt = block->option;
-		while (opt)
-		{
-			printf("  - %s\n", (char *)opt->content);
-			opt = opt->next;
-		}
-	}
-	if (block->arg)
-	{
-		arg = block->arg;
-		while (arg)
-		{
-			printf("  - %s\n", (char *)arg->content);
-			arg = arg->next;
-		}
-	}
-	if (block->redir_in)
-	{
-		redir = block->redir_in;
-		while (redir)
-		{
-			printf("Redirections in:\n");
-			printf("  - %s\n", ((t_token_lst *)redir->content)->text);
-			redir = redir->next;
-		}
-	}
-	if (block->redir_out)
-	{
-		printf("Redirections out:\n");
-		redir = block->redir_out;
-		while (redir)
-		{
-			printf("  - %s\n", ((t_token_lst *)redir->content)->text);
-			redir = redir->next;
-		}
-	}
 }
 
+void expand_ast(t_ast_node *node)
+{
+	t_cmd_block	*cmd_block;
+	t_list		*opt;
+	t_list		*arg;
+	t_list		*redir;
+
+	if (node == NULL)
+		return ;
+	if (node->type == command)
+	{
+		cmd_block = init_cmd_block();
+		fill_cmd_block(cmd_block, node->tokens);
+		printf("Command: %s\n", cmd_block->commande);
+		if (cmd_block->option)
+		{
+			opt = cmd_block->option;
+			while (opt)
+			{
+				printf("  Option: %s\n", (char *)opt->content);
+				opt = opt->next;
+			}
+		}
+		if (cmd_block->arg)
+		{
+			arg = cmd_block->arg;
+			while (arg)
+			{
+				printf("  Argument: %s\n", (char *)arg->content);
+				arg = arg->next;
+			}
+		}
+		if (cmd_block->redir_in)
+		{
+			redir = cmd_block->redir_in;
+			while (redir)
+			{
+				printf("Redirections in:\n");
+				printf("  %s\n", ((t_token_lst *)redir->content)->text);
+				redir = redir->next;
+			}
+		}
+		if (cmd_block->redir_out)
+		{
+			redir = cmd_block->redir_out;
+			while (redir)
+			{
+				printf("Redirections out:\n");
+				printf("  %s\n", ((t_token_lst *)redir->content)->text);
+				redir = redir->next;
+			}
+		}
+	}
+	expand_ast(node->left);
+	expand_ast(node->right);
+}
