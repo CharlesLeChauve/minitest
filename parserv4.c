@@ -47,13 +47,13 @@ void	set_quotes_state(t_tkn_info *tkn_info)
 				tkn_info->state = dquote;
 			else
 				tkn_info->state = quote;
-			tkn_info->curr_char++;
-			while ((*tkn_info->curr_char == '\"' || *tkn_info->curr_char == '\'') && same)
-			{
-				same = same_quote(tkn_info);
-				tkn_info->curr_char++;
-				tkn_info->quote_level++;
-			}
+			// tkn_info->curr_char++;
+			// while ((*tkn_info->curr_char == '\"' || *tkn_info->curr_char == '\'') && same)
+			// {
+			// 	same = same_quote(tkn_info);
+			// 	tkn_info->curr_char++;
+			// 	tkn_info->quote_level++;
+			// }
 	}
 	else if (same_quote(tkn_info))
 	{
@@ -64,7 +64,7 @@ void	set_quotes_state(t_tkn_info *tkn_info)
 		}
 		else
 			tkn_info->quote_level--;
-		tkn_info->curr_char++;
+		// tkn_info->curr_char++;
 	}
 }
 
@@ -97,8 +97,8 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	buffer = NULL;
 	while (*tkn_info->curr_char)
 	{
-		set_quotes_state(tkn_info);
-		if (break_token(tkn_info, 0))
+		// set_quotes_state(tkn_info);
+		if (tkn_info->curr_char != tkn_info->input && break_token(tkn_info, 0))
 			break ;
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
 		tkn_info->curr_char++;
@@ -111,11 +111,11 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	token->text = buffer;
 }
 
-t_token_lst	*redir_token(t_tkn_info *tkn_info)
+t_token_lst *redir_token(t_tkn_info *tkn_info)
 {
-	t_token_lst		*token;
-	char			*buffer;
-	size_t			len;
+	t_token_lst	*token;
+	char		*buffer;
+	size_t		len;
 
 	buffer = NULL;
 	len = 0;
@@ -127,9 +127,11 @@ t_token_lst	*redir_token(t_tkn_info *tkn_info)
 	}
 	if (*tkn_info->curr_char == '>')
 	{
+		ft_add_char_to_buffer(&buffer, '>', &len, tkn_info);
 		tkn_info->curr_char++;
 		if (*tkn_info->curr_char == '>')
 		{
+			ft_add_char_to_buffer(&buffer, '>', &len, tkn_info);
 			tkn_info->curr_char++;
 			token->type = redir_app;
 		}
@@ -138,9 +140,11 @@ t_token_lst	*redir_token(t_tkn_info *tkn_info)
 	}
 	else if (*tkn_info->curr_char == '<')
 	{
+		ft_add_char_to_buffer(&buffer, '<', &len, tkn_info);
 		tkn_info->curr_char++;
 		if (*tkn_info->curr_char == '<')
 		{
+			ft_add_char_to_buffer(&buffer, '<', &len, tkn_info);
 			tkn_info->curr_char++;
 			token->type = heredoc;
 		}
@@ -149,17 +153,20 @@ t_token_lst	*redir_token(t_tkn_info *tkn_info)
 	}
 	while (*tkn_info->curr_char == ' ')
 		tkn_info->curr_char++;
-	while (*tkn_info->curr_char && !(*tkn_info->curr_char == ' ') \
-			&& !ft_isshelloperator(*tkn_info->curr_char))
+	if (*tkn_info->curr_char == '\0' || *tkn_info->curr_char == '\n')
 	{
-		set_quotes_state(tkn_info);
+		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
+		exit(0);
+	}
+	while (*tkn_info->curr_char && !ft_isshelloperator(*tkn_info->curr_char) && !ft_isspace(*tkn_info->curr_char))
+	{
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
 		tkn_info->curr_char++;
-		set_quotes_state(tkn_info);
 	}
 	token->text = buffer;
-	return (token);
+	return token;
 }
+
 
 t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 {
@@ -167,6 +174,7 @@ t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
 	token->type = command;
+	// set_quotes_state(tkn_info);
 	set_token_text(tkn_info, token);
 	return (token);
 }
