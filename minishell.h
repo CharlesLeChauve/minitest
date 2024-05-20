@@ -10,6 +10,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "./libft/libft.h"
+#include "env.h"
 
 
 
@@ -106,5 +107,15 @@ t_ast_node  *parse_tokens(t_dlist *tokens);
 // void        print_tree(t_ast_node *root);
 void print_ast(t_ast_node *root);
 void print_tree(t_ast_node *node, int depth);
+
+//dirs_handling
+void	pwd(void);
+void	act_env_pwd(char **env);
+int 	change_directory(char *path, char **env);
+char	*get_cwd(void);
+
+//env
+void    export(char ***env, char **arg);
+void	unset(char ***env, char **args);
 
 #endif
