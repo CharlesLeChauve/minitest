@@ -2,7 +2,7 @@
 
 int	ft_isshelloperator(char c)
 {
-	if (c == '<' || c == '>' || c == '|' || c == '&')
+	if (c == '|' || c == '&')
 		return (1);
 	return (0);
 }
@@ -199,9 +199,9 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		tkn_info->curr_char += 2;
 		return (token_new(and_op, ft_strdup("&&")));
 	}
-	if ((*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<') \
-		&& tkn_info->state == reg)
-		return (redir_token(tkn_info));
+	// if ((*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<') \
+	// 	&& tkn_info->state == reg)
+	// 	return (redir_token(tkn_info));
 	return (cmd_token(tkn_info));
 }
 
