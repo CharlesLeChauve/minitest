@@ -91,6 +91,7 @@ t_token_lst *redir_token(char *str);
 t_dlist	*tokenize(char *input);
 void		parser(t_token_lst *tokens);
 int		    ft_isvalidchar(char c);
+void expand_ast(t_ast_node *node);
 void		parse_input(char *input, t_token_lst **token_lst);
 
 // signal
