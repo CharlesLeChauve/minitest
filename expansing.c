@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-t_cmd_block *init_cmd_block(void)
+t_cmd_block	*init_cmd_block(void)
 {
 	t_cmd_block	*block;
 
@@ -50,7 +50,7 @@ void	set_command_quotes_state(t_tkn_info *tkn_info)
 	}
 }
 
-void parse_command_option(char *token, t_cmd_block *block)
+void	parse_command_option(char *token, t_cmd_block *block)
 {
 	char	*ptr;
 	char	*start;
@@ -62,10 +62,7 @@ void parse_command_option(char *token, t_cmd_block *block)
 	while (*ptr && !ft_isspace(*ptr))
 		ptr++;
 	if (ptr > token)
-	{
 		block->commande = ft_strndup(token, ptr - token);
-		// printf("Command set: %s\n", block->commande);
-	}
 	while (*ptr)
 	{
 		while (ft_isspace(*ptr))
@@ -80,7 +77,6 @@ void parse_command_option(char *token, t_cmd_block *block)
 			{
 				new_opt = ft_lstnew(sub_token);
 				ft_lstadd_back(&(block->option), new_opt);
-				// printf("Option added: %s\n", sub_token);
 				continue ;
 			}
 			if (sub_token[0] == '>' || sub_token[0] == '<')
@@ -95,14 +91,13 @@ void parse_command_option(char *token, t_cmd_block *block)
 			{
 				new_arg = ft_lstnew(sub_token);
 				ft_lstadd_back(&(block->arg), new_arg);
-				// printf("Argument added: %s\n", sub_token);
 			}
-			free(sub_token);
+			// free(sub_token);
 		}
 	}
 }
 
-void fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
+void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 {
 	t_dlist		*current = tokens;
 	t_list		*new_redir;
@@ -141,7 +136,7 @@ void fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 	}
 }
 
-void expand_ast(t_ast_node *node)
+void	expand_ast(t_ast_node *node)
 {
 	t_cmd_block	*cmd_block;
 	t_list		*opt;
@@ -196,4 +191,14 @@ void expand_ast(t_ast_node *node)
 	}
 	expand_ast(node->left);
 	expand_ast(node->right);
+}
+
+void	clear_cmd_block(t_cmd_block *block)
+{
+	ft_lstclear(&(block->option), free);
+	ft_lstclear(&(block->arg), free);
+	ft_lstclear(&(block->redir_in), free);
+	ft_lstclear(&(block->redir_out), free);
+	free(block->commande);
+	free(block);
 }

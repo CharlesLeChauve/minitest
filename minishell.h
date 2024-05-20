@@ -76,40 +76,42 @@ int			is_redir(t_token_type type);
 int			is_command(t_token_type type);
 int			is_operator(t_token_type type);
 int			verify_tokens(t_dlist *tokens);
+void		print_ast(t_ast_node *root);
+void		print_tree(t_ast_node *node, int depth);
+void		print_token_type(t_token_lst *token);
 
 
 // lexing
+void		parse_input(char *input, t_token_lst **token_lst);
+int			same_quote(t_tkn_info *tkn_info);
 void		lexer(char	*input, t_token_lst **tokens);
 t_token_lst	*token_new(t_token_type type, void *content);
-t_token_lst 	*token_last(t_token_lst *token_lst);
+t_token_lst	*token_last(t_token_lst *token_lst);
 void		tokenaddback(t_token_lst **lst, t_token_lst *node);
-void		print_token_type(t_token_lst *token);
-t_token_lst *redir_token(char *str);
+t_token_lst	*redir_token(char *str);
+t_dlist		*tokenize(char *input);
 
 // parsing
-
-t_dlist	*tokenize(char *input);
 void		parser(t_token_lst *tokens);
-int		    ft_isvalidchar(char c);
-void expand_ast(t_ast_node *node);
-void		parse_input(char *input, t_token_lst **token_lst);
+int			ft_isvalidchar(char c);
+t_ast_node	*parse_tokens(t_dlist *tokens);
+t_ast_node	*construct_ast_from_tokens(t_dlist *token_list);
+
+// expansing
+void		expand_ast(t_ast_node *node);
+void		fill_cmd_block(t_cmd_block *block, t_dlist *tokens);
+t_cmd_block	*init_cmd_block(void);
 
 // signal
 void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
 
-// execution (faut la faire mdr)
-int	same_quote(t_tkn_info *tkn_info);
-void		fill_cmd_block(t_cmd_block *block, t_dlist *tokens);
-t_cmd_block	*init_cmd_block(void);
 
 // memory
-t_ast_node *construct_ast_from_tokens(t_dlist *token_list);
 void		free_tokens(t_token_lst	*token);
-t_ast_node  *parse_tokens(t_dlist *tokens);
-// void        print_tree(t_ast_node *root);
-void print_ast(t_ast_node *root);
-void print_tree(t_ast_node *node, int depth);
+void		clear_cmd_block(t_cmd_block *block);
+
+// execution
 
 //dirs_handling
 void	pwd(void);
@@ -118,9 +120,9 @@ int 	change_directory(char *path, char **env);
 char	*get_cwd(void);
 
 //env
-void    export(char ***env, char **arg);
+void	export(char ***env, char **arg);
 void	unset(char ***env, char **args);
-void    *ft_realloc(void *ptr, size_t old_size, size_t new_size);
+void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 char	*get_env_var(char **env, char *var_id);
 
 #endif
