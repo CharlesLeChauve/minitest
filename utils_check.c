@@ -35,23 +35,28 @@ int	verify_tokens(t_dlist *tokens)
 			if (!prev || !current->next \
 				|| (!is_command(((t_token_lst *)prev->content)->type) \
 				&& !is_redir(((t_token_lst *)prev->content)->type)) \
-				|| !is_command(((t_token_lst *)current->next->content)->type))
-				return (fprintf(stderr, "Error: Operator '%s' not between two \
-commands\n", token->text), 0);
+				|| !is_command(((t_token_lst *)current->next->content)->type)) {
+				return (fprintf(stderr, "Error: Operator '%s' not between two commands\n", token->text), 0);
+			}
 		if (is_redir(token->type))
+		{
 			if (!current->next)
-				return (fprintf(stderr, "Error: Redirection '%s' not followed \
-by a command\n", token->text), 0);
+				return (fprintf(stderr, "Error: Redirection '%s' not followed by a command\n", token->text), 0);
+			// if (is_redir(((t_token_lst *)current->next->content)->type))
+			// 	return (fprintf(stderr, "Error: Invalid redirection sequence '%s%s'\n",
+					// token->text, ((t_token_lst *)current->next->content)->text), 0);
+		}
 		if (current->next \
 			&& is_operator(((t_token_lst *)current->next->content)->type) \
-			&& ((t_token_lst *)current->next->content)->type == pipe_op)
+			&& ((t_token_lst *)current->next->content)->type == pipe_op) {
 			if (!current->next->next \
-				|| !is_command(((t_token_lst *) \
-				current->next->next->content)->type))
-				return (fprintf(stderr, "Error: Redirection '%s' not followed \
-by a command\n", token->text), 0);
+				|| !is_command(((t_token_lst *)current->next->next->content)->type))
+				return (fprintf(stderr, "Error: Redirection '%s' not followed by a command\n", token->text), 0);
+		}
 		prev = current;
 		current = current->next;
 	}
 	return (1);
 }
+
+// token \n (entree) trop proche de redir ca return une erreur
