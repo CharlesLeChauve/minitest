@@ -47,6 +47,7 @@ int	main(void)
 	struct sigaction	sa;
 	t_dlist				*token_lst;
 	t_ast_node			*ast;
+	t_cmd_block			*cmd_block;
 
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
@@ -73,7 +74,7 @@ int	main(void)
 				continue ;
 			}
 			ast = parse_tokens(token_lst);
-			print_tree(ast);
+			print_tree(ast, 0);
 		}
 		token_lst = NULL;
 		free(input);
