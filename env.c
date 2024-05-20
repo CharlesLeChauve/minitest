@@ -29,6 +29,22 @@ void	ft_sort_wordtab(char **tab)
 	}
 }
 
+void	ft_remove_from_strtab(char **tab, int index)
+{
+	int	size;
+
+	size = 0;
+	while (tab[size])
+		size++;
+	free(tab[index]);
+	while (index < size - 1)
+	{
+		tab[index] = tab[index + 1];
+		index++;
+	}
+	tab[size - 1] = NULL;
+}
+
 void    *ft_realloc(void *ptr, size_t old_size, size_t new_size)
 {
 	void *new_ptr;
@@ -75,14 +91,53 @@ char	*get_env_var(char **env, char *var_id)
 	return (NULL);
 }
 
+int	get_env_index(char **env, char *var_id)
+{
+	int		i;
+	char	*env_var;
+	int		id_len;
+
+	id_len = ft_strlen(var_id);
+	env_var = NULL;
+	i = -1;
+	while (env[++i])
+	{
+		if (!ft_strncmp(env[i], var_id, id_len))
+		{
+			env_var = env[i];
+			break ;
+		}
+	}
+	if (env_var)
+		return (i);
+	return (-1);
+}
+
+void	print_env(char **env)
+{
+	int		i;
+
+	i = 0;
+	while (env[i])
+	{
+		ft_printf("%s\n", env[i]);
+		i++;
+	}
+}
 
 void	print_export_env(char **env)
 {
 	int	i;
 
 	i = 0;
+	ft_sort_wordtab(env);
 	while (env[i])
 	{
+		if (strncmp(env[i], "_=", 2) == 0) 
+		{
+            i++;
+            continue ;
+		}
 		ft_printf("declare -x %s\n", env[i]);
 		i++;
 	}
@@ -183,10 +238,7 @@ void    export(char ***env, char **arg)
         env_cpy[i] = ft_strdup((*env)[i]);
     env_cpy[i] = NULL;
     if (arg == NULL)
-    {
-        ft_sort_wordtab(env_cpy);
         print_export_env(env_cpy);
-    }
     else
     {
 		replace_existing_vars(&arg, &env_cpy);
@@ -195,11 +247,27 @@ void    export(char ***env, char **arg)
     *env = env_cpy;
 }
 
-// void	unset(char ***env, char **args)
-// {
-// 	char	**new_env;
+void	unset(char ***env, char **args)
+{
+	char	**new_env;
+	int		i;
+	int		env_idx;
 
-// }
+	i = 0;
+	env_idx = 0;
+	while (args[i])
+	{
+		env_idx = get_env_index(*env, args[i]);
+		if (env_idx != -1)
+		{
+				ft_remove_from_strtab(*env, env_idx);
+				ft_remove_from_strtab(args, i);
+		}
+		else
+			i++;
+    }
+
+}
 
 // int main(int argc, char *argv[], char *envp[])
 // {

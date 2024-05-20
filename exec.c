@@ -4,78 +4,79 @@
 # include <stdio.h>
 # include <sys/wait.h>
 # include "libft/libft.h"
+# include "minishell.h"
 
-void	do_input_child(int pipe_fd[2], char *argv[], char **env)
+int exec_command_and_redirs(char **tokens)
 {
-	int	fd;
+    pid_t pid;
+    int status;
 
-	if (ft_strncmp("here_doc", argv[1], 9))
-	{
-		fd = check_open(argv[1]);
-		dup2(fd, 0);
-	}
-	dup2(pipe_fd[1], 1);
-	close(pipe_fd[0]);
-	execute_cmd(argv[2], env);
-	if (fd)
-		close(fd);
+    if ((pid = fork()) == -1) 
+    {
+        perror("fork");
+        return -1;
+    }
+    if (pid == 0) 
+    {
+        execvp(tokens[0], tokens);
+        perror("execvp");
+        exit(EXIT_FAILURE);
+    }
+    if (waitpid(pid, &status, 0) == -1) 
+    {
+        perror("waitpid");
+        return -1;
+    }
+    if (WIFEXITED(status)) 
+        return WEXITSTATUS(status);
+    return -1;
 }
 
-void	do_child(int pipe_fd[2], char *cmd, char **env)
+int	exec_ast(t_ast_node *ast)
 {
-	close(pipe_fd[0]);
-	dup2(pipe_fd[1], 1);
-	execute_cmd(cmd, env);
-}
-
-void	do_parent(int pipe_fd[2])
-{
-	waitpid(0, &(int){0}, 0);
-	close(pipe_fd[1]);
-	dup2(pipe_fd[0], 0);
-}
-
-void	do_pipe(int iter, char *av[], char **env)
-{
-	pid_t	pid;
-	int		pipe_fd[2];
-
-	if (pipe(pipe_fd) == -1)
-		exit(EXIT_FAILURE);
-	pid = fork();
-	if (pid == 0)
-	{
-		if (iter == 1)
-			do_input_child(pipe_fd, av, env);
-		else
-			do_child(pipe_fd, av[iter], env);
-	}
-	else if (pid > 0)
-	{
-		waitpid(0, &(int){0}, 0);
-		do_parent(pipe_fd);
-	}
-}
-
-
-int	execute_pipeline(int ac, char *av[], char **env)
-{
-	int	i;
-
-	i = 1;
-	check_argc(ac);
-	if (!ft_strncmp("here_doc", av[1], 8))
-	{
-		heredoc_handle(av[2]);
-		i += 2;
-	}
-	while (i < ac - 2)
-	{
-		do_pipe(i, av, env);
-		i++;
-	}
-	if (!ft_strncmp("here_doc", av[1], 8))
-		do_output(av, env, 'a', ac);
-	else
-		do_output(av, env, 'w', ac);
+    if (ast->type == pipe_op ) // && pas de redirection de sortie a gauche
+    {
+        int pipe_fds[2];
+        pid_t pid1, pid2;
+        if (pipe(pipe_fds) == -1)
+        {
+            perror("pipe");
+            exit(EXIT_FAILURE);
+        }
+        if ((pid1 = fork()) == -1)
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        if (pid1 == 0)
+        {
+            close(pipe_fds[0]);
+            dup2(pipe_fds[1], STDOUT_FILENO);
+            close(pipe_fds[1]);
+            exit(exec_ast(ast->left));
+        }
+        if ((pid2 = fork()) == -1)
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        if (pid2 == 0)
+        {
+            close(pipe_fds[1]);
+            dup2(pipe_fds[0], STDIN_FILENO);
+            close(pipe_fds[0]);
+            exit(exec_ast(ast->right));
+        }
+        close(pipe_fds[0]);
+        close(pipe_fds[1]);
+        waitpid(pid1, NULL, 0);
+        waitpid(pid2, NULL, 0);
+        return 0;
+    }
+    else if (ast->type == and_op && !exec_ast(ast->left))
+        return (exec_ast(ast->right));
+    else if (ast->type == or_op && exec_ast(ast->left))
+        return (exec_ast(ast->right));
+    else
+        return (exec_command_and_redirs(ast->tokens));
 }

@@ -13,7 +13,6 @@ char	*get_cwd(void)
 		path = ft_realloc(path, buffer_size, buffer_size + buffer_size);
 		buffer_size += buffer_size;
 	}
-
 	return (path);
 }
 

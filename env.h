@@ -8,4 +8,10 @@ typedef struct s_cwd
     int     size;
 } t_cwd;
 
+typedef struct s_env
+{
+    char **env;
+    char **local;
+}   t_env;
+
 #endif
