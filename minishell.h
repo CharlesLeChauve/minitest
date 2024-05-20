@@ -77,12 +77,14 @@ int			is_command(t_token_type type);
 int			is_operator(t_token_type type);
 int			verify_tokens(t_dlist *tokens);
 
+
 // lexing
 void		lexer(char	*input, t_token_lst **tokens);
 t_token_lst	*token_new(t_token_type type, void *content);
 t_token_lst 	*token_last(t_token_lst *token_lst);
 void		tokenaddback(t_token_lst **lst, t_token_lst *node);
 void		print_token_type(t_token_lst *token);
+t_token_lst *redir_token(char *str);
 
 // parsing
 

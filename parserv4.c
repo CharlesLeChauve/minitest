@@ -7,8 +7,7 @@ int	ft_isshelloperator(char c)
 	return (0);
 }
 
-void	ft_add_char_to_buffer(char **buffer, char c, size_t *len,
-		t_tkn_info *tkn_info)
+void	ft_add_char_to_buffer(char **buffer, char c, size_t *len)
 {
 	char	*new_buffer;
 
@@ -100,7 +99,7 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 		// set_quotes_state(tkn_info);
 		if (tkn_info->curr_char != tkn_info->input && break_token(tkn_info, 0))
 			break ;
-		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
+		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len);
 		tkn_info->curr_char++;
 	}
 	while (len > 0 && ft_isspace(buffer[len - 1]))
@@ -111,8 +110,9 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	token->text = buffer;
 }
 
-t_token_lst *redir_token(t_tkn_info *tkn_info)
+t_token_lst *redir_token(char *str)
 {
+	char	*curr_char = str;
 	t_token_lst	*token;
 	char		*buffer;
 	size_t		len;
@@ -125,43 +125,39 @@ t_token_lst *redir_token(t_tkn_info *tkn_info)
 		perror("Allocation Failed");
 		exit(EXIT_FAILURE);
 	}
-	if (*tkn_info->curr_char == '>')
+	if (*curr_char == '>')
 	{
-		ft_add_char_to_buffer(&buffer, '>', &len, tkn_info);
-		tkn_info->curr_char++;
-		if (*tkn_info->curr_char == '>')
+		curr_char++;
+		if (*curr_char == '>')
 		{
-			ft_add_char_to_buffer(&buffer, '>', &len, tkn_info);
-			tkn_info->curr_char++;
+			curr_char++;
 			token->type = redir_app;
 		}
 		else
 			token->type = redir_out;
 	}
-	else if (*tkn_info->curr_char == '<')
+	else if (*curr_char == '<')
 	{
-		ft_add_char_to_buffer(&buffer, '<', &len, tkn_info);
-		tkn_info->curr_char++;
-		if (*tkn_info->curr_char == '<')
+		curr_char++;
+		if (*curr_char == '<')
 		{
-			ft_add_char_to_buffer(&buffer, '<', &len, tkn_info);
-			tkn_info->curr_char++;
+			curr_char++;
 			token->type = heredoc;
 		}
 		else
 			token->type = redir_in;
 	}
-	while (*tkn_info->curr_char == ' ')
-		tkn_info->curr_char++;
-	if (*tkn_info->curr_char == '\0' || *tkn_info->curr_char == '\n')
+	while (*curr_char == ' ')
+		curr_char++;
+	if (*curr_char == '\0' || *curr_char == '\n')
 	{
 		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
 		exit(0);
 	}
-	while (*tkn_info->curr_char && !ft_isshelloperator(*tkn_info->curr_char) && !ft_isspace(*tkn_info->curr_char))
+	while (*curr_char && !ft_isshelloperator(*curr_char) && !ft_isspace(*curr_char))
 	{
-		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len, tkn_info);
-		tkn_info->curr_char++;
+		ft_add_char_to_buffer(&buffer, *curr_char, &len);
+		curr_char++;
 	}
 	token->text = buffer;
 	return token;
