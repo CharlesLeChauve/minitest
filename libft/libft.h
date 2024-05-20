@@ -88,5 +88,6 @@ int		ft_toupper(int c);
 int		ft_isspace(int c);
 int		ft_lstsize(t_list *lst);
 int		ft_sprintf(char *str, const char *input, ...);
+char	*ft_strndup(const char *s, size_t n);
 
 #endif //LIBFT_H
