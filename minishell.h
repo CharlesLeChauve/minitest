@@ -50,7 +50,16 @@ typedef	struct	s_tkn_info
 	char		first_quote;
 }	t_tkn_info;
 
-// Mise à jour de la structure Node pour inclure des informations sur les redirections
+typedef struct s_cmd_block
+{
+	char	**exec_tab;
+	char	*commande;
+	t_list	*option;
+	t_list	*arg;
+	t_list	*redir_in;
+	t_list	*redir_out;
+} t_cmd_block;
+
 typedef struct s_ast_node {
 	t_token_type    type;
 	t_dlist  	   *tokens;
@@ -86,10 +95,16 @@ void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
 
 // execution (faut la faire mdr)
+int	same_quote(t_tkn_info *tkn_info);
+void		fill_cmd_block(t_cmd_block *block, t_dlist *tokens);
+t_cmd_block	*init_cmd_block(void);
 
 // memory
+t_ast_node *construct_ast_from_tokens(t_dlist *token_list);
 void		free_tokens(t_token_lst	*token);
 t_ast_node  *parse_tokens(t_dlist *tokens);
-void        print_tree(t_ast_node *root);
+// void        print_tree(t_ast_node *root);
+void print_ast(t_ast_node *root);
+void print_tree(t_ast_node *node, int depth);
 
 #endif
