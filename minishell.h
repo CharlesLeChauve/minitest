@@ -117,5 +117,6 @@ char	*get_cwd(void);
 //env
 void    export(char ***env, char **arg);
 void	unset(char ***env, char **args);
+void    *ft_realloc(void *ptr, size_t old_size, size_t new_size);
 
 #endif
