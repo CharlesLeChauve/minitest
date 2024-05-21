@@ -136,20 +136,12 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 	}
 }
 
-void	expand_ast(t_ast_node *node)
+void	print_cmd_block(t_cmd_block *cmd_block)
 {
-	t_cmd_block	*cmd_block;
-	t_list		*opt;
-	t_list		*arg;
-	t_list		*redir;
+		t_list		*opt;
+		t_list		*arg;
+		t_list		*redir;
 
-	if (node == NULL)
-		return ;
-	if (node->type == command)
-	{
-		cmd_block = init_cmd_block();
-		fill_cmd_block(cmd_block, node->tokens);
-		printf("Command: %s\n", cmd_block->commande);
 		if (cmd_block->option)
 		{
 			opt = cmd_block->option;
@@ -188,6 +180,25 @@ void	expand_ast(t_ast_node *node)
 				redir = redir->next;
 			}
 		}
+}
+
+void	expand_ast(t_ast_node *node)
+{
+	t_cmd_block	*cmd_block;
+
+
+	if (node == NULL)
+		return ;
+	//Le commande block cree a l'air nickel mais il n'est jamais affecte a rien, on le erd apres cette fonction
+	//est-ce qu'on ajoute un pointeur a la structure ast_node ?
+	// 
+	if (node->type == command)
+	{
+		//cmd_block = init_cmd_block();
+		node->cmd_block = init_cmd_block();
+		fill_cmd_block(node->cmd_block, node->tokens);
+		// node->cmd_block = cmd_block;
+		// print_cmd_block(node->cmd_block);
 	}
 	expand_ast(node->left);
 	expand_ast(node->right);

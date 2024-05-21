@@ -39,6 +39,7 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
 	}
 	node->left = NULL;
 	node->right = NULL;
+	node->cmd_block = NULL;
 	return node;
 }
 
@@ -161,19 +162,23 @@ void	print_tree(t_ast_node *node, int depth)
 	if (is_logical(node->type))
 		printf("%sLogical Node (%s)\n", indent, node->value);
 	else if (node->type == command)
+	{
 		printf("%sCommand: [%s]\n", indent, node->value);
+		print_cmd_block(node->cmd_block);
+	}
 	else
 		printf("%sOther Node: [%s]\n", indent, node->value ? node->value : "NULL");
-	if (node->tokens)
-	{
-		token_node = node->tokens;
-		printf("%sTokens:\n", indent);
-		while (token_node)
-		{
-			printf("%s - %s\n", indent, ((t_token_lst *)token_node->content)->text);
-			token_node = token_node->next;
-		}
-	}
+	// if (node->tokens)
+	// {
+	// 	token_node = node->tokens;
+	// 	printf("%sTokens:\n", indent);
+	// 	while (token_node)
+	// 	{
+	// 		printf("%s - %s\n", indent, ((t_token_lst *)token_node->content)->text);
+	// 		print_token_type((t_token_lst *)token_node->content);
+	// 		token_node = token_node->next;
+	// 	}
+	// }
 	if (node->left)
 	{
 		printf("%sGauche:\n", indent);
@@ -186,6 +191,7 @@ void	print_tree(t_ast_node *node, int depth)
 	}
 	free(indent);
 }
+
 
 // Fonction initiale pour commencer l'affichage à partir de la racine avec une profondeur de 0
 void print_ast(t_ast_node *root)

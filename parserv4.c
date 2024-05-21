@@ -35,35 +35,48 @@ int	same_quote(t_tkn_info *tkn_info)
 
 void	set_quotes_state(t_tkn_info *tkn_info)
 {
-	int same;
-
-	same = 1;
-	if (tkn_info->quote_level == 0 && (*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\''))
+	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
 	{
-			tkn_info->quote_level++;
-			tkn_info->first_quote = *tkn_info->curr_char;
 			if (*tkn_info->curr_char == '"')
 				tkn_info->state = dquote;
 			else
 				tkn_info->state = quote;
-			// tkn_info->curr_char++;
-			// while ((*tkn_info->curr_char == '\"' || *tkn_info->curr_char == '\'') && same)
-			// {
-			// 	same = same_quote(tkn_info);
-			// 	tkn_info->curr_char++;
-			// 	tkn_info->quote_level++;
-			// }
+			tkn_info->curr_char++;
 	}
-	else if (same_quote(tkn_info))
+	else if (*tkn_info->curr_char == '"' && tkn_info->state == dquote)
 	{
-		if (tkn_info->quote_level == 1)
-		{
-			tkn_info->state = reg;
-			tkn_info->quote_level--;
-		}
-		else
-			tkn_info->quote_level--;
-		// tkn_info->curr_char++;
+		tkn_info->state = reg;
+		tkn_info->curr_char++;
+	}
+	else if (*tkn_info->curr_char == '\'' && tkn_info->state == quote)
+	{
+		tkn_info->state = reg;
+		tkn_info->curr_char++;
+	}
+}
+
+void	first_read_quotes(t_tkn_info *tkn_info, char **buffer, size_t *len)
+{
+	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
+	{
+			if (*tkn_info->curr_char == '"')
+				tkn_info->state = dquote;
+			else
+				tkn_info->state = quote;
+			ft_add_char_to_buffer(buffer, *tkn_info->curr_char, len);
+			tkn_info->curr_char++;
+	}
+	else if (*tkn_info->curr_char == '"' && tkn_info->state == dquote)
+	{
+		ft_add_char_to_buffer(buffer, *tkn_info->curr_char, len);
+		tkn_info->state = reg;
+		tkn_info->curr_char++;
+	}
+	else if (*tkn_info->curr_char == '\'' && tkn_info->state == quote)
+	{
+		ft_add_char_to_buffer(buffer, *tkn_info->curr_char, len);
+		tkn_info->state = reg;
+		tkn_info->curr_char++;
 	}
 }
 
@@ -75,13 +88,10 @@ void	space_quotes(t_tkn_info *tkn_info)
 	set_quotes_state(tkn_info);
 }
 
-int	break_token(t_tkn_info *tkn_info, int is_redir)
+int	break_token(t_tkn_info *tkn_info,  char **buffer, size_t *len)
 {
-	t_sm	state;
-
-	set_quotes_state(tkn_info);
-	state = tkn_info->state;
-	if (state == reg && (ft_isshelloperator(*tkn_info->curr_char)))
+	first_read_quotes(tkn_info, buffer, len);
+	if (tkn_info->state == reg && (ft_isshelloperator(*tkn_info->curr_char)))
 		return (1);
 	else
 		return (0);
@@ -97,7 +107,7 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	while (*tkn_info->curr_char)
 	{
 		// set_quotes_state(tkn_info);
-		if (tkn_info->curr_char != tkn_info->input && break_token(tkn_info, 0))
+		if (tkn_info->curr_char != tkn_info->input && break_token(tkn_info, &buffer, &len))
 			break ;
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len);
 		tkn_info->curr_char++;

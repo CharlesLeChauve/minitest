@@ -61,13 +61,27 @@ typedef struct s_cmd_block
 	t_list	*redir_out;
 } t_cmd_block;
 
+/*
 typedef struct s_ast_node {
 	t_token_type    type;
 	t_dlist  	   *tokens;
 	char			*value;
 	struct s_ast_node *left;
 	struct s_ast_node *right;
+} t_ast_node;*/
+
+
+
+typedef struct s_ast_node {
+	t_token_type    type;
+	char		*value;
+	t_cmd_block	*cmd_block;
+	t_dlist  	   *tokens;
+	struct s_ast_node *left;
+	struct s_ast_node *right;
 } t_ast_node;
+
+
 
 // utils
 void		swap_char(char *c1, char *c2);
@@ -78,6 +92,8 @@ int			is_operator(t_token_type type);
 int			verify_tokens(t_dlist *tokens);
 void		print_ast(t_ast_node *root);
 void		print_tree(t_ast_node *node, int depth);
+//attention c'est de la merde
+void		print_tree_2(t_ast_node *node, int depth);
 void		print_token_type(t_token_lst *token);
 
 
@@ -101,6 +117,7 @@ t_ast_node	*construct_ast_from_tokens(t_dlist *token_list);
 void		expand_ast(t_ast_node *node);
 void		fill_cmd_block(t_cmd_block *block, t_dlist *tokens);
 t_cmd_block	*init_cmd_block(void);
+void	print_cmd_block(t_cmd_block *cmd_block);
 
 // signal
 void		setup_signal_handlers(void);
