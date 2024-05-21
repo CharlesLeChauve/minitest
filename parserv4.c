@@ -35,7 +35,6 @@ int	same_quote(t_tkn_info *tkn_info)
 
 void	set_quotes_state(t_tkn_info *tkn_info)
 {
-	if (tkn_info->curr_char == tkn_info->input)
 	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
 	{
 			if (*tkn_info->curr_char == '"')
