@@ -49,25 +49,15 @@ void	first_read_quotes(t_tkn_info *tkn_info, char **buffer, size_t *len)
 {
 	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
 	{
-			if (*tkn_info->curr_char == '"')
-				tkn_info->state = dquote;
-			else
-				tkn_info->state = quote;
-			ft_add_char_to_buffer(buffer, *tkn_info->curr_char, len);
-			tkn_info->curr_char++;
+		if (*tkn_info->curr_char == '"')
+			tkn_info->state = dquote;
+		else
+			tkn_info->state = quote;
 	}
 	else if (*tkn_info->curr_char == '"' && tkn_info->state == dquote)
-	{
-		ft_add_char_to_buffer(buffer, *tkn_info->curr_char, len);
 		tkn_info->state = reg;
-		tkn_info->curr_char++;
-	}
 	else if (*tkn_info->curr_char == '\'' && tkn_info->state == quote)
-	{
-		ft_add_char_to_buffer(buffer, *tkn_info->curr_char, len);
 		tkn_info->state = reg;
-		tkn_info->curr_char++;
-	}
 }
 
 void	space_quotes(t_tkn_info *tkn_info)

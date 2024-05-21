@@ -86,7 +86,6 @@ char	*extract_sub_token(char **ptr)
 	return (token);
 }
 
-
 void	process_sub_token(char *sub_token, t_cmd_block *block)
 {
 	t_list	*new_opt;
@@ -129,69 +128,6 @@ void	parse_command_option(char *token, t_cmd_block *block)
 		}
 	}
 }
-
-
-// void	parse_command_option(char *token, t_cmd_block *block)
-// {
-// 	char	*ptr;
-// 	char	*start;
-// 	char	*sub_token;
-// 	t_list	*new_opt;
-// 	t_list	*new_arg;
-// 	int		in_quotes = 0;
-// 	char	quote_char = '\0';
-
-// 	ptr = token;
-// 	while (*ptr && !ft_isspace(*ptr))
-// 		ptr++;
-// 	if (ptr > token)
-// 		block->commande = ft_strndup(token, ptr - token);
-
-// 	while (*ptr)
-// 	{
-// 		while (ft_isspace(*ptr))
-// 			ptr++;
-// 		start = ptr;
-
-// 		while (*ptr && (in_quotes || !ft_isspace(*ptr)))
-// 		{
-// 			if (*ptr == '"' || *ptr == '\'')
-// 			{
-// 				if (in_quotes && *ptr == quote_char)
-// 					in_quotes = 0;
-// 				else if (!in_quotes)
-// 				{
-// 					in_quotes = 1;
-// 					quote_char = *ptr;
-// 				}
-// 			}
-// 			ptr++;
-// 		}
-// 		if (ptr > start)
-// 		{
-// 			sub_token = ft_strndup(start, ptr - start);
-// 			if (sub_token[0] == '-')
-// 			{
-// 				new_opt = ft_lstnew(sub_token);
-// 				ft_lstadd_back(&(block->option), new_opt);
-// 			}
-// 			else if (sub_token[0] == '>' || sub_token[0] == '<')
-// 			{
-// 				new_arg = ft_lstnew(redir_token(sub_token));
-// 				if (sub_token[0] == '>')
-// 					ft_lstadd_back(&(block->redir_out), new_arg);
-// 				if (sub_token[0] == '<')
-// 					ft_lstadd_back(&(block->redir_in), new_arg);
-// 			}
-// 			else
-// 			{
-// 				new_arg = ft_lstnew(sub_token);
-// 				ft_lstadd_back(&(block->arg), new_arg);
-// 			}
-// 		}
-// 	}
-// }
-
 
 void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 {
@@ -282,16 +218,12 @@ void	expand_ast(t_ast_node *node)
 {
 	t_cmd_block	*cmd_block;
 
-
 	if (node == NULL)
 		return ;
 	if (node->type == command)
 	{
-		//cmd_block = init_cmd_block();
 		node->cmd_block = init_cmd_block();
 		fill_cmd_block(node->cmd_block, node->tokens);
-		// node->cmd_block = cmd_block;
-		// print_cmd_block(node->cmd_block);
 	}
 	expand_ast(node->left);
 	expand_ast(node->right);
