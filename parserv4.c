@@ -81,7 +81,7 @@ void	space_quotes(t_tkn_info *tkn_info)
 int	break_token(t_tkn_info *tkn_info,  char **buffer, size_t *len)
 {
 	first_read_quotes(tkn_info, buffer, len);
-	if (tkn_info->state == reg && (ft_isshelloperator(*tkn_info->curr_char) || *tkn_info->curr_char == ' '))
+	if ((tkn_info->state == reg && ft_isshelloperator(*tkn_info->curr_char)))
 		return (1);
 	else
 		return (0);
