@@ -35,23 +35,21 @@ int	same_quote(t_tkn_info *tkn_info)
 
 void	set_quotes_state(t_tkn_info *tkn_info)
 {
+	if (tkn_info->curr_char == tkn_info->input)
 	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
 	{
 			if (*tkn_info->curr_char == '"')
 				tkn_info->state = dquote;
 			else
 				tkn_info->state = quote;
-			tkn_info->curr_char++;
 	}
 	else if (*tkn_info->curr_char == '"' && tkn_info->state == dquote)
 	{
 		tkn_info->state = reg;
-		tkn_info->curr_char++;
 	}
 	else if (*tkn_info->curr_char == '\'' && tkn_info->state == quote)
 	{
 		tkn_info->state = reg;
-		tkn_info->curr_char++;
 	}
 }
 
@@ -190,7 +188,7 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 	space_quotes(tkn_info);
 	if (!*tkn_info->curr_char)
 		return (token_new(eol, NULL));
-	if (*tkn_info->curr_char == '|')
+	if (*tkn_info->curr_char == '|' && tkn_info->state == reg)
 	{
 		tkn_info->curr_char++;
 		if (*tkn_info->curr_char == '|')
@@ -200,7 +198,7 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		}
 		return (token_new(pipe_op, ft_strdup("|")));
 	}
-	else if (*tkn_info->curr_char == '&' && *(tkn_info->curr_char + 1) == '&')
+	else if (*tkn_info->curr_char == '&' && *(tkn_info->curr_char + 1) == '&' && tkn_info->state == reg)
 	{
 		tkn_info->curr_char += 2;
 		return (token_new(and_op, ft_strdup("&&")));

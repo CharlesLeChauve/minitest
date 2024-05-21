@@ -18,7 +18,7 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
 	{
 		node->tokens = tokens;
 		if (text != NULL && text[0] != '\0') {
-			node->value = strdup(text);
+			node->value = ft_strdup(text);
 			if (node->value == NULL) {
 				fprintf(stderr, "Memory allocation failed\n");
 				exit(EXIT_FAILURE);
