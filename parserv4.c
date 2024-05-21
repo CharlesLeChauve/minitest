@@ -26,13 +26,6 @@ void	ft_add_char_to_buffer(char **buffer, char c, size_t *len)
 	*buffer = new_buffer;
 }
 
-int	same_quote(t_tkn_info *tkn_info)
-{
-	if (tkn_info->first_quote == *tkn_info->curr_char)
-		return (1);
-	return (0);
-}
-
 void	set_quotes_state(t_tkn_info *tkn_info)
 {
 	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
@@ -88,7 +81,7 @@ void	space_quotes(t_tkn_info *tkn_info)
 int	break_token(t_tkn_info *tkn_info,  char **buffer, size_t *len)
 {
 	first_read_quotes(tkn_info, buffer, len);
-	if (tkn_info->state == reg && (ft_isshelloperator(*tkn_info->curr_char)))
+	if (tkn_info->state == reg && (ft_isshelloperator(*tkn_info->curr_char) || *tkn_info->curr_char))
 		return (1);
 	else
 		return (0);
