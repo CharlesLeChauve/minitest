@@ -16,40 +16,6 @@ t_cmd_block	*init_cmd_block(void)
 	return (block);
 }
 
-void	set_command_quotes_state(t_tkn_info *tkn_info)
-{
-	int same;
-
-	same = 1;
-	if (tkn_info->quote_level == 0 && (*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\''))
-	{
-			tkn_info->quote_level++;
-			tkn_info->first_quote = *tkn_info->curr_char;
-			if (*tkn_info->curr_char == '"')
-				tkn_info->state = dquote;
-			else
-				tkn_info->state = quote;
-			tkn_info->curr_char++;
-			while ((*tkn_info->curr_char == '\"' || *tkn_info->curr_char == '\'') && same)
-			{
-				same = same_quote(tkn_info);
-				tkn_info->curr_char++;
-				tkn_info->quote_level++;
-			}
-	}
-	else if (same_quote(tkn_info))
-	{
-		if (tkn_info->quote_level == 1)
-		{
-			tkn_info->state = reg;
-			tkn_info->quote_level--;
-		}
-		else
-			tkn_info->quote_level--;
-		tkn_info->curr_char++;
-	}
-}
-
 void	parse_command_option(char *token, t_cmd_block *block)
 {
 	char	*ptr;
@@ -191,7 +157,7 @@ void	expand_ast(t_ast_node *node)
 		return ;
 	//Le commande block cree a l'air nickel mais il n'est jamais affecte a rien, on le erd apres cette fonction
 	//est-ce qu'on ajoute un pointeur a la structure ast_node ?
-	// 
+	//
 	if (node->type == command)
 	{
 		//cmd_block = init_cmd_block();
