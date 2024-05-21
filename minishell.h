@@ -95,6 +95,7 @@ void		print_tree(t_ast_node *node, int depth);
 //attention c'est de la merde
 void		print_tree_2(t_ast_node *node, int depth);
 void		print_token_type(t_token_lst *token);
+int			ft_isshelloperator(char c);
 
 
 // lexing
@@ -118,6 +119,7 @@ void		expand_ast(t_ast_node *node);
 void		fill_cmd_block(t_cmd_block *block, t_dlist *tokens);
 t_cmd_block	*init_cmd_block(void);
 void	print_cmd_block(t_cmd_block *cmd_block);
+void	ft_add_char_to_buffer(char **buffer, char c, size_t *len);
 
 // signal
 void		setup_signal_handlers(void);

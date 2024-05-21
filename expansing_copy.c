@@ -16,28 +16,6 @@ t_cmd_block	*init_cmd_block(void)
 	return (block);
 }
 
-void	set_quotes_state_in_cmd_block(t_tkn_info *tkn_info)
-{
-	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
-	{
-			if (*tkn_info->curr_char == '"')
-				tkn_info->state = dquote;
-			else
-				tkn_info->state = quote;
-		tkn_info->curr_char++;
-	}
-	else if (*tkn_info->curr_char == '"' && tkn_info->state == dquote)
-	{
-		tkn_info->state = reg;
-		tkn_info->curr_char++;
-	}
-	else if (*tkn_info->curr_char == '\'' && tkn_info->state == quote)
-	{
-		tkn_info->state = reg;
-		tkn_info->curr_char++;
-	}
-}
-
 void	extract_command(char **ptr, t_cmd_block *block)
 {
 	char	*start = *ptr;
@@ -48,42 +26,52 @@ void	extract_command(char **ptr, t_cmd_block *block)
 		block->commande = ft_strndup(start, *ptr - start);
 }
 
+void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
+{
+	if ((**curr_char == '"' || **curr_char == '\'') && *state == reg)
+	{
+		if (**curr_char == '"')
+			*state = dquote;
+		else
+			*state = quote;
+		(*curr_char)++;
+	}
+	else if (**curr_char == '"' && *state == dquote)
+	{
+		*state = reg;
+		(*curr_char)++;
+	}
+	else if (**curr_char == '\'' && *state == quote)
+	{
+		*state = reg;
+		(*curr_char)++;
+	}
+}
+
+int	break_cmd_sub_token(char **curr_char, t_sm *state)
+{
+	set_quotes_state_in_cmd_block(curr_char, state);
+	if (state == reg && (ft_isshelloperator(**curr_char)) || **curr_char == ' ' || **curr_char == '>' || **curr_char == '<')
+		return (1);
+	else
+		return (0);
+}
+
 char	*extract_sub_token(char **ptr)
 {
-	char	*start = *ptr;
-	char	*token;
-	int		in_quotes = 0;
-	char	quote_char = '\0';
-	size_t	len = 0;
+	t_sm	state;
+	char	*buffer = NULL;
+	size_t len = 0;
 
-	while (**ptr && (in_quotes || !ft_isspace(**ptr)))
+	state = reg;
+	while (*ptr)
 	{
-		if (**ptr == '"' || **ptr == '\'')
-		{
-			if (in_quotes && **ptr == quote_char)
-				in_quotes = 0;
-			else if (!in_quotes)
-			{
-				in_quotes = 1;
-				quote_char = **ptr;
-			}
-		}
-		else
-			len++;
+		if (break_cmd_sub_token(ptr, &state))
+			break ;
+		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
 	}
-	token = malloc(len + 1);
-	if (!token)
-		return (NULL);
-	len = 0;
-	while (start < *ptr)
-	{
-		if (*start != '"' && *start != '\'')
-			token[len++] = *start;
-		start++;
-	}
-	token[len] = '\0';
-	return (token);
+	return (buffer);
 }
 
 
@@ -285,6 +273,9 @@ void	expand_ast(t_ast_node *node)
 
 	if (node == NULL)
 		return ;
+	//Le commande block cree a l'air nickel mais il n'est jamais affecte a rien, on le erd apres cette fonction
+	//est-ce qu'on ajoute un pointeur a la structure ast_node ?
+	//
 	if (node->type == command)
 	{
 		//cmd_block = init_cmd_block();
@@ -296,7 +287,6 @@ void	expand_ast(t_ast_node *node)
 	expand_ast(node->left);
 	expand_ast(node->right);
 }
-
 void	clear_cmd_block(t_cmd_block *block)
 {
 	ft_lstclear(&(block->option), free);
