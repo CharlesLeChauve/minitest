@@ -1,16 +1,16 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <math.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include "./libft/libft.h"
-#include "env.h"
+# include <stdio.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <fcntl.h>
+# include <signal.h>
+# include <math.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include "./libft/libft.h"
+# include "env.h"
 
 
 
@@ -23,6 +23,11 @@ typedef enum e_state_machine
 {
 	reg, quote, dquote
 }	t_sm;
+
+typedef enum e_open_mode
+{
+	append_o, truncate_o, read_o
+}	t_open_mode;
 
 typedef enum {
 	COMMAND,
@@ -134,7 +139,7 @@ void		clear_cmd_block(t_cmd_block *block);
 
 //dirs_handling
 void	pwd(void);
-void	act_env_pwd(char **env);
+void	act_env_pwd(char **env, char *pwd);
 int 	change_directory(char *path, char **env);
 char	*get_cwd(void);
 
@@ -143,5 +148,9 @@ void	export(char ***env, char **arg);
 void	unset(char ***env, char **args);
 void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 char	*get_env_var(char **env, char *var_id);
+
+//exec.c
+int		exec_ast(t_ast_node *ast, char *envp[]);
+void 	create_exec_tab(t_cmd_block *cmd_block);
 
 #endif

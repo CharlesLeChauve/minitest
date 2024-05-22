@@ -25,20 +25,16 @@ void	pwd(void)
 	free(wd);
 }
 
-void	act_env_pwd(char **env)
+void	act_env_pwd(char **env, char *pwd)
 {
-	char *pwd;
+	char *old_pwd;
 	char *new_pwd;
-	char *tmp;
 
 	new_pwd = ft_strdup("PWD=");
-	pwd = get_env_var(env, "PWD");
-	while (*env != pwd)
-		env++;
-	pwd = get_cwd();
-	tmp = ft_strjoin_free(new_pwd, pwd, 2);
-	free(*env);
-	*env = tmp;
+	old_pwd = get_env_var(env, "PWD");
+	new_pwd = ft_strjoin_free(new_pwd, pwd, 2);
+	free(old_pwd);
+	old_pwd = new_pwd;
 }
 
 int change_directory(char *path, char **env)
@@ -49,6 +45,9 @@ int change_directory(char *path, char **env)
 		return (1);
 	}
 	else
-		act_env_pwd(env);
+	{
+
+		act_env_pwd(env, get_cwd());
+	}
 	return (0);
 }
