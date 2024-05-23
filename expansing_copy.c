@@ -8,7 +8,7 @@ t_cmd_block	*init_cmd_block(void)
 	if (!block)
 		return (NULL);
 	block->exec_tab = NULL;
-	block->commande = NULL;
+	block->command = NULL;
 	block->option = NULL;
 	block->arg = NULL;
 	block->redir_in = NULL;
@@ -23,7 +23,7 @@ void	extract_command(char **ptr, t_cmd_block *block)
 	while (**ptr && !ft_isspace(**ptr))
 		(*ptr)++;
 	if (*ptr > start)
-		block->commande = ft_strndup(start, *ptr - start);
+		block->command = ft_strndup(start, *ptr - start);
 }
 
 void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
@@ -133,7 +133,7 @@ void	parse_command_option(char *token, t_cmd_block *block)
 // 	while (*ptr && !ft_isspace(*ptr))
 // 		ptr++;
 // 	if (ptr > token)
-// 		block->commande = ft_strndup(token, ptr - token);
+// 		block->command = ft_strndup(token, ptr - token);
 
 // 	while (*ptr)
 // 	{
@@ -273,7 +273,7 @@ void	expand_ast(t_ast_node *node)
 
 	if (node == NULL)
 		return ;
-	//Le commande block cree a l'air nickel mais il n'est jamais affecte a rien, on le erd apres cette fonction
+	//Le command block cree a l'air nickel mais il n'est jamais affecte a rien, on le erd apres cette fonction
 	//est-ce qu'on ajoute un pointeur a la structure ast_node ?
 	//
 	if (node->type == command)
@@ -293,6 +293,6 @@ void	clear_cmd_block(t_cmd_block *block)
 	ft_lstclear(&(block->arg), free);
 	ft_lstclear(&(block->redir_in), free);
 	ft_lstclear(&(block->redir_out), free);
-	free(block->commande);
+	free(block->command);
 	free(block);
 }

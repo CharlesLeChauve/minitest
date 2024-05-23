@@ -14,7 +14,7 @@ int list_size(t_list *list) {
 void create_exec_tab(t_cmd_block *cmd_block) {
     int option_count = list_size(cmd_block->option);
     int arg_count = list_size(cmd_block->arg);
-    int total_size = 1 + option_count + arg_count + 1; // commande + options + arguments + NULL
+    int total_size = 1 + option_count + arg_count + 1; // command + options + arguments + NULL
 
     // Allouer de la mémoire pour exec_tab
     cmd_block->exec_tab = (char **)malloc(total_size * sizeof(char *));
@@ -25,8 +25,8 @@ void create_exec_tab(t_cmd_block *cmd_block) {
 
     int index = 0;
 
-    // Ajouter la commande
-    cmd_block->exec_tab[index++] = cmd_block->commande;
+    // Ajouter la command
+    cmd_block->exec_tab[index++] = cmd_block->command;
 
     // Ajouter les options
     t_list *current = cmd_block->option;

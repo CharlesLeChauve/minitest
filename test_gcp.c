@@ -12,7 +12,7 @@ int main() {
     ssize_t bytes_read;
     char *token;
 
-    // Lire la ligne de commande
+    // Lire la ligne de command
     printf("shell$ ");
     bytes_read = getline(&input, &input_size, stdin);
 

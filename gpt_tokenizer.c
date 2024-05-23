@@ -55,7 +55,7 @@ Token nextToken(void) {
     int len = 0;
     char *start = currentChar;
 
-    if (isalpha(*currentChar)) { // Début d'une commande ou d'un argument
+    if (isalpha(*currentChar)) { // Début d'une command ou d'un argument
         while (isalnum(*currentChar) || *currentChar == '_' || *currentChar == '-') {
             len++;
             currentChar++;

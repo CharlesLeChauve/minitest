@@ -29,17 +29,17 @@ int expect(TokenType expectedToken)
     return 0;
 }
 
-// Parsing d'une commande.
+// Parsing d'une command.
 void command(void)
 {
     expect(COMMAND);
     while (accept(ARGUMENT))
 	{
-        // Boucle pour gérer tous les arguments d'une commande.
+        // Boucle pour gérer tous les arguments d'une command.
     }
 }
 
-// Parsing d'une ligne de commande.
+// Parsing d'une ligne de command.
 void commandLine(void)
 {
     command();
@@ -60,7 +60,7 @@ void startParsing(void)
 {
     nextToken(); // Initialiser avec le premier token.
     commandLine();
-    expect(EOL); // Une commande se termine par une fin de ligne.
+    expect(EOL); // Une command se termine par une fin de ligne.
 }
 
 void nextToken(void)
@@ -74,7 +74,7 @@ void nextToken(void)
 	{
         currentToken = PIPE;
     } else if (isCommand(nextInput))
-	{ // Suppose une fonction qui vérifie si l'entrée est une commande.
+	{ // Suppose une fonction qui vérifie si l'entrée est une command.
         currentToken = COMMAND;
     } else if (isArgument(nextInput))
 	{ // Suppose une fonction qui vérifie si l'entrée est un argument.
@@ -86,7 +86,7 @@ void nextToken(void)
     // Continuer avec les autres types de tokens...
     else
 	{
-        currentToken = EOL; // Indique la fin de la ligne/commande.
+        currentToken = EOL; // Indique la fin de la ligne/command.
     }
 }
 

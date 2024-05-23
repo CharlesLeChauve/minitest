@@ -8,7 +8,7 @@ t_cmd_block	*init_cmd_block(void)
 	if (!block)
 		return (NULL);
 	block->exec_tab = NULL;
-	block->commande = NULL;
+	block->command = NULL;
 	block->option = NULL;
 	block->arg = NULL;
 	block->redir_in = NULL;
@@ -45,7 +45,7 @@ void	extract_command(char **ptr, t_cmd_block *block)
 	while (**ptr && !ft_isspace(**ptr))
 		(*ptr)++;
 	if (*ptr > start)
-		block->commande = ft_strndup(start, *ptr - start);
+		block->command = ft_strndup(start, *ptr - start);
 }
 
 char	*extract_sub_token(char **ptr)
@@ -235,6 +235,6 @@ void	clear_cmd_block(t_cmd_block *block)
 	ft_lstclear(&(block->arg), free);
 	ft_lstclear(&(block->redir_in), free);
 	ft_lstclear(&(block->redir_out), free);
-	free(block->commande);
+	free(block->command);
 	free(block);
 }

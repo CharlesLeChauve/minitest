@@ -202,7 +202,6 @@ t_dlist	*tokenize(char *input)
 	tkn_info.curr_char = tkn_info.input;
 	tkn_info.token_lst = NULL;
 	tkn_info.state = reg;
-	tkn_info.quote_level = 0;
 	ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(next_token(&tkn_info)));
 	last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
 	while (last && ((t_token_lst *)(last->content))->type != eol)

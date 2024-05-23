@@ -50,16 +50,14 @@ typedef	struct	s_tkn_info
 {
 	t_dlist		*token_lst;
 	t_sm		state;
-	int			quote_level;
 	char		*input;
 	char		*curr_char;
-	char		first_quote;
 }	t_tkn_info;
 
 typedef struct s_cmd_block
 {
 	char	**exec_tab;
-	char	*commande;
+	char	*command;
 	t_list	*option;
 	t_list	*arg;
 	t_list	*redir_in;
