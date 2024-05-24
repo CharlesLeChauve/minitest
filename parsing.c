@@ -27,6 +27,25 @@ void	revstr(char *str)
 		swap_char(&str[i], &str[size]);
 }
 
+char	**set_env(char **envp)
+{
+	int     i;
+	char	**env;
+
+    i = 0;
+    while (envp[i])
+        i++;
+    env = (char **)malloc(sizeof(char *) * (i + 1));
+    i = 0;
+    while (envp[i])
+    {
+        env[i] = ft_strdup(envp[i]);
+        i++;
+    }
+    env[i] = NULL;
+	return (env);
+}
+
 // void	parse_input(char *input, t_token_lst **token_lst)
 // {
 // 	char	**input_tab;
@@ -41,13 +60,13 @@ void	revstr(char *str)
 // 	}
 // }
 
-int	main(void)
+int	main(int argc, char *argv[], char *envp[])
 {
 	char				*input;
 	struct sigaction	sa;
 	t_dlist				*token_lst;
 	t_ast_node			*ast;
-	t_cmd_block			*cmd_block;
+	char				**env;
 
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
@@ -58,6 +77,7 @@ int	main(void)
 		perror("sigaction");
 		exit(EXIT_FAILURE);
 	}
+	env = set_env(envp);
 	while (1)
 	{
 		input = readline("Maxishell > ");
@@ -75,7 +95,9 @@ int	main(void)
 			}
 			ast = parse_tokens(token_lst);
 			expand_ast(ast);
-			print_tree(ast, 0);
+			//print_tree(ast, 0);
+			exec_ast(ast, env);
+			//ast = NULL;
 		}
 		token_lst = NULL;
 		free(input);
