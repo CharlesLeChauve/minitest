@@ -118,6 +118,8 @@ t_token_lst *redir_token(char *str)
 	if (*curr_char == '>')
 	{
 		curr_char++;
+		while (*curr_char == ' ')
+            curr_char++;
 		if (*curr_char == '>')
 		{
 			curr_char++;
@@ -187,7 +189,7 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 	}
 	// if ((*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<') \
 	// 	&& tkn_info->state == reg)
-	// 	return (redir_token(tkn_info));
+	// 	return (redir_token(tkn_info->curr_char));
 	return (cmd_token(tkn_info));
 }
 

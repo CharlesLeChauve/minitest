@@ -39,11 +39,7 @@ typedef enum {
 typedef struct s_token_lst
 {
 	t_token_type type;
-	union
-	{
-		char	*text;
-		int		priority;
-	};
+	char	*text;
 }	t_token_lst;
 
 typedef	struct	s_tkn_info

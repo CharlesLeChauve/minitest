@@ -115,14 +115,27 @@ void	parse_command_option(char *token, t_cmd_block *block)
 {
 	char	*ptr = token;
 	char	*sub_token;
+	int		command_found;
 
-	extract_command(&ptr, block);
+	command_found = 0;
+	// if (*ptr == '>' || *ptr == '<')
+	// {
+	// 	sub_token = extract_sub_token(&ptr);
+	// 	process_sub_token(sub_token, block);
+	// 	free(sub_token);
+	// }
+	// extract_command(&ptr, block);
 	while (*ptr)
 	{
 		while (ft_isspace(*ptr))
 			ptr++;
 		if (*ptr)
 		{
+			if (!command_found && *ptr != '>' && *ptr != '<')
+			{
+				extract_command(&ptr, block);
+				command_found = 1;
+			}
 			sub_token = extract_sub_token(&ptr);
 			process_sub_token(sub_token, block);
 		}
