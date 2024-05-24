@@ -271,7 +271,6 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char *envp[])
     {
         handle_redirs(cmd_block);
         exec_command(envp, cmd_block);
-        //execve(get_cmd_path(envp, cmd_block->exec_tab[0]), cmd_block->exec_tab, envp);
     }
     else
     {
@@ -284,6 +283,7 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char *envp[])
         dup2(stdin_save, STDIN_FILENO);
         close(stdout_save);
         close(stdin_save);
+        return (status);
     }
     return (-1);
 }
@@ -332,9 +332,14 @@ int	exec_ast(t_ast_node *ast, char *envp[])
         waitpid(pid2, NULL, 0);
         return 0;
     }
-    else if (ast->type == and_op && !exec_ast(ast->left, envp))
-        return (exec_ast(ast->right, envp));
-    else if (ast->type == or_op && exec_ast(ast->left, envp))
+    else if (ast->type == and_op)
+    {
+        ret_value = exec_ast(ast->left, envp);
+        if (!ret_value)
+            return (exec_ast(ast->right, envp));
+        return (ret_value);
+    }
+    else if (ast->type == or_op)
     {
         ret_value = exec_ast(ast->left, envp);
         if (ret_value)

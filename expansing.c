@@ -136,8 +136,11 @@ void	parse_command_option(char *token, t_cmd_block *block)
 				extract_command(&ptr, block);
 				command_found = 1;
 			}
-			sub_token = extract_sub_token(&ptr);
-			process_sub_token(sub_token, block);
+			else
+			{
+				sub_token = extract_sub_token(&ptr);
+				process_sub_token(sub_token, block);
+			}
 		}
 	}
 }
