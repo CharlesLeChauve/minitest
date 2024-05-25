@@ -86,7 +86,6 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	buffer = NULL;
 	while (*tkn_info->curr_char)
 	{
-		// set_quotes_state(tkn_info);
 		if (tkn_info->curr_char != tkn_info->input && break_token(tkn_info, &buffer, &len))
 			break ;
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len);
@@ -119,7 +118,7 @@ t_token_lst *redir_token(char *str)
 	{
 		curr_char++;
 		while (*curr_char == ' ')
-            curr_char++;
+			curr_char++;
 		if (*curr_char == '>')
 		{
 			curr_char++;
@@ -162,7 +161,6 @@ t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
 	token->type = command;
-	// set_quotes_state(tkn_info);
 	set_token_text(tkn_info, token);
 	return (token);
 }
@@ -187,9 +185,6 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		tkn_info->curr_char += 2;
 		return (token_new(and_op, ft_strdup("&&")));
 	}
-	// if ((*tkn_info->curr_char == '>' || *tkn_info->curr_char == '<') \
-	// 	&& tkn_info->state == reg)
-	// 	return (redir_token(tkn_info->curr_char));
 	return (cmd_token(tkn_info));
 }
 

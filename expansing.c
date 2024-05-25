@@ -147,7 +147,7 @@ void	parse_command_option(char *token, t_cmd_block *block)
 
 void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 {
-	t_dlist		*current = tokens;
+	t_dlist		*current;
 	t_list		*new_redir;
 	t_list		*redir;
 	t_token_lst	*token;
@@ -155,6 +155,7 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 	t_list		*arg;
 	char		*token_text;
 
+	current = tokens;
 	while (current)
 	{
 		token = (t_token_lst *)(current->content);

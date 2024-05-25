@@ -7,9 +7,13 @@
 // Fonction pour créer un nouveau nœud
 #include <string.h> // Pour strdup
 
-t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
-	t_ast_node *node = (t_ast_node *)malloc(sizeof(t_ast_node));
-	if (node == NULL) {
+t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens)
+{
+	t_ast_node *node;
+
+	node = (t_ast_node *)malloc(sizeof(t_ast_node));
+	if (node == NULL)
+	{
 		fprintf(stderr, "Memory allocation failed\n");
 		exit(EXIT_FAILURE);
 	}
@@ -17,15 +21,16 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
 	if ((type == command || is_redir(type)) && tokens != NULL)
 	{
 		node->tokens = tokens;
-		if (text != NULL && text[0] != '\0') {
+		if (text != NULL && text[0] != '\0')
+		{
 			node->value = ft_strdup(text);
-			if (node->value == NULL) {
+			if (node->value == NULL)
+			{
 				fprintf(stderr, "Memory allocation failed\n");
 				exit(EXIT_FAILURE);
 			}
-		} else {
-			node->value = NULL; // Ou tout autre gestion appropriée pour une chaîne vide
-		}
+		} else
+			node->value = NULL;
 	}
 	else
 	{
@@ -40,24 +45,13 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens) {
 	node->left = NULL;
 	node->right = NULL;
 	node->cmd_block = NULL;
-	return node;
+	return (node);
 }
 
-// int operator_priority(t_token_type type) {
-//     switch (type) {
-//         case and_op:
-//         case or_op:
-//             return ();  // Higher priority
-//         case pipe_op:
-//             return ();    // Lower priority
-//         default:
-//             return 0;  // Not an operator, no priority
-//     }
-// }
-
-// Fonction pour libérer la mémoire de l'arbre
-void free_tree(t_ast_node *root) {
-	if (root == NULL) return;
+void free_tree(t_ast_node *root)
+{
+	if (root == NULL)
+		return ;
 	free_tree(root->left);
 	free_tree(root->right);
 	free(root->value);
@@ -65,34 +59,33 @@ void free_tree(t_ast_node *root) {
 }
 
 
-t_ast_node *create_subtree(t_dlist *op_node, t_dlist *tokens) {
-	t_token_type type = ((t_token_lst *)(op_node->content))->type;
-	char *text = ((t_token_lst *)(op_node->content))->text;
+t_ast_node *create_subtree(t_dlist *op_node, t_dlist *tokens)
+{
+	t_token_type type;
+	char *text;
+	t_ast_node *node;
+	t_dlist *left_tokens;
+	t_dlist *right_tokens;
 
-	t_ast_node *node = create_node(type, text, NULL);
+	type = ((t_token_lst *)(op_node->content))->type;
+	text = ((t_token_lst *)(op_node->content))->text;
 
-	// Diviser les tokens en deux parties autour de l'opérateur
-	t_dlist *left_tokens = tokens;
-	t_dlist *right_tokens = op_node->next;
-	if (op_node->prev) {
-		op_node->prev->next = NULL; // Couper la liste à gauche de l'opérateur
-	}
-
-	// Construire les sous-arbres de manière récursive
+	left_tokens = tokens;
+	node = create_node(type, text, NULL);
+	right_tokens = op_node->next;
+	if (op_node->prev)
+		op_node->prev->next = NULL;
 	node->left = parse_tokens(left_tokens);
 	node->right = parse_tokens(right_tokens);
-
-	return node;
+	return (node);
 }
 
 
 t_ast_node *parse_tokens(t_dlist *tokens)
 {
-
 	t_dlist	*current;
 	t_dlist	*last_logical_op;
 	t_dlist	*last_op;
-
 
 	current = tokens;
 	last_logical_op = NULL;
@@ -103,7 +96,8 @@ t_ast_node *parse_tokens(t_dlist *tokens)
 	{
 		if (((t_token_lst *)(current->content))->type == and_op ||
 			((t_token_lst *)(current->content))->type == or_op ||
-			((t_token_lst *)(current->content))->type == pipe_op) {
+			((t_token_lst *)(current->content))->type == pipe_op)
+		{
 			last_op = current;
 			if (((t_token_lst *)(current->content))->type == and_op ||
 				((t_token_lst *)(current->content))->type == or_op)
@@ -111,9 +105,8 @@ t_ast_node *parse_tokens(t_dlist *tokens)
 		}
 		current = current->next;
 	}
-
 	if (last_logical_op != NULL)
-		return create_subtree(last_logical_op, tokens);
+		return (create_subtree(last_logical_op, tokens));
 	else if (last_op != NULL)
 		return create_subtree(last_op, tokens);
 	return (create_node(command, ((t_token_lst *)(tokens->content))->text, tokens));
@@ -145,7 +138,6 @@ int is_logical(t_token_type type)
 	return (0);
 }
 
-// Fonction de test pour afficher l'arbre syntaxique (à des fins de débogage)
 void	print_tree(t_ast_node *node, int depth)
 {
 	t_dlist	*token_node;
@@ -192,8 +184,6 @@ void	print_tree(t_ast_node *node, int depth)
 	free(indent);
 }
 
-
-// Fonction initiale pour commencer l'affichage à partir de la racine avec une profondeur de 0
 void print_ast(t_ast_node *root)
 {
 	printf("AST Structure:\n");
