@@ -165,11 +165,45 @@ t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 	return (token);
 }
 
+t_token_lst	*subshell_token(t_tkn_info *tkn_info)
+{
+	t_token_lst	*token;
+	size_t		len;
+	char		*buffer;
+	int			par_lvl;
+
+	par_lvl = 0;
+	token = (t_token_lst *)malloc(sizeof(t_token_lst));
+	token->type = subshell;
+	len = 0;
+	buffer = NULL;
+	while (*tkn_info->curr_char)
+	{
+		if (*tkn_info->curr_char == '(')
+			par_lvl++;
+		if (*tkn_info->curr_char == ')' && par_lvl)
+			par_lvl--;
+		else if (*tkn_info->curr_char == ')')
+		{
+			tkn_info->curr_char++;
+			break ;
+		}
+		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len);
+		tkn_info->curr_char++;
+	}
+	token->text = buffer;
+	return (token);
+}
+
 t_token_lst	*next_token(t_tkn_info *tkn_info)
 {
 	space_quotes(tkn_info);
 	if (!*tkn_info->curr_char)
 		return (token_new(eol, NULL));
+	if (*tkn_info->curr_char == '(')
+	{
+		return (subshell_token(tkn_info));
+	}
 	if (*tkn_info->curr_char == '|' && tkn_info->state == reg)
 	{
 		tkn_info->curr_char++;

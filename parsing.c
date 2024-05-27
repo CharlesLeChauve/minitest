@@ -60,18 +60,31 @@ char	**set_env(char **envp)
 // 	}
 // }
 
+t_ast_node *build_ast(char *input)
+{
+	t_dlist		*token_lst;
+	t_ast_node	*ast;
+
+	token_lst = tokenize(input);
+	// if (!verify_tokens(token_lst))
+	// {
+	// 	fprintf(stderr, "Error: Syntax error in input\n");
+	// 	free(input);
+	// 	return (NULL);
+	// }
+	ast = parse_tokens(token_lst);
+}
+
 int	main(int argc, char *argv[], char *envp[])
 {
 	char				*input;
 	struct sigaction	sa;
-	t_dlist				*token_lst;
 	t_ast_node			*ast;
 	char				**env;
 
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
-	token_lst = NULL;
 	if (sigaction(SIGINT, &sa, NULL) == -1)
 	{
 		perror("sigaction");
@@ -86,20 +99,20 @@ int	main(int argc, char *argv[], char *envp[])
 		if (input && *input)
 		{
 			add_history(input);
-			token_lst = tokenize(input);
+			/* token_lst = tokenize(input);
 			if (!verify_tokens(token_lst))
 			{
 				fprintf(stderr, "Error: Syntax error in input\n");
 				free(input);
 				continue ;
 			}
-			ast = parse_tokens(token_lst);
+			ast = parse_tokens(token_lst); */
+			ast = build_ast(input);
 			expand_ast(ast);
 			//print_tree(ast, 0);
-			exec_ast(ast, env);
+			exec_ast(ast, &env);
 			//ast = NULL;
 		}
-		token_lst = NULL;
 		free(input);
 	}
 }

@@ -72,6 +72,12 @@ t_ast_node *create_subtree(t_dlist *op_node, t_dlist *tokens)
 
 	left_tokens = tokens;
 	node = create_node(type, text, NULL);
+	/**/
+	if (type == subshell)
+	{
+		return (build_ast(text));
+	}
+	/**/
 	right_tokens = op_node->next;
 	if (op_node->prev)
 		op_node->prev->next = NULL;

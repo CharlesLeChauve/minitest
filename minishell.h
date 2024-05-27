@@ -16,7 +16,7 @@
 
 typedef enum e_token_type
 {
-	command, redir_in, redir_out, redir_app, heredoc, pipe_op, fd, file_path, and_op, or_op, eol
+	command, redir_in, redir_out, redir_app, heredoc, pipe_op, fd, file_path, and_op, or_op, subshell, eol
 }	t_token_type;
 
 typedef enum e_state_machine
@@ -142,9 +142,13 @@ void	export(char ***env, char **arg);
 void	unset(char ***env, char **args);
 void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 char	*get_env_var(char **env, char *var_id);
+void	print_env(char **env);
 
 //exec.c
-int		exec_ast(t_ast_node *ast, char *envp[]);
+int		exec_ast(t_ast_node *ast, char **envp[]);
 void 	create_exec_tab(t_cmd_block *cmd_block);
+
+
+t_ast_node *build_ast(char *input);
 
 #endif
