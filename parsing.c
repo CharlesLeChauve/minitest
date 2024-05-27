@@ -66,12 +66,6 @@ t_ast_node *build_ast(char *input)
 	t_ast_node	*ast;
 
 	token_lst = tokenize(input);
-	t_dlist *tmp = token_lst;
-	while (tmp)
-	{
-		print_token_type((t_token_lst *)(tmp->content));
-		tmp = tmp->next;
-	}
 	//Changer cette fonction pour ajouter la possibilite d'avoir subshell > operateur > command
 	//Globalement subshell partout ou il pouvait y avoir commande
 	// if (!verify_tokens(token_lst))

@@ -214,22 +214,15 @@ void    handle_redirs(t_cmd_block *cmd_block)
 {
     t_list  *redirs;
 
-    if (cmd_block->redir_out)
+    if (cmd_block->redirs)
     {
-        redirs = cmd_block->redir_out;
+        redirs = cmd_block->redirs;
         while (redirs)
         {
-            make_redir_out((t_token_lst *)redirs->content);
-            redirs = redirs->next;
-        }
-        redirs = NULL;
-    }
-    if (cmd_block->redir_in)
-    {
-        redirs = cmd_block->redir_in;
-        while (redirs)
-        {
-            make_redir_in((t_token_lst *)redirs->content);
+            if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)
+                make_redir_out((t_token_lst *)redirs->content);
+            if (((t_token_lst *)redirs->content)->type == redir_in || ((t_token_lst *)redirs->content)->type == heredoc)
+                make_redir_in((t_token_lst *)redirs->content);
             redirs = redirs->next;
         }
         redirs = NULL;
@@ -265,15 +258,26 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
     //exit(EXIT_SUCCESS);
 }
 
+char    *set_cmd_path(char *envp[], char *cmd)
+{
+    if (cmd[0] == '/' || cmd[0] == '.')
+        return (cmd);
+    return (get_cmd_path(envp, cmd));
+}
+
 int exec_command(char **envp[], t_cmd_block *cmd_block)
 {
+    char *path;
+
     if (is_a_builtin(cmd_block->exec_tab[0]))
     {
         do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
     }
     else
     {
-        execve(get_cmd_path(*envp, cmd_block->exec_tab[0]), cmd_block->exec_tab, *envp);
+        path = set_cmd_path(*envp, cmd_block->exec_tab[0]);
+        //get_cmd_path(*envp, cmd_block->exec_tab[0]);
+        execve(path, cmd_block->exec_tab, *envp);
         perror("execve");
         exit(EXIT_FAILURE);
     }
