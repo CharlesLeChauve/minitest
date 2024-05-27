@@ -241,10 +241,9 @@ void    export(char ***env, char **arg)
         print_export_env(env_cpy);
     else
     {
-		replace_existing_vars(&arg, &env_cpy);
-        add_vars_to_env(arg, &env_cpy);
+		replace_existing_vars(&arg, env);
+        add_vars_to_env(arg, env);
     }
-    *env = env_cpy;
 }
 
 void	unset(char ***env, char **args)

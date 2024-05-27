@@ -236,22 +236,50 @@ void    handle_redirs(t_cmd_block *cmd_block)
     }
 }
 
-int exec_command(char *envp[], t_cmd_block *cmd_block)
+int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
+{
+    if (!ft_strcmp(cmd, "export"))
+    {
+		export(env, &cmd_tab[1]);
+    }
+	else if (!ft_strncmp(cmd, "pwd", 3))
+	{
+		pwd();
+	}
+	else if (!ft_strncmp(cmd, "env", 3))
+	{
+		print_env(*env);
+	}
+	// else if (!ft_strncmp(cmd, "cd ", 3))
+	// {
+	// 	char *str = ft_substr(input, 3, ft_strlen(input) - 3);
+	// 	change_directory(str, env);
+	// 	free(str);
+	// }
+	// else if (!ft_strncmp(cmd, "unset ", 6))
+	// {
+	// 	char *str = ft_substr(input, 6, ft_strlen(input) - 6);
+	// 	unset(&env, ft_split(str, ' '));
+	// 	free(str);
+	// }
+    //exit(EXIT_SUCCESS);
+}
+
+int exec_command(char **envp[], t_cmd_block *cmd_block)
 {
     if (is_a_builtin(cmd_block->exec_tab[0]))
     {
-        return 0;
-        //do_the_builtin();
+        do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
     }
     else
     {
-        execve(get_cmd_path(envp, cmd_block->exec_tab[0]), cmd_block->exec_tab, envp);
+        execve(get_cmd_path(*envp, cmd_block->exec_tab[0]), cmd_block->exec_tab, *envp);
         perror("execve");
         exit(EXIT_FAILURE);
     }
 }
 
-int exec_command_and_redirs(t_cmd_block *cmd_block, char *envp[])
+int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 {
     pid_t   pid;
     int     status;
@@ -288,7 +316,7 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char *envp[])
     return (-1);
 }
 
-int	exec_ast(t_ast_node *ast, char *envp[])
+int	exec_ast(t_ast_node *ast, char **envp[])
 {
     int ret_value;
 
