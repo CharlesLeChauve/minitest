@@ -11,8 +11,7 @@ t_cmd_block	*init_cmd_block(void)
 	block->command = NULL;
 	block->option = NULL;
 	block->arg = NULL;
-	block->redir_in = NULL;
-	block->redir_out = NULL;
+	block->redirs = NULL;
 	return (block);
 }
 
@@ -99,10 +98,7 @@ void	process_sub_token(char *sub_token, t_cmd_block *block)
 	else if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
 		new_arg = ft_lstnew(redir_token(sub_token));
-		if (sub_token[0] == '>')
-			ft_lstadd_back(&(block->redir_out), new_arg);
-		if (sub_token[0] == '<')
-			ft_lstadd_back(&(block->redir_in), new_arg);
+		ft_lstadd_back(&(block->redirs), new_arg);
 	}
 	else
 	{
@@ -170,13 +166,8 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 			new_redir = ft_lstnew(token_text);
 			if (token->type == redir_in || token->type == heredoc)
 			{
-				ft_lstadd_back(&(block->redir_in), new_redir);
-				printf("Redirection in added: %s\n", token_text);
-			}
-			else
-			{
-				ft_lstadd_back(&(block->redir_out), new_redir);
-				printf("Redirection out added: %s\n", token_text);
+				ft_lstadd_back(&(block->redirs), new_redir);
+				printf("Redirection added: %s\n", token_text);
 			}
 		}
 		else
@@ -209,19 +200,9 @@ void	print_cmd_block(t_cmd_block *cmd_block)
 				arg = arg->next;
 			}
 		}
-		if (cmd_block->redir_in)
+		if (cmd_block->redirs)
 		{
-			redir = cmd_block->redir_in;
-			while (redir)
-			{
-				printf("Redirections in:\n");
-				printf("  %s\n", ((t_token_lst *)redir->content)->text);
-				redir = redir->next;
-			}
-		}
-		if (cmd_block->redir_out)
-		{
-			redir = cmd_block->redir_out;
+			redir = cmd_block->redirs;
 			while (redir)
 			{
 				printf("Redirections out:\n");
@@ -250,8 +231,7 @@ void	clear_cmd_block(t_cmd_block *block)
 {
 	ft_lstclear(&(block->option), free);
 	ft_lstclear(&(block->arg), free);
-	ft_lstclear(&(block->redir_in), free);
-	ft_lstclear(&(block->redir_out), free);
+	ft_lstclear(&(block->redirs), free);
 	free(block->command);
 	free(block);
 }

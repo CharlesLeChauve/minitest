@@ -56,8 +56,7 @@ typedef struct s_cmd_block
 	char	*command;
 	t_list	*option;
 	t_list	*arg;
-	t_list	*redir_in;
-	t_list	*redir_out;
+	t_list	*redirs;
 } t_cmd_block;
 
 /*
