@@ -66,6 +66,14 @@ t_ast_node *build_ast(char *input)
 	t_ast_node	*ast;
 
 	token_lst = tokenize(input);
+	t_dlist *tmp = token_lst;
+	while (tmp)
+	{
+		print_token_type((t_token_lst *)(tmp->content));
+		tmp = tmp->next;
+	}
+	//Changer cette fonction pour ajouter la possibilite d'avoir subshell > operateur > command
+	//Globalement subshell partout ou il pouvait y avoir commande
 	// if (!verify_tokens(token_lst))
 	// {
 	// 	fprintf(stderr, "Error: Syntax error in input\n");
@@ -73,6 +81,7 @@ t_ast_node *build_ast(char *input)
 	// 	return (NULL);
 	// }
 	ast = parse_tokens(token_lst);
+	return (ast);
 }
 
 int	main(int argc, char *argv[], char *envp[])
@@ -109,7 +118,7 @@ int	main(int argc, char *argv[], char *envp[])
 			ast = parse_tokens(token_lst); */
 			ast = build_ast(input);
 			expand_ast(ast);
-			//print_tree(ast, 0);
+			print_tree(ast, 0);
 			exec_ast(ast, &env);
 			//ast = NULL;
 		}

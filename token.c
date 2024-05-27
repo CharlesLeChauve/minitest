@@ -97,12 +97,21 @@ void	print_token_type(t_token_lst *token)
 			break ;
 		case eol:
 			printf("Type: eol\t\n");
-				break ;
+			break ;
+		case subshell:
+			printf("Type: subshell\t\n");
+			break ;
+		case or_op:
+			printf("Type: or_op\t\n");
+			break ;
+		case and_op:
+			printf("Type: and_op\t\n");
+			break ;
 		default :
 			printf("Unknown type\t");
 				break;
 	}
 	if ((token->type == command || token->type == redir_in || token->type == redir_out ||
-			token->type == redir_app || token->type == heredoc) && token->text != NULL)
+			token->type == redir_app || token->type == heredoc || token->type == subshell) && token->text != NULL)
 		printf("Content : [%s]\n", token->text);
 }

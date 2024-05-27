@@ -73,10 +73,6 @@ t_ast_node *create_subtree(t_dlist *op_node, t_dlist *tokens)
 	left_tokens = tokens;
 	node = create_node(type, text, NULL);
 	/**/
-	if (type == subshell)
-	{
-		return (build_ast(text));
-	}
 	/**/
 	right_tokens = op_node->next;
 	if (op_node->prev)
@@ -115,7 +111,10 @@ t_ast_node *parse_tokens(t_dlist *tokens)
 		return (create_subtree(last_logical_op, tokens));
 	else if (last_op != NULL)
 		return create_subtree(last_op, tokens);
-	return (create_node(command, ((t_token_lst *)(tokens->content))->text, tokens));
+	if (((t_token_lst *)(tokens->content))->type == subshell)
+		return (build_ast(((t_token_lst *)(tokens->content))->text));
+	else
+		return (create_node(command, ((t_token_lst *)(tokens->content))->text, tokens));
 }
 
 void	print_logical_node(t_ast_node *node)

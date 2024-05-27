@@ -202,6 +202,7 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		return (token_new(eol, NULL));
 	if (*tkn_info->curr_char == '(')
 	{
+		tkn_info->curr_char++;
 		return (subshell_token(tkn_info));
 	}
 	if (*tkn_info->curr_char == '|' && tkn_info->state == reg)
