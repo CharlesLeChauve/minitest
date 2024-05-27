@@ -163,7 +163,7 @@ int	open_write(char *file, t_open_mode mode)
 	return (fd);
 }
 
-void    make_redir_in(t_token_lst *redir)
+int    make_redir_in(t_token_lst *redir)
 {
     int fd;
 
@@ -175,14 +175,17 @@ void    make_redir_in(t_token_lst *redir)
             fd = open_mode(redir->text, read_o);
             dup2(fd, STDIN_FILENO);
         }
+        else
+            return (1);
     }
     else if (redir->type == heredoc)
     {
         heredoc_handle(redir->text);
     }
+    return (0);
 }
 
-void    make_redir_out(t_token_lst *redir)
+int    make_redir_out(t_token_lst *redir)
 {
     int fd;
 
@@ -198,16 +201,17 @@ void    make_redir_out(t_token_lst *redir)
         if (fd == -1)
         {
             perror("open_write");
-            exit(EXIT_FAILURE);
+            return (1);
         }
         if (dup2(fd, STDOUT_FILENO) == -1)
         {
             perror("dup2");
             close(fd);
-            exit(EXIT_FAILURE);
+            return (1);
         }
         close(fd);
     }
+    return (0);
 }
 
 void    handle_redirs(t_cmd_block *cmd_block)
@@ -219,10 +223,13 @@ void    handle_redirs(t_cmd_block *cmd_block)
         redirs = cmd_block->redirs;
         while (redirs)
         {
+            //si l'une des redirs ne peut pas se produire
             if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)
-                make_redir_out((t_token_lst *)redirs->content);
+                if (make_redir_out((t_token_lst *)redirs->content))
+                    return ;
             if (((t_token_lst *)redirs->content)->type == redir_in || ((t_token_lst *)redirs->content)->type == heredoc)
-                make_redir_in((t_token_lst *)redirs->content);
+                if (make_redir_in((t_token_lst *)redirs->content))
+                    return ;
             redirs = redirs->next;
         }
         redirs = NULL;
