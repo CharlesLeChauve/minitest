@@ -96,7 +96,7 @@ int	main(int argc, char *argv[], char *envp[])
 	env = set_env(envp);
 	while (1)
 	{
-		input = readline("Maxishell > ");
+		input = readline("tash > ");
 		if (!input)
 			break ;
 		if (input && *input)

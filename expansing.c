@@ -1,5 +1,60 @@
 #include "minishell.h"
 
+t_token_lst *redir_token(char *str)
+{
+	char	*curr_char = str;
+	t_token_lst	*token;
+	char		*buffer;
+	size_t		len;
+
+	buffer = NULL;
+	len = 0;
+	token = (t_token_lst *)malloc(sizeof(t_token_lst));
+	if (!token)
+	{
+		perror("Allocation Failed");
+		exit(EXIT_FAILURE);
+	}
+	if (*curr_char == '>')
+	{
+		curr_char++;
+		while (*curr_char == ' ')
+			curr_char++;
+		if (*curr_char == '>')
+		{
+			curr_char++;
+			token->type = redir_app;
+		}
+		else
+			token->type = redir_out;
+	}
+	else if (*curr_char == '<')
+	{
+		curr_char++;
+		if (*curr_char == '<')
+		{
+			curr_char++;
+			token->type = heredoc;
+		}
+		else
+			token->type = redir_in;
+	}
+	while (*curr_char == ' ')
+		curr_char++;
+	// if (*curr_char == '\0' || *curr_char == '\n')
+	// {
+	// 	ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
+	// 	exit(0);
+	// }
+	while (*curr_char && !ft_isshelloperator(*curr_char) && !ft_isspace(*curr_char))
+	{
+		ft_add_char_to_buffer(&buffer, *curr_char, &len);
+		curr_char++;
+	}
+	token->text = buffer;
+	return token;
+}
+
 t_cmd_block	*init_cmd_block(void)
 {
 	t_cmd_block	*block;
