@@ -96,7 +96,8 @@ int	main(int argc, char *argv[], char *envp[])
 	env = set_env(envp);
 	while (1)
 	{
-		input = readline("tash > ");
+		input = readline("\033[0;37m╭─\033[0;32mminishell_project\033[0;37m\n\
+╰─\033[0;34mtash \033[0;35m> \033[0;37m");
 		if (!input)
 			break ;
 		if (input && *input)
