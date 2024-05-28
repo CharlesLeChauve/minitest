@@ -223,7 +223,7 @@ void	replace_existing_vars(char ***arg, char ***env)
 //Usage : Premier argument est un pointeur vers les tableau de chaines de caracteres env
 // Deuxieme argument un tableau NULL termine de chaines de caracteres NULL terminees listant les variables a ajouter;
 
-void    export(char ***env, char **arg)
+int    export(char **env[], char **arg)
 {
     char    **new_vars;
     char    **env_cpy;
@@ -237,13 +237,18 @@ void    export(char ***env, char **arg)
     while ((*env)[++i])
         env_cpy[i] = ft_strdup((*env)[i]);
     env_cpy[i] = NULL;
-    if (arg == NULL)
+    if (*arg == NULL)
         print_export_env(env_cpy);
     else
     {
-		replace_existing_vars(&arg, env);
-        add_vars_to_env(arg, env);
+		// if (not_a_valid_identifier(arg))
+		// 	return (1);
+		replace_existing_vars(&arg, &env_cpy);
+        add_vars_to_env(arg, &env_cpy);
+		ft_free_tab(*env);
+		*env = env_cpy;
     }
+	return (0);
 }
 
 void	unset(char ***env, char **args)
@@ -265,7 +270,6 @@ void	unset(char ***env, char **args)
 		else
 			i++;
     }
-
 }
 
 // int main(int argc, char *argv[], char *envp[])

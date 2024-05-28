@@ -226,10 +226,10 @@ void    handle_redirs(t_cmd_block *cmd_block)
             //si l'une des redirs ne peut pas se produire
             if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)
                 if (make_redir_out((t_token_lst *)redirs->content))
-                    return ;
+                    exit(EXIT_FAILURE) ;
             if (((t_token_lst *)redirs->content)->type == redir_in || ((t_token_lst *)redirs->content)->type == heredoc)
                 if (make_redir_in((t_token_lst *)redirs->content))
-                    return ;
+                    exit (EXIT_FAILURE);
             redirs = redirs->next;
         }
         redirs = NULL;
@@ -250,12 +250,15 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
 	{
 		print_env(*env);
 	}
-	// else if (!ft_strncmp(cmd, "cd ", 3))
-	// {
-	// 	char *str = ft_substr(input, 3, ft_strlen(input) - 3);
-	// 	change_directory(str, env);
-	// 	free(str);
-	// }
+	else if (!ft_strncmp(cmd, "cd ", 3))
+	{
+		//char *str = ft_substr(input, 3, ft_strlen(input) - 3);
+       /*  if (more_than_one_arg)
+            bash: cd: too many arguments
+            exit(); */
+		change_directory(cmd_tab[1], *env);
+		//free(str);
+	}
 	// else if (!ft_strncmp(cmd, "unset ", 6))
 	// {
 	// 	char *str = ft_substr(input, 6, ft_strlen(input) - 6);
@@ -265,9 +268,16 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
     //exit(EXIT_SUCCESS);
 }
 
+int is_a_path(char *cmd)
+{
+    if (!access(cmd, F_OK))
+        return (1);
+    return (0);
+}
+
 char    *set_cmd_path(char *envp[], char *cmd)
 {
-    if (cmd[0] == '/' || cmd[0] == '.')
+    if (is_a_path(cmd))
         return (cmd);
     return (get_cmd_path(envp, cmd));
 }
@@ -276,18 +286,10 @@ int exec_command(char **envp[], t_cmd_block *cmd_block)
 {
     char *path;
 
-    if (is_a_builtin(cmd_block->exec_tab[0]))
-    {
-        do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
-    }
-    else
-    {
-        path = set_cmd_path(*envp, cmd_block->exec_tab[0]);
-        //get_cmd_path(*envp, cmd_block->exec_tab[0]);
-        execve(path, cmd_block->exec_tab, *envp);
-        perror("execve");
-        exit(EXIT_FAILURE);
-    }
+    path = set_cmd_path(*envp, cmd_block->exec_tab[0]);
+    execve(path, cmd_block->exec_tab, *envp);
+    perror("execve");
+    exit(EXIT_FAILURE);
 }
 
 int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
@@ -300,29 +302,37 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
     create_exec_tab(cmd_block);
     stdout_save = dup(STDOUT_FILENO);
     stdin_save = dup(STDIN_FILENO);
-    pid = fork();
-    if (pid == -1) 
-    {
-        perror("fork");
-        return (-1);
-    }
-    if (pid == 0) 
+    if (is_a_builtin(cmd_block->exec_tab[0]))
     {
         handle_redirs(cmd_block);
-        exec_command(envp, cmd_block);
+        return(do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab));
     }
     else
     {
-        if (waitpid(pid, &status, 0) == -1) 
+        pid = fork();
+        if (pid == -1) 
         {
-            perror("waitpid");
+            perror("fork");
             return (-1);
         }
-        dup2(stdout_save, STDOUT_FILENO);
-        dup2(stdin_save, STDIN_FILENO);
-        close(stdout_save);
-        close(stdin_save);
-        return (status);
+        if (pid == 0) 
+        {
+            handle_redirs(cmd_block);
+            exec_command(envp, cmd_block);
+        }
+        else
+        {
+            if (waitpid(pid, &status, 0) == -1) 
+            {
+                perror("waitpid");
+                return (-1);
+            }
+            dup2(stdout_save, STDOUT_FILENO);
+            dup2(stdin_save, STDIN_FILENO);
+            close(stdout_save);
+            close(stdin_save);
+            return (status);
+        }
     }
     return (-1);
 }
@@ -341,7 +351,8 @@ int	exec_ast(t_ast_node *ast, char **envp[])
             perror("pipe");
             exit(EXIT_FAILURE);
         }
-        if ((pid1 = fork()) == -1)
+        pid1 = fork();
+        if (pid1 == -1)
         {
             perror("fork");
             exit(EXIT_FAILURE);
@@ -353,7 +364,8 @@ int	exec_ast(t_ast_node *ast, char **envp[])
             close(pipe_fds[1]);
             exit(exec_ast(ast->left, envp));
         }
-        if ((pid2 = fork()) == -1)
+        pid2 = fork();
+        if (pid2 == -1)
         {
             perror("fork");
             exit(EXIT_FAILURE);

@@ -137,7 +137,7 @@ int 	change_directory(char *path, char **env);
 char	*get_cwd(void);
 
 //env
-void	export(char ***env, char **arg);
+int		export(char ***env, char **arg);
 void	unset(char ***env, char **args);
 void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 char	*get_env_var(char **env, char *var_id);

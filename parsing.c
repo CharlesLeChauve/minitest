@@ -114,7 +114,7 @@ int	main(int argc, char *argv[], char *envp[])
 			expand_ast(ast);
 			print_tree(ast, 0);
 			exec_ast(ast, &env);
-			//ast = NULL;
+			ast = NULL;
 		}
 		free(input);
 	}
