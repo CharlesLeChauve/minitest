@@ -178,7 +178,7 @@ void	replace_var(char ***env, char *new_var, char *old_var)
 	(*env)[i] = ft_strdup(new_var);
 }
 
-void remove_arg(char ***arg, int index)
+void remove_from_tab(char ***arg, int index)
 {
 	char **temp;
 
@@ -198,20 +198,42 @@ void remove_arg(char ***arg, int index)
     *arg = temp; 
 }
 
+char *extract_var_id(char *var)
+{
+	char *var_id;
+	int i = 0;
+	int	index = -1;
+	
+	while (var[i])
+	{
+		if (var[i] == '=')
+		{
+			index = i;
+			break ;
+		}
+		i++;
+	}
+	if (index > -1)
+		return (ft_strndup(var, index + 1));
+	return (var);
+}
+
 void	replace_existing_vars(char ***arg, char ***env)
 {
 	int		i;
 	char	*var;
+	char	*var_id;
 
 	i = 0;
 	var = NULL;
 	while ((*arg)[i])
 	{
-		var = get_env_var(*env, (*arg)[i]);
+		var_id = extract_var_id((*arg)[i]);
+		var = get_env_var(*env, var_id);
 		if (var)
 		{
 			replace_var(env, (*arg)[i], var);
-			remove_arg(arg, i);
+			remove_from_tab(arg, i);
 		}
 		else
 			i++;
@@ -264,8 +286,8 @@ void	unset(char ***env, char **args)
 		env_idx = get_env_index(*env, args[i]);
 		if (env_idx != -1)
 		{
-				ft_remove_from_strtab(*env, env_idx);
-				ft_remove_from_strtab(args, i);
+				remove_from_tab(env, env_idx);
+				remove_from_tab(&args, i);
 		}
 		else
 			i++;

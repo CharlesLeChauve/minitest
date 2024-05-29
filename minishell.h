@@ -149,5 +149,6 @@ void 	create_exec_tab(t_cmd_block *cmd_block);
 
 
 t_ast_node *build_ast(char *input);
+void remove_from_tab(char ***arg, int index);
 
 #endif

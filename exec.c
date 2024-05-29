@@ -242,15 +242,15 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
     {
 		export(env, &cmd_tab[1]);
     }
-	else if (!ft_strncmp(cmd, "pwd", 3))
+	else if (!ft_strcmp(cmd, "pwd"))
 	{
 		pwd();
 	}
-	else if (!ft_strncmp(cmd, "env", 3))
+	else if (!ft_strcmp(cmd, "env"))
 	{
 		print_env(*env);
 	}
-	else if (!ft_strncmp(cmd, "cd ", 3))
+	else if (!ft_strcmp(cmd, "cd"))
 	{
 		//char *str = ft_substr(input, 3, ft_strlen(input) - 3);
        /*  if (more_than_one_arg)
@@ -259,13 +259,13 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
 		change_directory(cmd_tab[1], *env);
 		//free(str);
 	}
-	// else if (!ft_strncmp(cmd, "unset ", 6))
-	// {
-	// 	char *str = ft_substr(input, 6, ft_strlen(input) - 6);
-	// 	unset(&env, ft_split(str, ' '));
-	// 	free(str);
-	// }
-    //exit(EXIT_SUCCESS);
+	else if (!ft_strcmp(cmd, "unset"))
+	{
+		// char *str = ft_substr(input, 6, ft_strlen(input) - 6);
+		unset(env, &cmd_tab[1]);
+		//free(str);
+	}
+    return (0);
 }
 
 int is_a_path(char *cmd)

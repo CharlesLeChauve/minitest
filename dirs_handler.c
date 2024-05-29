@@ -42,11 +42,11 @@ int change_directory(char *path, char **env)
 	if (chdir(path))
 	{
 		perror("chdir() error\n");
-		exit (EXIT_FAILURE);
+		return (1);
 	}
 	else
 	{
 		act_env_pwd(env, get_cwd());
 	}
-	//exit (EXIT_SUCCESS);
+	return (0);
 }
