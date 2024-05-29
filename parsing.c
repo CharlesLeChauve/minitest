@@ -42,6 +42,7 @@ char	**set_env(char **envp)
         env[i] = ft_strdup(envp[i]);
         i++;
     }
+
     env[i] = NULL;
 	return (env);
 }
@@ -119,4 +120,5 @@ int	main(int argc, char *argv[], char *envp[])
 		}
 		free(input);
 	}
+	ft_free_tab(env);
 }
