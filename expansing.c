@@ -18,8 +18,6 @@ t_token_lst *redir_token(char *str)
 	if (*curr_char == '>')
 	{
 		curr_char++;
-		while (*curr_char == ' ')
-			curr_char++;
 		if (*curr_char == '>')
 		{
 			curr_char++;
@@ -41,11 +39,12 @@ t_token_lst *redir_token(char *str)
 	}
 	while (*curr_char == ' ')
 		curr_char++;
-	// if (*curr_char == '\0' || *curr_char == '\n')
-	// {
-	// 	ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
-	// 	exit(0);
-	// }
+	if (ft_isshelloperator(*curr_char) || *curr_char == '\0')
+	{
+		printf("nique bien ta mere la pute\n");
+		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
+		exit(EXIT_FAILURE);
+	}
 	while (*curr_char && !ft_isshelloperator(*curr_char) && !ft_isspace(*curr_char))
 	{
 		ft_add_char_to_buffer(&buffer, *curr_char, &len);
@@ -70,36 +69,47 @@ t_cmd_block	*init_cmd_block(void)
 	return (block);
 }
 
-void	set_quotes_state_in_cmd_block(t_tkn_info *tkn_info)
+void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 {
-	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
+	if ((**curr_char == '"' || **curr_char == '\'') && *state == reg)
 	{
-			if (*tkn_info->curr_char == '"')
-				tkn_info->state = dquote;
-			else
-				tkn_info->state = quote;
-		tkn_info->curr_char++;
+		if (**curr_char == '"')
+			*state = dquote;
+		else
+			*state = quote;
+		(*curr_char)++;
 	}
-	else if (*tkn_info->curr_char == '"' && tkn_info->state == dquote)
+	else if (**curr_char == '"' && *state == dquote)
 	{
-		tkn_info->state = reg;
-		tkn_info->curr_char++;
+		*state = reg;
+		(*curr_char)++;
 	}
-	else if (*tkn_info->curr_char == '\'' && tkn_info->state == quote)
+	else if (**curr_char == '\'' && *state == quote)
 	{
-		tkn_info->state = reg;
-		tkn_info->curr_char++;
+		*state = reg;
+		(*curr_char)++;
 	}
 }
 
 void	extract_command(char **ptr, t_cmd_block *block)
 {
+	t_sm	state;
 	char	*start = *ptr;
 
-	while (**ptr && !ft_isspace(**ptr))
+	state = reg;
+	set_quotes_state_in_cmd_block(ptr, &state);
+	printf("ce que tu veux\n");
+	while (**ptr)
+	{
+		printf("dans le while\n");
+		if (state == reg && (**ptr == '>' || **ptr == '<') || (ft_isspace(**ptr) && state == reg))
+			break;
+		set_quotes_state_in_cmd_block(ptr, &state);
 		(*ptr)++;
+	}
 	if (*ptr > start)
 		block->command = ft_strndup(start, *ptr - start);
+	printf("block->command = %s\npd", block->command);
 }
 
 char	*extract_sub_token(char **ptr)
@@ -110,6 +120,13 @@ char	*extract_sub_token(char **ptr)
 	char	quote_char = '\0';
 	size_t	len = 0;
 
+	if (**ptr == '<' || **ptr =='>')
+	{
+		while (**ptr == '>' || **ptr == '<')
+			(*ptr)++;
+		while (**ptr == ' ')
+			(*ptr)++;
+	}
 	while (**ptr && (in_quotes || !ft_isspace(**ptr)))
 	{
 		if (**ptr == '"' || **ptr == '\'')
@@ -152,6 +169,11 @@ void	process_sub_token(char *sub_token, t_cmd_block *block)
 	}
 	else if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
+		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<'))
+		{
+			fprintf(stderr, "erreur tavu\n");
+			exit(EXIT_FAILURE);
+		}
 		new_arg = ft_lstnew(redir_token(sub_token));
 		ft_lstadd_back(&(block->redirs), new_arg);
 	}
@@ -169,13 +191,6 @@ void	parse_command_option(char *token, t_cmd_block *block)
 	int		command_found;
 
 	command_found = 0;
-	// if (*ptr == '>' || *ptr == '<')
-	// {
-	// 	sub_token = extract_sub_token(&ptr);
-	// 	process_sub_token(sub_token, block);
-	// 	free(sub_token);
-	// }
-	// extract_command(&ptr, block);
 	while (*ptr)
 	{
 		while (ft_isspace(*ptr))
@@ -216,17 +231,17 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 			current = current->next;
 			continue;
 		}
-		if (token->type == redir_in || token->type == redir_out || token->type == redir_app || token->type == heredoc)
-		{
-			new_redir = ft_lstnew(token_text);
-			if (token->type == redir_in || token->type == heredoc)
-			{
-				ft_lstadd_back(&(block->redirs), new_redir);
-				printf("Redirection added: %s\n", token_text);
-			}
-		}
-		else
-			parse_command_option(token_text, block);
+		// if (token->type == redir_in || token->type == redir_out || token->type == redir_app || token->type == heredoc)
+		// {
+		// 	new_redir = ft_lstnew(token_text);
+		// 	if (token->type == redir_in || token->type == heredoc)
+		// 	{
+		// 		ft_lstadd_back(&(block->redirs), new_redir);
+		// 		printf("Redirection added: %s\n", token_text);
+		// 	}
+		// }
+		// else
+		parse_command_option(token_text, block);
 		current = current->next;
 	}
 }
