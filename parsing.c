@@ -104,7 +104,7 @@ int	main(int argc, char *argv[], char *envp[])
 		else
 		{
 			//prompt = build_prompt();
-			input = readline("TASH_PROMPT");
+			input = readline(TASH_PROMPT_S);
 		}
 		if (!input)
 			break ;
