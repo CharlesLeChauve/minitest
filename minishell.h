@@ -11,7 +11,8 @@
 # include <readline/history.h>
 # include "./libft/libft.h"
 # include "env.h"
-# define TASH_PROMPT "\033[0;37m╭─\033[0;32mminishell_project\033[0;37m\n\
+# define TASH_PROMPT_S "\033[0;37m╭─\033[0;32m"
+# define TASH_PROMPT_E "\033[0;37m\n\
 ╰─\033[0;34mtash \033[0;35m> \033[0;37m"
 
 
@@ -134,16 +135,16 @@ void		clear_cmd_block(t_cmd_block *block);
 
 //dirs_handling
 void	pwd(void);
-void	act_env_pwd(char **env, char *pwd);
-int 	change_directory(char *path, char **env);
+void	act_env_pwd(char ***env, char *pwd);
+int 	change_directory(char *path, char ***env);
 char	*get_cwd(void);
 
 //env
 int		export(char ***env, char **arg);
-void	unset(char ***env, char **args);
+int		unset(char ***env, char **args);
 void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
 char	*get_env_var(char **env, char *var_id);
-void	print_env(char **env);
+int		print_env(char **env);
 
 //exec.c
 int		exec_ast(t_ast_node *ast, char **envp[]);
@@ -151,6 +152,8 @@ void 	create_exec_tab(t_cmd_block *cmd_block);
 
 
 t_ast_node *build_ast(char *input);
-void remove_from_tab(char ***arg, int index);
+void 	remove_from_tab(char ***arg, int index);
+void	replace_var(char ***env, char *new_var, char *old_var);
+void	replace_existing_vars(char ***arg, char ***env);
 
 #endif

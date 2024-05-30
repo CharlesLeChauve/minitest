@@ -102,16 +102,19 @@ int	main(int argc, char *argv[], char *envp[])
 		if (input)
 			input = ft_strjoin_free(input, readline("> "), 1);
 		else
-			input = readline(TASH_PROMPT);
+		{
+			//prompt = build_prompt();
+			input = readline("TASH_PROMPT");
+		}
 		if (!input)
 			break ;
 		if (input && *input)
 		{
 			add_history(input);
 			token_lst = tokenize(input);
-			if (!verify_tokens(token_lst))
+			if (verify_tokens(token_lst) == -1)
 				continue ;
-			else if (verify_tokens(token_lst) == -1)
+			else if (!verify_tokens(token_lst))
 			{
 				fprintf(stderr, "Error: Syntax error in input\n");
 				free(input);

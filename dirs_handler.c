@@ -25,19 +25,17 @@ void	pwd(void)
 	free(wd);
 }
 
-void	act_env_pwd(char **env, char *pwd)
+void	act_env_pwd(char ***env, char *pwd)
 {
-	char *old_pwd;
-	char *new_pwd;
+	char **pwds;
 
-	new_pwd = ft_strdup("PWD=");
-	old_pwd = get_env_var(env, "PWD");
-	new_pwd = ft_strjoin_free(new_pwd, pwd, 2);
-	free(old_pwd);
-	old_pwd = new_pwd;
+	pwds[0] = ft_strjoin_free("PWD=", get_cwd(), 1);
+	pwds[1] = ft_strjoin_free("OLDPWD=", ft_strdup(get_env_var(*env, "PWD") + 4), 1);
+	pwds[2] = NULL;
+	replace_existing_vars(&pwds, env);
 }
 
-int change_directory(char *path, char **env)
+int change_directory(char *path, char ***env)
 {
 	if (chdir(path))
 	{

@@ -68,6 +68,23 @@ void    *ft_realloc(void *ptr, size_t old_size, size_t new_size)
 	return (new_ptr);
 }
 
+// char	*get_env_value(char **env, char *var_id)
+// {
+// 	int		i;
+// 	int		id_len;
+// 	char	*value
+
+// 	id_len = ft_strlen(var_id);
+// 	i = -1;
+// 	while (env[++i])
+// 	{
+// 		if (!ft_strncmp(env[i], var_id, id_len))
+// 			break ;
+// 	}
+// 	if (env[i])
+// 		return (env[i]);
+// 	return (NULL);
+// }
 
 char	*get_env_var(char **env, char *var_id)
 {
@@ -113,7 +130,7 @@ int	get_env_index(char **env, char *var_id)
 	return (-1);
 }
 
-int	no_value(char *var)
+int	no_equal(char *var)
 {
 	int	i;
 	int	equal;
@@ -126,19 +143,19 @@ int	no_value(char *var)
 			equal = 1;
 		i++;
 	}
-	if (var[i - 1] == '=' || equal == 0)
+	if (equal == 0)
 		return (1);
 	return (0);
 }
 
-void	print_env(char **env)
+int	print_env(char **env)
 {
 	int		i;
 
 	i = 0;
 	while (env[i])
 	{
-		if (no_value(env[i]))
+		if (no_equal(env[i]))
 		{
 			i++;
 			continue ;
@@ -146,6 +163,7 @@ void	print_env(char **env)
 		ft_printf("%s\n", env[i]);
 		i++;
 	}
+	return (0);
 }
 
 void	print_export_env(char **env)
@@ -319,7 +337,7 @@ int    export(char **env[], char **arg)
 	return (0);
 }
 
-void	unset(char ***env, char **args)
+int	unset(char ***env, char **args)
 {
 	char	**new_env;
 	int		i;
@@ -338,6 +356,7 @@ void	unset(char ***env, char **args)
 		else
 			i++;
     }
+	return (0);
 }
 
 // int main(int argc, char *argv[], char *envp[])

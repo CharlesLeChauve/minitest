@@ -248,22 +248,18 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
 	}
 	else if (!ft_strcmp(cmd, "env"))
 	{
-		print_env(*env);
+		return (print_env(*env));
 	}
 	else if (!ft_strcmp(cmd, "cd"))
 	{
-		//char *str = ft_substr(input, 3, ft_strlen(input) - 3);
        /*  if (more_than_one_arg)
             bash: cd: too many arguments
             exit(); */
-		change_directory(cmd_tab[1], *env);
-		//free(str);
+		return (change_directory(cmd_tab[1], env));
 	}
 	else if (!ft_strcmp(cmd, "unset"))
 	{
-		// char *str = ft_substr(input, 6, ft_strlen(input) - 6);
-		unset(env, &cmd_tab[1]);
-		//free(str);
+		return (unset(env, &cmd_tab[1]));
 	}
     return (0);
 }
