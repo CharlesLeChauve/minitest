@@ -227,16 +227,6 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 			current = current->next;
 			continue;
 		}
-		// if (token->type == redir_in || token->type == redir_out || token->type == redir_app || token->type == heredoc)
-		// {
-		// 	new_redir = ft_lstnew(token_text);
-		// 	if (token->type == redir_in || token->type == heredoc)
-		// 	{
-		// 		ft_lstadd_back(&(block->redirs), new_redir);
-		// 		printf("Redirection added: %s\n", token_text);
-		// 	}
-		// }
-		// else
 		parse_command_option(token_text, block);
 		current = current->next;
 	}
@@ -271,7 +261,7 @@ void	print_cmd_block(t_cmd_block *cmd_block)
 			redir = cmd_block->redirs;
 			while (redir)
 			{
-				printf("Redirections out:\n");
+				printf("Redirections:\n");
 				printf("  %s\n", ((t_token_lst *)redir->content)->text);
 				redir = redir->next;
 			}
