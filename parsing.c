@@ -85,10 +85,12 @@ int	main(int argc, char *argv[], char *envp[])
 	struct sigaction	sa;
 	t_ast_node			*ast;
 	char				**env;
+	t_dlist		*token_lst;
 
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
+	input = NULL;
 	if (sigaction(SIGINT, &sa, NULL) == -1)
 	{
 		perror("sigaction");
@@ -97,28 +99,34 @@ int	main(int argc, char *argv[], char *envp[])
 	env = set_env(envp);
 	while (1)
 	{
-		input = readline("\033[0;37m╭─\033[0;32mminishell_project\033[0;37m\n\
-╰─\033[0;34mtash \033[0;35m> \033[0;37m");
+		if (input)
+			input = ft_strjoin_free(input, readline("> "), 1);
+		else
+			input = readline(TASH_PROMPT);
 		if (!input)
 			break ;
 		if (input && *input)
 		{
 			add_history(input);
-			/* token_lst = tokenize(input);
+			token_lst = tokenize(input);
 			if (!verify_tokens(token_lst))
+				continue ;
+			else if (verify_tokens(token_lst) == -1)
 			{
 				fprintf(stderr, "Error: Syntax error in input\n");
 				free(input);
+				input = NULL;
 				continue ;
 			}
-			ast = parse_tokens(token_lst); */
-			ast = build_ast(input);
+			ast = parse_tokens(token_lst);
+			//ast = build_ast(input);
 			expand_ast(ast);
 			print_tree(ast, 0);
 			exec_ast(ast, &env);
 			ast = NULL;
 		}
 		free(input);
+		input = NULL;
 	}
 	ft_free_tab(env);
 }
