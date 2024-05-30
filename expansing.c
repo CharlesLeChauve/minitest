@@ -41,7 +41,6 @@ t_token_lst *redir_token(char *str)
 		curr_char++;
 	if (ft_isshelloperator(*curr_char) || *curr_char == '\0')
 	{
-		printf("nique bien ta mere la pute\n");
 		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
 		exit(EXIT_FAILURE);
 	}
@@ -98,10 +97,8 @@ void	extract_command(char **ptr, t_cmd_block *block)
 
 	state = reg;
 	set_quotes_state_in_cmd_block(ptr, &state);
-	printf("ce que tu veux\n");
 	while (**ptr)
 	{
-		printf("dans le while\n");
 		if (state == reg && (**ptr == '>' || **ptr == '<') || (ft_isspace(**ptr) && state == reg))
 			break;
 		set_quotes_state_in_cmd_block(ptr, &state);
@@ -109,7 +106,6 @@ void	extract_command(char **ptr, t_cmd_block *block)
 	}
 	if (*ptr > start)
 		block->command = ft_strndup(start, *ptr - start);
-	printf("block->command = %s\npd", block->command);
 }
 
 char	*extract_sub_token(char **ptr)
@@ -171,7 +167,7 @@ void	process_sub_token(char *sub_token, t_cmd_block *block)
 	{
 		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<'))
 		{
-			fprintf(stderr, "erreur tavu\n");
+			fprintf(stderr, "tash: `<>' operator not handled\n");
 			exit(EXIT_FAILURE);
 		}
 		new_arg = ft_lstnew(redir_token(sub_token));
@@ -231,16 +227,6 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 			current = current->next;
 			continue;
 		}
-		// if (token->type == redir_in || token->type == redir_out || token->type == redir_app || token->type == heredoc)
-		// {
-		// 	new_redir = ft_lstnew(token_text);
-		// 	if (token->type == redir_in || token->type == heredoc)
-		// 	{
-		// 		ft_lstadd_back(&(block->redirs), new_redir);
-		// 		printf("Redirection added: %s\n", token_text);
-		// 	}
-		// }
-		// else
 		parse_command_option(token_text, block);
 		current = current->next;
 	}
@@ -275,7 +261,7 @@ void	print_cmd_block(t_cmd_block *cmd_block)
 			redir = cmd_block->redirs;
 			while (redir)
 			{
-				printf("Redirections out:\n");
+				printf("Redirections:\n");
 				printf("  %s\n", ((t_token_lst *)redir->content)->text);
 				redir = redir->next;
 			}
