@@ -8,12 +8,12 @@
 
 int is_a_builtin(char *command)
 {
-    if (!ft_strcmp(command, "cd") || !ft_strcmp(command, "echo")
-            || !ft_strcmp(command, "env") || !ft_strcmp(command, "exit")
-            || !ft_strcmp(command, "export") || !ft_strcmp(command, "pwd")
-            || !ft_strcmp(command, "unset"))
-        return(1);
-    return (0);
+	if (!ft_strcmp(command, "cd") || !ft_strcmp(command, "echo")
+			|| !ft_strcmp(command, "env") || !ft_strcmp(command, "exit")
+			|| !ft_strcmp(command, "export") || !ft_strcmp(command, "pwd")
+			|| !ft_strcmp(command, "unset"))
+		return(1);
+	return (0);
 }
 
 char	*get_env_path(char **env)
@@ -165,83 +165,83 @@ int	open_write(char *file, t_open_mode mode)
 
 int    make_redir_in(t_token_lst *redir)
 {
-    int fd;
+	int fd;
 
-    fd = -1;
-    if (redir->type == redir_in)
-    {
-        if (check_acces(redir->text, read_o))
-        {
-            fd = open_mode(redir->text, read_o);
-            dup2(fd, STDIN_FILENO);
-        }
-        else
-            return (1);
-    }
-    else if (redir->type == heredoc)
-    {
-        heredoc_handle(redir->text);
-    }
-    return (0);
+	fd = -1;
+	if (redir->type == redir_in)
+	{
+		if (check_acces(redir->text, read_o))
+		{
+			fd = open_mode(redir->text, read_o);
+			dup2(fd, STDIN_FILENO);
+		}
+		else
+			return (1);
+	}
+	else if (redir->type == heredoc)
+	{
+		heredoc_handle(redir->text);
+	}
+	return (0);
 }
 
 int    make_redir_out(t_token_lst *redir)
 {
-    int fd;
+	int fd;
 
-    fd = -1;
-    if (redir->type == redir_out)
-    {
-        fd = open_write(redir->text, truncate_o);
-        dup2(fd, STDOUT_FILENO);
-    }
-    else if (redir->type == redir_app)
-    {
-        fd = open_write(redir->text, append_o);
-        if (fd == -1)
-        {
-            perror("open_write");
-            return (1);
-        }
-        if (dup2(fd, STDOUT_FILENO) == -1)
-        {
-            perror("dup2");
-            close(fd);
-            return (1);
-        }
-        close(fd);
-    }
-    return (0);
+	fd = -1;
+	if (redir->type == redir_out)
+	{
+		fd = open_write(redir->text, truncate_o);
+		dup2(fd, STDOUT_FILENO);
+	}
+	else if (redir->type == redir_app)
+	{
+		fd = open_write(redir->text, append_o);
+		if (fd == -1)
+		{
+			perror("open_write");
+			return (1);
+		}
+		if (dup2(fd, STDOUT_FILENO) == -1)
+		{
+			perror("dup2");
+			close(fd);
+			return (1);
+		}
+		close(fd);
+	}
+	return (0);
 }
 
 void    handle_redirs(t_cmd_block *cmd_block)
 {
-    t_list  *redirs;
+	t_list  *redirs;
 
-    if (cmd_block->redirs)
-    {
-        redirs = cmd_block->redirs;
-        while (redirs)
-        {
-            //si l'une des redirs ne peut pas se produire
-            if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)
-                if (make_redir_out((t_token_lst *)redirs->content))
-                    exit(EXIT_FAILURE) ;
-            if (((t_token_lst *)redirs->content)->type == redir_in || ((t_token_lst *)redirs->content)->type == heredoc)
-                if (make_redir_in((t_token_lst *)redirs->content))
-                    exit (EXIT_FAILURE);
-            redirs = redirs->next;
-        }
-        redirs = NULL;
-    }
+	if (cmd_block->redirs)
+	{
+		redirs = cmd_block->redirs;
+		while (redirs)
+		{
+			//si l'une des redirs ne peut pas se produire
+			if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)
+				if (make_redir_out((t_token_lst *)redirs->content))
+					exit(EXIT_FAILURE) ;
+			if (((t_token_lst *)redirs->content)->type == redir_in || ((t_token_lst *)redirs->content)->type == heredoc)
+				if (make_redir_in((t_token_lst *)redirs->content))
+					exit (EXIT_FAILURE);
+			redirs = redirs->next;
+		}
+		redirs = NULL;
+	}
 }
 
 int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
 {
-    if (!ft_strcmp(cmd, "export"))
-    {
+	if (!ft_strcmp(cmd, "export"))
+	{
 		export(env, &cmd_tab[1]);
-    }
+	}
 	else if (!ft_strcmp(cmd, "pwd"))
 	{
 		pwd();
@@ -252,161 +252,178 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
 	}
 	else if (!ft_strcmp(cmd, "cd"))
 	{
-       /*  if (more_than_one_arg)
-            bash: cd: too many arguments
-            exit(); */
+	   /*  if (more_than_one_arg)
+			bash: cd: too many arguments
+			exit(); */
 		return (change_directory(cmd_tab[1], env));
 	}
 	else if (!ft_strcmp(cmd, "unset"))
 	{
 		return (unset(env, &cmd_tab[1]));
 	}
-    return (0);
+	return (0);
 }
 
 int is_a_path(char *cmd)
 {
-    if (!access(cmd, F_OK))
-        return (1);
-    return (0);
+	if (!access(cmd, F_OK))
+		return (1);
+	return (0);
 }
 
 char    *set_cmd_path(char *envp[], char *cmd)
 {
-    if (is_a_path(cmd))
-        return (cmd);
-    return (get_cmd_path(envp, cmd));
+	if (is_a_path(cmd))
+		return (cmd);
+	return (get_cmd_path(envp, cmd));
 }
 
 int exec_command(char **envp[], t_cmd_block *cmd_block)
 {
-    char *path;
+	char *path;
 
-    path = set_cmd_path(*envp, cmd_block->exec_tab[0]);
-    execve(path, cmd_block->exec_tab, *envp);
-    perror("execve");
-    exit(EXIT_FAILURE);
+	path = set_cmd_path(*envp, cmd_block->exec_tab[0]);
+	execve(path, cmd_block->exec_tab, *envp);
+	perror("execve");
+	exit(EXIT_FAILURE);
+}
+
+void    restore_stds_and_close_dup(int out_save, int in_save)
+{
+	dup2(out_save, STDOUT_FILENO);
+	dup2(in_save, STDIN_FILENO);
+	close(out_save);
+	close(in_save);
+}
+
+int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], int out_save, int in_save)
+{
+	pid_t   pid;
+	int     status;
+
+	pid = fork();
+	if (pid == -1) 
+	{
+		perror("fork");
+		return (-1);
+	}
+	if (pid == 0) 
+	{
+		handle_redirs(cmd_block);
+		exec_command(envp, cmd_block);
+	}
+	else
+	{
+		if (waitpid(pid, &status, 0) == -1) 
+		{
+			perror("waitpid");
+			return (-1);
+		}
+		restore_stds_and_close_dup(out_save, in_save);
+		return (status);
+	}
 }
 
 int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 {
-    pid_t   pid;
-    int     status;
-    int     stdout_save;
-    int     stdin_save;
+	int     status;
+	int     stdout_save;
+	int     stdin_save;
 
-    create_exec_tab(cmd_block);
-    stdout_save = dup(STDOUT_FILENO);
-    stdin_save = dup(STDIN_FILENO);
-    if (!cmd_block->exec_tab[0])
-    {
-        handle_redirs(cmd_block);
-        dup2(stdout_save, STDOUT_FILENO);
-        dup2(stdin_save, STDIN_FILENO);
-        close(stdout_save);
-        close(stdin_save);
-        return (0);
-    }
-    if (is_a_builtin(cmd_block->exec_tab[0]))
-    {
-        handle_redirs(cmd_block);
-        status = do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
-        dup2(stdout_save, STDOUT_FILENO);
-        dup2(stdin_save, STDIN_FILENO);
-        close(stdout_save);
-        close(stdin_save);
-        return(status);
-    }
-    else
-    {
-        pid = fork();
-        if (pid == -1) 
-        {
-            perror("fork");
-            return (-1);
-        }
-        if (pid == 0) 
-        {
-            handle_redirs(cmd_block);
-            exec_command(envp, cmd_block);
-        }
-        else
-        {
-            if (waitpid(pid, &status, 0) == -1) 
-            {
-                perror("waitpid");
-                return (-1);
-            }
-            dup2(stdout_save, STDOUT_FILENO);
-            dup2(stdin_save, STDIN_FILENO);
-            close(stdout_save);
-            close(stdin_save);
-            return (status);
-        }
-    }
-    return (-1);
+	create_exec_tab(cmd_block);
+	stdout_save = dup(STDOUT_FILENO);
+	stdin_save = dup(STDIN_FILENO);
+	if (!cmd_block->exec_tab[0])
+	{
+		handle_redirs(cmd_block);
+		restore_stds_and_close_dup(stdout_save, stdin_save);
+		return (0);
+	}
+	if (is_a_builtin(cmd_block->exec_tab[0]))
+	{
+		handle_redirs(cmd_block);
+		status = do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
+		restore_stds_and_close_dup(stdout_save, stdin_save);
+		return(status);
+	}
+	else
+		return (exec_not_builtin(cmd_block, envp, stdout_save, stdin_save));
+	return (-1);
+}
+
+void do_pipe_side(t_pipe_info *pipe_info, char **envp[], t_ast_node *ast, int side)
+{
+	pipe_info->pids[side] = fork();
+	if (pipe_info->pids[side] == -1)
+	{
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+	if (pipe_info->pids[side] == 0)
+	{
+		close(pipe_info->pipe_fds[side]);
+		if (side == 0)
+			dup2(pipe_info->pipe_fds[side ^ 1], STDOUT_FILENO);
+		else
+			dup2(pipe_info->pipe_fds[side ^ 1], STDIN_FILENO);
+		close(pipe_info->pipe_fds[side ^ 1]);
+		if (side == 0)
+			exit(exec_ast(ast->left, envp));
+		else
+			exit(exec_ast(ast->right, envp));
+	}
+}
+
+void do_pipes(t_pipe_info *pipe_info, char **envp[], t_ast_node *ast)
+{
+	do_pipe_side(pipe_info, envp, ast, 0);
+	do_pipe_side(pipe_info, envp, ast, 1);
+	close(pipe_info->pipe_fds[0]);
+	close(pipe_info->pipe_fds[1]);
+}
+
+void	init_pipe_info(t_pipe_info *pipe_info)
+{
+	pipe_info->pipe_fds[0] = -1;
+	pipe_info->pipe_fds[1] = -1;
+	pipe_info->pids[0] = -1;
+	pipe_info->pids[1] = -1;
+
+	if (pipe(pipe_info->pipe_fds) == -1)
+	{
+	    perror("pipe");
+	    exit(EXIT_FAILURE);
+	}
 }
 
 int	exec_ast(t_ast_node *ast, char **envp[])
 {
-    int ret_value;
+	int ret_value;
+	t_pipe_info	pipe_info;
 
-    ret_value = 0;
-    if (ast->type == pipe_op)
-    {
-        int pipe_fds[2];
-        pid_t pid1, pid2;
-        if (pipe(pipe_fds) == -1)
-        {
-            perror("pipe");
-            exit(EXIT_FAILURE);
-        }
-        pid1 = fork();
-        if (pid1 == -1)
-        {
-            perror("fork");
-            exit(EXIT_FAILURE);
-        }
-        if (pid1 == 0)
-        {
-            close(pipe_fds[0]);
-            dup2(pipe_fds[1], STDOUT_FILENO);
-            close(pipe_fds[1]);
-            exit(exec_ast(ast->left, envp));
-        }
-        pid2 = fork();
-        if (pid2 == -1)
-        {
-            perror("fork");
-            exit(EXIT_FAILURE);
-        }
-        if (pid2 == 0)
-        {
-            close(pipe_fds[1]);
-            dup2(pipe_fds[0], STDIN_FILENO);
-            close(pipe_fds[0]);
-            exit(exec_ast(ast->right, envp));
-        }
-        close(pipe_fds[0]);
-        close(pipe_fds[1]);
-        waitpid(pid1, NULL, 0);
-        waitpid(pid2, NULL, 0);
-        return 0;
-    }
-    else if (ast->type == and_op)
-    {
-        ret_value = exec_ast(ast->left, envp);
-        if (!ret_value)
-            return (exec_ast(ast->right, envp));
-        return (ret_value);
-    }
-    else if (ast->type == or_op)
-    {
-        ret_value = exec_ast(ast->left, envp);
-        if (ret_value)
-            return (exec_ast(ast->right, envp));
-        return (ret_value);
-    }
-    else
-        return (exec_command_and_redirs(ast->cmd_block, envp));
+	ret_value = 0;
+	if (ast->type == pipe_op)
+	{
+		init_pipe_info(&pipe_info);
+		do_pipes(&pipe_info, envp, ast);
+		waitpid(pipe_info.pids[0], NULL, 0);
+		waitpid(pipe_info.pids[1], NULL, 0);
+		return 0;
+	}
+	else if (ast->type == and_op)
+	{
+		ret_value = exec_ast(ast->left, envp);
+		if (!ret_value)
+			return (exec_ast(ast->right, envp));
+		return (ret_value);
+	}
+	else if (ast->type == or_op)
+	{
+		ret_value = exec_ast(ast->left, envp);
+		if (ret_value)
+			return (exec_ast(ast->right, envp));
+		return (ret_value);
+	}
+	else
+		return (exec_command_and_redirs(ast->cmd_block, envp));
 }

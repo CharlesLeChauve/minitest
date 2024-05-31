@@ -14,6 +14,7 @@
 # define TASH_PROMPT_S "\033[0;37m╭─\033[0;32m"
 # define TASH_PROMPT_E "\033[0;37m\n╰─\033[0;34mtash \033[0;35m> \033[0;37m"
 
+
 typedef enum e_token_type
 {
 	command, redir_in, redir_out, redir_app, heredoc, pipe_op, fd, file_path, and_op, or_op, subshell, eol
@@ -35,6 +36,12 @@ typedef enum {
 	AND,
 	OR
 } NodeType;
+
+typedef struct s_pipe_infos
+{
+	int		pipe_fds[2];
+	int		pids[2];
+}	t_pipe_info;
 
 typedef struct s_token_lst
 {

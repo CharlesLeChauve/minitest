@@ -161,9 +161,8 @@ int	main(int argc, char *argv[], char *envp[])
 				continue ;
 			}
 			ast = parse_tokens(token_lst);
-			//ast = build_ast(input);
 			expand_ast(ast);
-			print_tree(ast, 0);
+			//print_tree(ast, 0);
 			exec_ast(ast, &env);
 			ast = NULL;
 		}
