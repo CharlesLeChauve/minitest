@@ -9,6 +9,7 @@
 # include <math.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <sys/wait.h>
 # include "./libft/libft.h"
 # include "env.h"
 # define TASH_PROMPT_S "\033[0;37m╭─\033[0;32m"
@@ -159,5 +160,8 @@ t_ast_node *build_ast(char *input);
 void 	remove_from_tab(char ***arg, int index);
 void	replace_var(char ***env, char *new_var, char *old_var);
 void	replace_existing_vars(char ***arg, char ***env);
+
+//pipes
+int	handle_pipes(t_ast_node *ast, char **envp[]);
 
 #endif

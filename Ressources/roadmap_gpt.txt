@@ -1,0 +1,43 @@
+
+Le projet minishell est un excellent exercice pour comprendre en profondeur le fonctionnement des shells sous UNIX, ainsi que l'interprétation des commands utilisateur et la gestion des processus. Voici une roadmap détaillée pour mener à bien ce projet, en respectant les principes de la programmation bas niveau et les normes de l'école 42.
+
+1. Comprendre le fonctionnement d'un shell
+Avant de commencer à coder, il est crucial de comprendre ce qu'est un shell et comment il fonctionne. Un shell est un interpréteur de commands qui lit les entrées de l'utilisateur et exécute des commands. Les aspects à comprendre incluent :
+
+La boucle principale : lecture de l'entrée, analyse (parsing), exécution.
+L'analyse syntaxique (parsing) : transformation de la chaîne de caractères entrée par l'utilisateur en une structure de données appropriée.
+La gestion des processus : création et gestion des processus pour exécuter les commands.
+Les redirections et les pipes : redirection de l'entrée/sortie standard, création de pipelines entre commands.
+Les variables d'environnement : gestion et utilisation des variables d'environnement.
+2. Mise en place de l'environnement de développement
+Utilisez git pour versionner votre code dès le début.
+Assurez-vous d'avoir un environnement UNIX pour le développement.
+Préparez un Makefile conforme aux normes de l'école 42 pour automatiser la compilation.
+3. Lecture et parsing de l'entrée
+Lecture de l'entrée : utilisez readline() ou une boucle autour de read() pour lire l'entrée de l'utilisateur.
+Parsing : développez un parser pour analyser la command entrée et la transformer en une structure de données (par exemple, une liste de tokens ou une arborescence syntaxique).
+Gérez les quotes, les espaces et les échappements de caractères.
+4. Exécution des commands
+commands internes : implémentez des commands intégrées au shell (comme cd, echo, exit).
+Exécution de programmes externes : utilisez fork() pour créer un processus enfant, puis execve() pour exécuter un programme externe.
+Gérez les erreurs de manière appropriée.
+5. Gestion des redirections et des pipes
+Redirections : utilisez dup2() pour rediriger stdin, stdout et stderr.
+Pipes : utilisez pipe() pour créer un pipeline entre commands et fork() pour exécuter les commands en parallèle.
+6. Gestion des signaux
+Interceptez et gérez les signaux de manière appropriée (par exemple, SIGINT, SIGQUIT).
+Assurez-vous que votre shell se comporte correctement lorsqu'un signal est reçu.
+7. Variables d'environnement
+Implémentez la gestion des variables d'environnement (setenv, unsetenv, env).
+Assurez-vous que les commands externes héritent de l'environnement du shell.
+8. Tests et débogage
+Écrivez des scripts de test pour automatiser la vérification de la conformité de votre shell.
+Utilisez des outils comme valgrind pour détecter les fuites de mémoire.
+9. Documentation et normes
+Documentez votre code conformément aux exigences de l'école 42.
+Assurez-vous que votre code respecte la norminette.
+Conseils supplémentaires
+Commencez simple : commencez par les fonctionnalités de base et ajoutez progressivement des fonctionnalités plus complexes.
+Testez fréquemment : testez chaque nouvelle fonctionnalité ou modification en profondeur.
+Utilisez les ressources disponibles : manuels UNIX (man), documentation en ligne, forums, etc.
+Ce projet est complexe et exigeant, mais c'est une excellente opportunité d'apprendre en profondeur le fonctionnement des systèmes UNIX et la programmation en C à bas niveau. Bon courage !
