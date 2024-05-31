@@ -5,45 +5,6 @@
 #include "minishell.h"
 #include <stdlib.h>
 
-void	ft_sort_wordtab(char **tab)
-{
-	int		i;
-	int		j;
-	char	*temp;
-
-	i = 0;
-	while (tab[i] != 0)
-	{
-		j = i + 1;
-		while (tab[j] != 0)
-		{
-			if (ft_strcmp(tab[i], tab[j]) > 0)
-			{
-				temp = tab[i];
-				tab[i] = tab[j];
-				tab[j] = temp;
-			}
-			++j;
-		}
-		++i;
-	}
-}
-
-void	ft_remove_from_strtab(char **tab, int index)
-{
-	int	size;
-
-	size = 0;
-	while (tab[size])
-		size++;
-	free(tab[index]);
-	while (index < size - 1)
-	{
-		tab[index] = tab[index + 1];
-		index++;
-	}
-	tab[size - 1] = NULL;
-}
 
 void    *ft_realloc(void *ptr, size_t old_size, size_t new_size)
 {
@@ -67,24 +28,6 @@ void    *ft_realloc(void *ptr, size_t old_size, size_t new_size)
 	free(ptr);
 	return (new_ptr);
 }
-
-// char	*get_env_value(char **env, char *var_id)
-// {
-// 	int		i;
-// 	int		id_len;
-// 	char	*value
-
-// 	id_len = ft_strlen(var_id);
-// 	i = -1;
-// 	while (env[++i])
-// 	{
-// 		if (!ft_strncmp(env[i], var_id, id_len))
-// 			break ;
-// 	}
-// 	if (env[i])
-// 		return (env[i]);
-// 	return (NULL);
-// }
 
 char	*get_env_var(char **env, char *var_id)
 {
@@ -324,10 +267,9 @@ int    export(char **env[], char **arg)
 		env_cpy = (char **)malloc((i + 1) * sizeof(char *));
 		i = -1;
 		while ((*env)[++i])
-			env_cpy[i] = export_format((*env)[i]);	//ft_strdup((*env)[i]);
+			env_cpy[i] = export_format((*env)[i]);
 		env_cpy[i] = NULL;
         print_export_env(env_cpy);
-		
 	}
     else
     {
@@ -358,33 +300,3 @@ int	unset(char ***env, char **args)
     }
 	return (0);
 }
-
-// int main(int argc, char *argv[], char *envp[])
-// {
-//     char    **env;
-//     char    *env_pwd;
-//     char    *args[] = {"ARG=\"fuck\"", "FUCK=\"arg\"", NULL};
-// 	char    *args2[] = {"ARG=\"arg\"", "FUCK=\"fuck\"", NULL};
-//     int     i;
-
-//     i = 0;
-//     while (envp[i])
-//         i++;
-//     env = (char **)malloc(sizeof(char *) * (i + 1));
-//     i = 0;
-//     while (envp[i])
-//     {
-//         env[i] = ft_strdup(envp[i]);
-//         i++;
-//     }
-//     env[i] = NULL;
-// 	pwd();
-//     if (change_directory("/home/", env))
-//     {
-//         printf("cd failed\n");
-//     }
-//     export(&env, args);
-//     export(&env, NULL);
-// 	export(&env, args2);
-// 	export(&env, NULL);
-// }

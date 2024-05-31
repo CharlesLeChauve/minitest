@@ -67,7 +67,7 @@ void	read_heredoc(char *limiter)
 		{
 			ft_putstr_fd(
 				"Error : End Of File before finding here_doc LIMITER", 2);
-			exit(0);
+			exit(EXIT_FAILURE);
 		}
 		if (!ft_strncmp(nl, limiter, ft_strlen(limiter))
 			&& nl[ft_strlen(limiter)] == '\n')
@@ -96,7 +96,7 @@ void	heredoc_handle(char *limiter)
 	}
 	else if (pid > 0)
 	{
-		waitpid(0, &(int){0}, 0);
+		waitpid(pid, &(int){0}, 0);
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
 	}
@@ -289,10 +289,16 @@ int exec_command(char **envp[], t_cmd_block *cmd_block)
 
 void    restore_stds_and_close_dup(int out_save, int in_save)
 {
-	dup2(out_save, STDOUT_FILENO);
-	dup2(in_save, STDIN_FILENO);
-	close(out_save);
-	close(in_save);
+	if  (out_save != -1)
+	{
+		dup2(out_save, STDOUT_FILENO);
+		close(out_save);
+	}
+	if (in_save != -1)
+	{
+		dup2(in_save, STDIN_FILENO);
+		close(in_save);
+	}
 }
 
 int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], int out_save, int in_save)

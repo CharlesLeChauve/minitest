@@ -164,4 +164,9 @@ void	replace_existing_vars(char ***arg, char ***env);
 //pipes
 int	handle_pipes(t_ast_node *ast, char **envp[]);
 
+//tab_utils.c
+void	ft_remove_from_strtab(char **tab, int index);
+void	ft_sort_wordtab(char **tab);
+void    restore_stds_and_close_dup(int out_save, int in_save);
+
 #endif
