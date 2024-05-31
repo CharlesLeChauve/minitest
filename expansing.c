@@ -139,7 +139,7 @@ char	*extract_sub_token(char **ptr)
 			len++;
 		(*ptr)++;
 	}
-	token = malloc(len + 1);
+	token = malloc(len + 2);
 	if (!token)
 		return (NULL);
 	len = 0;
