@@ -298,10 +298,24 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
     create_exec_tab(cmd_block);
     stdout_save = dup(STDOUT_FILENO);
     stdin_save = dup(STDIN_FILENO);
+    if (!cmd_block->exec_tab[0])
+    {
+        handle_redirs(cmd_block);
+        dup2(stdout_save, STDOUT_FILENO);
+        dup2(stdin_save, STDIN_FILENO);
+        close(stdout_save);
+        close(stdin_save);
+        return (0);
+    }
     if (is_a_builtin(cmd_block->exec_tab[0]))
     {
         handle_redirs(cmd_block);
-        return(do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab));
+        status = do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
+        dup2(stdout_save, STDOUT_FILENO);
+        dup2(stdin_save, STDIN_FILENO);
+        close(stdout_save);
+        close(stdin_save);
+        return(status);
     }
     else
     {

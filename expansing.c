@@ -149,6 +149,7 @@ char	*extract_sub_token(char **ptr)
 			token[len++] = *start;
 		start++;
 	}
+	//invalid write here
 	token[len] = '\0';
 	return (token);
 }
