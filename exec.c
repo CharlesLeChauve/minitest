@@ -396,20 +396,25 @@ void	init_pipe_info(t_pipe_info *pipe_info)
 	}
 }
 
+int	handle_pipes(t_ast_node *ast, char **envp[])
+{
+	t_pipe_info	pipe_info;
+	int			status;
+
+	init_pipe_info(&pipe_info);
+	do_pipes(&pipe_info, envp, ast);
+	waitpid(pipe_info.pids[0], NULL, 0);
+	waitpid(pipe_info.pids[1], &status, 0);
+	return (status);
+}
+
 int	exec_ast(t_ast_node *ast, char **envp[])
 {
 	int ret_value;
-	t_pipe_info	pipe_info;
-
+	
 	ret_value = 0;
 	if (ast->type == pipe_op)
-	{
-		init_pipe_info(&pipe_info);
-		do_pipes(&pipe_info, envp, ast);
-		waitpid(pipe_info.pids[0], NULL, 0);
-		waitpid(pipe_info.pids[1], NULL, 0);
-		return 0;
-	}
+		return (handle_pipes(ast, envp));
 	else if (ast->type == and_op)
 	{
 		ret_value = exec_ast(ast->left, envp);
