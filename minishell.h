@@ -11,8 +11,8 @@
 # include <readline/history.h>
 # include "./libft/libft.h"
 # include "env.h"
-# define TASH_PROMPT_S "\033[0;37m╭─\033[0;32mminishell_project\033[0;37m\n\
-╰─\033[0;34mtash \033[0;35m> \033[0;37m"
+# define TASH_PROMPT_S "\033[0;37m╭─\033[0;32m"
+# define TASH_PROMPT_E "\033[0;37m\n╰─\033[0;34mtash \033[0;35m> \033[0;37m"
 
 typedef enum e_token_type
 {

@@ -79,13 +79,27 @@ t_ast_node *build_ast(char *input)
 	return (ast);
 }
 
+char	*build_prompt(char **env)
+{
+	char	*pwd;
+	char	*prompt;
+	int		len;
+
+	pwd = ft_strdup(get_env_var(env, "PWD") + 4);
+	prompt = ft_strdup(TASH_PROMPT_S);
+	prompt = ft_strjoin_free(prompt, pwd, 2);
+	prompt = ft_strjoin_free(prompt, TASH_PROMPT_E, 0);
+	return (prompt);
+}
+
 int	main(int argc, char *argv[], char *envp[])
 {
 	char				*input;
 	struct sigaction	sa;
 	t_ast_node			*ast;
 	char				**env;
-	t_dlist		*token_lst;
+	t_dlist				*token_lst;
+	char				*prompt;
 
 	sa.sa_handler = handle_sigint;
 	sigemptyset(&sa.sa_mask);
@@ -103,8 +117,8 @@ int	main(int argc, char *argv[], char *envp[])
 			input = ft_strjoin_free(input, readline("> "), 1);
 		else
 		{
-			//prompt = build_prompt();
-			input = readline(TASH_PROMPT_S);
+			prompt = build_prompt(env);
+			input = readline(prompt);
 		}
 		if (!input)
 			break ;
