@@ -139,7 +139,7 @@ char	*extract_sub_token(char **ptr)
 			len++;
 		(*ptr)++;
 	}
-	token = malloc(len + 2);
+	token = malloc(len + 3);
 	if (!token)
 		return (NULL);
 	len = 0;
@@ -149,7 +149,6 @@ char	*extract_sub_token(char **ptr)
 			token[len++] = *start;
 		start++;
 	}
-	//invalid write here
 	token[len] = '\0';
 	return (token);
 }
