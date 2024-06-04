@@ -48,11 +48,11 @@ void	init_pipe_info(t_pipe_info *pipe_info)
 int	handle_pipes(t_ast_node *ast, char **envp[])
 {
 	t_pipe_info	pipe_info;
-	int			status;
+	int			ret_value;
 
 	init_pipe_info(&pipe_info);
 	do_pipes(&pipe_info, envp, ast);
 	waitpid(pipe_info.pids[0], NULL, 0);
-	waitpid(pipe_info.pids[1], &status, 0);
-	return (status);
+	ret_value = wait_status(pipe_info.pids[1]);
+	return (ret_value);
 }

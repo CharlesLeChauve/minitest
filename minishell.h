@@ -156,7 +156,7 @@ char	*get_env_var(char **env, char *var_id);
 int		print_env(char **env);
 
 //exec.c
-int		exec_ast(t_ast_node *ast, char **envp[]);
+int	exec_ast(t_ast_node *ast, char **envp[]);
 void 	create_exec_tab(t_cmd_block *cmd_block);
 
 
@@ -172,5 +172,7 @@ int	handle_pipes(t_ast_node *ast, char **envp[]);
 void	ft_remove_from_strtab(char **tab, int index);
 void	ft_sort_wordtab(char **tab);
 void    restore_stds_and_close_dup(int out_save, int in_save);
+
+int	wait_status(pid_t pid);
 
 #endif

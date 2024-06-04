@@ -301,10 +301,33 @@ void    restore_stds_and_close_dup(int out_save, int in_save)
 	}
 }
 
+int	wait_status(pid_t pid)
+{
+	int	status;
+	int	ret_val;
+
+	if (waitpid(pid, &status, 0) == -1) 
+	{
+		perror("waitpid");
+		return (-1);
+	}
+	if (WIFEXITED(status))
+	{
+		ret_val = WEXITSTATUS(status);
+		return (ret_val);
+	}
+	else
+	{
+		perror("Error waitpid");
+		return (-1);
+	}
+}
+
 int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], int out_save, int in_save)
 {
 	pid_t   pid;
 	int     status;
+	int		ret_val;
 
 	pid = fork();
 	if (pid == -1) 
@@ -318,14 +341,7 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], int out_save, int in
 		exec_command(envp, cmd_block);
 	}
 	else
-	{
-		if (waitpid(pid, &status, 0) == -1) 
-		{
-			perror("waitpid");
-			return (-1);
-		}
-		return (status);
-	}
+		ret_val = wait_status(pid);
 }
 
 int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])

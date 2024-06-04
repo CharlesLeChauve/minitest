@@ -124,12 +124,12 @@ int	main(int argc, char *argv[], char *envp[])
 	char				**env;
 	t_dlist				*token_lst;
 	char				*prompt;
-	int					in_heredoc;
+	int					last_ret;
 
-	in_heredoc = 0;
 	setup_signal_handlers();
 	input = NULL;
 	env = set_env(envp);
+	last_ret = 0;
 	while (1)
 	{
 		if (input)
@@ -157,7 +157,8 @@ int	main(int argc, char *argv[], char *envp[])
 			ast = parse_tokens(token_lst);
 			expand_ast(ast);
 			//print_tree(ast, 0);
-			exec_ast(ast, &env);
+			last_ret = exec_ast(ast, &env);
+			printf("Last_return_value = %d\n", last_ret);
 			ast = NULL;
 		}
 		free(input);
