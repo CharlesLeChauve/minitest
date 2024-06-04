@@ -239,7 +239,7 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
 {
 	if (!ft_strcmp(cmd, "export"))
 	{
-		export(env, &cmd_tab[1]);
+		return (export(env, &cmd_tab[1]));
 	}
 	else if (!ft_strcmp(cmd, "pwd"))
 	{
@@ -324,7 +324,6 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], int out_save, int in
 			perror("waitpid");
 			return (-1);
 		}
-		restore_stds_and_close_dup(out_save, in_save);
 		return (status);
 	}
 }
@@ -352,7 +351,11 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 		return(status);
 	}
 	else
-		return (exec_not_builtin(cmd_block, envp, stdout_save, stdin_save));
+	{
+		status = exec_not_builtin(cmd_block, envp, stdout_save, stdin_save);
+		restore_stds_and_close_dup(stdout_save, stdin_save);
+		return (status);
+	}
 	return (-1);
 }
 
@@ -374,7 +377,7 @@ int	exec_ast(t_ast_node *ast, char **envp[])
 	{
 		ret_value = exec_ast(ast->left, envp);
 		if (ret_value)
-			return (exec_ast(ast->right, envp));
+			ret_value = exec_ast(ast->right, envp);
 		return (ret_value);
 	}
 	else

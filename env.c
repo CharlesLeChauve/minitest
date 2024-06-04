@@ -192,7 +192,7 @@ char *extract_var_id(char *var)
 	{
 		if (var[i] == '=')
 		{
-			index = i;
+			index = i - 1;
 			break ;
 		}
 		i++;
@@ -214,11 +214,13 @@ void	replace_existing_vars(char ***arg, char ***env)
 	{
 		var_id = extract_var_id((*arg)[i]);
 		var = get_env_var(*env, var_id);
-		if (var)
+		if (var && !no_equal((*arg)[i]))
 		{
 			replace_var(env, (*arg)[i], var);
 			remove_from_tab(arg, i);
 		}
+		else if (var)
+			remove_from_tab(arg, i);
 		else
 			i++;
 		var = NULL;

@@ -87,7 +87,7 @@ typedef struct s_ast_node {
 	struct s_ast_node *right;
 } t_ast_node;
 
-
+extern int	g_state;
 
 // utils
 void		swap_char(char *c1, char *c2);
@@ -130,6 +130,8 @@ void	ft_add_char_to_buffer(char **buffer, char c, size_t *len);
 // signal
 void		setup_signal_handlers(void);
 void		handle_sigint(int sig);
+void		handle_main_signal(void);
+void		handle_heredoc_signal(void);
 
 
 // memory

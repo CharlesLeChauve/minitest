@@ -120,21 +120,15 @@ char	*build_prompt(char **env)
 int	main(int argc, char *argv[], char *envp[])
 {
 	char				*input;
-	struct sigaction	sa;
 	t_ast_node			*ast;
 	char				**env;
 	t_dlist				*token_lst;
 	char				*prompt;
+	int					in_heredoc;
 
-	sa.sa_handler = handle_sigint;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
+	in_heredoc = 0;
+	setup_signal_handlers();
 	input = NULL;
-	if (sigaction(SIGINT, &sa, NULL) == -1)
-	{
-		perror("sigaction");
-		exit(EXIT_FAILURE);
-	}
 	env = set_env(envp);
 	while (1)
 	{
