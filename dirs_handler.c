@@ -43,6 +43,16 @@ void	act_env_pwd(char ***env, char *pwd)
 
 int change_directory(char *path, char ***env)
 {
+	DIR	*directory;
+	char mess[64];
+
+	directory = opendir(path);
+	if (!directory)
+	{
+		ft_sprintf(mess, "tash: cd: %s: Not a directory\n", path);
+		ft_putstr_fd(mess, 2);
+		return (1);
+	}
 	if (chdir(path))
 	{
 		perror("chdir() error\n");

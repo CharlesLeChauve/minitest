@@ -10,6 +10,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
+# include <sys/types.h>
+# include <dirent.h>
 # include "./libft/libft.h"
 # include "env.h"
 # define TASH_PROMPT_S "\033[0;37m╭─\033[0;32m"
