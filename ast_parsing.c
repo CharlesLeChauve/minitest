@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-
-
 void	set_quotes_state(t_tkn_info *tkn_info)
 {
 	int same = 1;

@@ -156,7 +156,7 @@ char	*get_env_var(char **env, char *var_id);
 int		print_env(char **env);
 
 //exec.c
-int	exec_ast(t_ast_node *ast, char **envp[]);
+int		exec_ast(t_ast_node *ast, char **envp[]);
 void 	create_exec_tab(t_cmd_block *cmd_block);
 
 
@@ -166,12 +166,30 @@ void	replace_var(char ***env, char *new_var, char *old_var);
 void	replace_existing_vars(char ***arg, char ***env);
 
 //pipes
-int	handle_pipes(t_ast_node *ast, char **envp[]);
+int		handle_pipes(t_ast_node *ast, char **envp[]);
 
 //tab_utils.c
 void	ft_remove_from_strtab(char **tab, int index);
 void	ft_sort_wordtab(char **tab);
 void    restore_stds_and_close_dup(int out_save, int in_save);
+
+//redirs.c
+void    handle_redirs(t_cmd_block *cmd_block);
+
+//path_utils.c
+char    *set_cmd_path(char *envp[], char *cmd);
+
+//file_utils.c
+int	check_acces(char *file, t_open_mode mode);
+int	open_mode(char *path, t_open_mode mode);
+int	open_write(char *file, t_open_mode mode);
+
+//exec_actions.c
+int do_the_builtin(char **env[], char *cmd, char **cmd_tab);
+int is_a_builtin(char *command);
+
+//heredoc.c
+void	heredoc_handle(char *limiter);
 
 int	wait_status(pid_t pid);
 
