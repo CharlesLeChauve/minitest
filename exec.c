@@ -1,10 +1,4 @@
-# include <fcntl.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <stdio.h>
-# include "libft/libft.h"
-# include "minishell.h"
-
+#include "minishell.h"
 
 int exec_command(char **envp[], t_cmd_block *cmd_block)
 {
@@ -48,9 +42,9 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 	stdin_save = dup(STDIN_FILENO);
 	if (!cmd_block->exec_tab[0])
 	{
-		handle_redirs(cmd_block);
+		status = handle_redirs(cmd_block);
 		restore_stds_and_close_dup(stdout_save, stdin_save);
-		return (0);
+		return (status);
 	}
 	if (is_a_builtin(cmd_block->exec_tab[0]))
 	{

@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dirs_handler.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/05 07:17:36 by tgibert           #+#    #+#             */
+/*   Updated: 2024/06/05 07:24:24 by tgibert          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include "env.h"
 
 char	*get_cwd(void)
 {
-	size_t  buffer_size;
+	size_t	buffer_size;
 	char	*path;
 
 	buffer_size = CWD_BUFF;
@@ -27,8 +39,8 @@ void	pwd(void)
 
 void	act_env_pwd(char ***env, char *pwd)
 {
-	char **pwds;
-	char *pwd_ptr;
+	char	**pwds;
+	char	*pwd_ptr;
 
 	pwds = (char **)malloc(3 * sizeof(char *));
 	pwds[0] = ft_strjoin_free("PWD=", get_cwd(), 1);
@@ -41,7 +53,7 @@ void	act_env_pwd(char ***env, char *pwd)
 	replace_existing_vars(&pwds, env);
 }
 
-int change_directory(char *path, char ***env)
+int	change_directory(char *path, char ***env)
 {
 	DIR	*directory;
 
@@ -59,8 +71,6 @@ int change_directory(char *path, char ***env)
 		return (1);
 	}
 	else
-	{
 		act_env_pwd(env, get_cwd());
-	}
 	return (0);
 }

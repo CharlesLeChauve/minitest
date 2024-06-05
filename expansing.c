@@ -42,7 +42,7 @@ t_token_lst *redir_token(char *str)
 	if (ft_isshelloperator(*curr_char) || *curr_char == '\0')
 	{
 		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
-		exit(EXIT_FAILURE);
+		return (NULL);
 	}
 	while (*curr_char && !ft_isshelloperator(*curr_char) && !ft_isspace(*curr_char))
 	{
@@ -167,11 +167,17 @@ void	process_sub_token(char *sub_token, t_cmd_block *block)
 	{
 		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<'))
 		{
-			fprintf(stderr, "tash: `<>' operator not handled\n");
-			exit(EXIT_FAILURE);
+			fprintf(stderr, "tash: wrong redir operator\n");
+			return ;
 		}
 		new_arg = ft_lstnew(redir_token(sub_token));
-		ft_lstadd_back(&(block->redirs), new_arg);
+		if (new_arg)
+			ft_lstadd_back(&(block->redirs), new_arg);
+		else
+		{
+			free(sub_token);
+			sub_token = NULL;
+		}
 	}
 	else
 	{

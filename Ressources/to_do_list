@@ -1,0 +1,6 @@
+- Ctrl + C dans heredoc;
+
+- Heredoc doit se produire avant  | ls dans cat <<END | ls
+
+- Heredoc histo ?
+

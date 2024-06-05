@@ -151,9 +151,13 @@ char	*get_cwd(void);
 //env
 int		export(char ***env, char **arg);
 int		unset(char ***env, char **args);
+int		no_equal(char *var);
 void	*ft_realloc(void *ptr, size_t old_size, size_t new_size);
-char	*get_env_var(char **env, char *var_id);
 int		print_env(char **env);
+
+//env_utils.c
+char	*get_env_var(char **env, char *var_id);
+int		get_env_index(char **env, char *var_id);
 
 //exec.c
 int		exec_ast(t_ast_node *ast, char **envp[]);
@@ -169,12 +173,13 @@ void	replace_existing_vars(char ***arg, char ***env);
 int		handle_pipes(t_ast_node *ast, char **envp[]);
 
 //tab_utils.c
-void	ft_remove_from_strtab(char **tab, int index);
 void	ft_sort_wordtab(char **tab);
 void    restore_stds_and_close_dup(int out_save, int in_save);
+void	remove_from_tab(char ***tab, int index);
+void	add_strs_to_strtab(char **strs, char ***strtab);
 
 //redirs.c
-void    handle_redirs(t_cmd_block *cmd_block);
+int		handle_redirs(t_cmd_block *cmd_block);
 
 //path_utils.c
 char    *set_cmd_path(char *envp[], char *cmd);

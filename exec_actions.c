@@ -54,8 +54,5 @@ int	wait_status(pid_t pid)
 		return (ret_val);
 	}
 	else
-	{
-		perror("Error waitpid");
 		return (-1);
-	}
 }
