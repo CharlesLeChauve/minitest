@@ -31,6 +31,10 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
 			exit(); */
 		return (change_directory(cmd_tab[1], env));
 	}
+	else if (!ft_strcmp(cmd, "exit"))
+	{
+		ft_exit(cmd_tab);
+	}
 	else if (!ft_strcmp(cmd, "unset"))
 	{
 		return (unset(env, &cmd_tab[1]));

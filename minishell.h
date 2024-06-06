@@ -192,5 +192,6 @@ int is_a_builtin(char *command);
 void	heredoc_handle(char *limiter);
 
 int	wait_status(pid_t pid);
+void ft_exit(char **args);
 
 #endif

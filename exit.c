@@ -25,21 +25,21 @@ void ft_exit(char **args)
 {
     int exit_code;
     
-    exit_code = ft_atoi(args[1]);
     if (args[1] == NULL)
         exit(0);
-    else if (ft_is_numeric(args[1]))
+    exit_code = ft_atoi(args[1]);
+    if (ft_is_numeric(args[1]))
     {
         if (args[2] != NULL)
         {
-            ft_putstr_fd(2, "exit: too many arguments\n");
+            ft_putstr_fd("exit: too many arguments\n", 2);
             return ;
         }
         exit(exit_code);
     }
     else if (!ft_is_numeric(args[1]))
     {
-        ft_putstr_fd(2, "exit: %s: numeric argument required\n");
+        ft_putstr_fd("exit: numeric argument required\n", 2);
         exit(2);
     }
 }
