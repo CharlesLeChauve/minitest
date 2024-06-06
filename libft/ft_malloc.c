@@ -6,7 +6,7 @@
 /*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 18:51:12 by pfilippi          #+#    #+#             */
-/*   Updated: 2024/06/06 09:15:37 by anporced         ###   ########.fr       */
+/*   Updated: 2024/06/06 09:19:55 by anporced         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,24 +66,22 @@ void *ft_calloc(size_t count, size_t size)
 
 void ft_free(void *ptr)
 {
-	t_reg *reg;
-	int i;
-	int j;
+	t_reg	*reg;
+	int		i;
+	int		j;
 
 	i = -1;
 	reg = get_main_reg();
 	if (ptr == NULL)
 		return ;
-	while (++i < reg->size) {
+	while (++i < reg->size)
+	{
 		if (reg->ptrs[i] == ptr)
 		{
 			free(ptr);
-			j = i;
-			while (j < reg->size - 1)
-			{
+			j = i - 1;
+			while (++j < reg->size - 1)
 				reg->ptrs[j] = reg->ptrs[j + 1];
-				j++;
-			}
 			reg->ptrs = realloc(reg->ptrs, (reg->size - 1) * sizeof(void *));
 			reg->size--;
 			return ;
