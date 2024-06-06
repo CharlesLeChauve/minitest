@@ -18,7 +18,7 @@ void ft_echo(char **args)
 			if (args[i][j] != 'n')
 			{
 				valid_option = 0;
-				break;
+				break ;
 			}
 			j++;
 		}
@@ -28,7 +28,7 @@ void ft_echo(char **args)
 			i++;
 		}
 		else
-			break;
+			break ;
 	}
 	while (args[i])
 	{
