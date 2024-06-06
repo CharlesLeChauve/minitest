@@ -16,6 +16,10 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
 	{
 		return (export(env, &cmd_tab[1]));
 	}
+	else if (!ft_strcmp(cmd, "echo"))
+	{
+		ft_echo(cmd_tab);
+	}
 	else if (!ft_strcmp(cmd, "pwd"))
 	{
 		pwd();
@@ -47,7 +51,7 @@ int	wait_status(pid_t pid)
 	int	status;
 	int	ret_val;
 
-	if (waitpid(pid, &status, 0) == -1) 
+	if (waitpid(pid, &status, 0) == -1)
 	{
 		perror("waitpid");
 		return (-1);

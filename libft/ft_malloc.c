@@ -6,7 +6,7 @@
 /*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 18:51:12 by pfilippi          #+#    #+#             */
-/*   Updated: 2024/06/06 09:19:55 by anporced         ###   ########.fr       */
+/*   Updated: 2024/06/06 09:21:49 by anporced         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,9 @@ void ft_free(void *ptr)
 
 void *ft_realloc2(void *ptr, size_t size)
 {
-	t_reg *reg;
+	t_reg	*reg;
 	int		i;
-	void *new_ptr;
+	void	*new_ptr;
 
 	reg = get_main_reg();
 	i = -1;
