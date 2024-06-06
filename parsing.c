@@ -124,7 +124,37 @@ char *prompted_readline(char *env[])
 
 	prompt = build_prompt(env);
 	input = readline(prompt);
+	free(prompt);
 	return (input);
+}
+
+void	del_tkn_node(void *node_ptr)
+{
+	t_token_lst *node;
+
+	node = (t_token_lst *)node_ptr;
+	free(node->text);
+	node->text = NULL;
+	free(node);
+}
+
+void	free_ast(t_ast_node *ast)
+{
+	if (ast == NULL)
+		return ;
+	free_ast(ast->left);
+	free_ast(ast->right);
+	if (ast->value != NULL)
+		free(ast->value);
+	free(ast);
+}
+
+void	clean_shell_instance(t_shell *shl)
+{
+	// free_ast(shl->ast);
+	shl->ast = NULL;
+	ft_dlstclear(&(shl->token_lst), del_tkn_node);
+	shl->token_lst = NULL;
 }
 
 int	main(int argc, char *argv[], char *envp[])
@@ -160,9 +190,9 @@ int	main(int argc, char *argv[], char *envp[])
 			shl.ast = parse_tokens(shl.token_lst);
 			//expand_ast(shl.ast);
 			//print_tree(ast, 0);
-			shl.last_ret = exec_ast(shl.ast, &shl.env);
+			shl.last_ret = exec_ast(shl.ast, &shl.env, &shl.last_ret);
 			printf("Last_return_value = %d\n", shl.last_ret);
-			shl.ast = NULL;
+			clean_shell_instance(&shl);
 		}
 		free(input);
 		input = NULL;

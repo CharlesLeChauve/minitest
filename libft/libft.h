@@ -79,6 +79,7 @@ void	ft_dlstadd_front(t_dlist **lst, t_dlist *new);
 void	ft_lstadd_back(t_list **lst, t_list *new);
 void	ft_dlstadd_back(t_dlist **lst, t_dlist *new);
 void	ft_lstclear(t_list **lst, void (*del)(void *));
+void	ft_dlstclear(t_dlist **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f) (void *));
 int		ft_memcmp(const void *s1, const void *s2, size_t n);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);

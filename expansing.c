@@ -93,8 +93,9 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 void	extract_command(char **ptr, t_cmd_block *block)
 {
 	t_sm	state;
-	char	*start = *ptr;
-
+	char	*start;
+	
+	start = *ptr;
 	state = reg;
 	set_quotes_state_in_cmd_block(ptr, &state);
 	while (**ptr)
@@ -274,7 +275,7 @@ void	print_cmd_block(t_cmd_block *cmd_block)
 		}
 }
 
-void	expand_ast(t_ast_node *node)
+void	expand_ast(t_ast_node *node, int last_ret, char **env)
 {
 	t_cmd_block	*cmd_block;
 

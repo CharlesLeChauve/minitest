@@ -17,9 +17,9 @@ void do_pipe_side(t_pipe_info *pipe_info, char **envp[], t_ast_node *ast, int si
 			dup2(pipe_info->pipe_fds[side ^ 1], STDIN_FILENO);
 		close(pipe_info->pipe_fds[side ^ 1]);
 		if (side == 0)
-			exit(exec_ast(ast->left, envp));
+			exit(exec_ast(ast->left, envp, &(int){0}));
 		else
-			exit(exec_ast(ast->right, envp));
+			exit(exec_ast(ast->right, envp, &(int){0}));
 	}
 }
 

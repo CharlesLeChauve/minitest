@@ -62,27 +62,30 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 	return (-1);
 }
 
-int	exec_ast(t_ast_node *ast, char **envp[])
+int	exec_ast(t_ast_node *ast, char **envp[], int *last_ret)
 {
-	int ret_value;
-	
-	ret_value = 0;
-	expand_ast(ast);
+	expand_ast(ast, *last_ret, *envp);
 	if (ast->type == pipe_op)
-		return (handle_pipes(ast, envp));
+	{
+		*last_ret = handle_pipes(ast, envp);
+		return (*last_ret);
+	}
 	else if (ast->type == and_op)
 	{
-		ret_value = exec_ast(ast->left, envp);
-		if (!ret_value)
-			return (exec_ast(ast->right, envp));
-		return (ret_value);
+		*last_ret = exec_ast(ast->left, envp, last_ret);
+		if (!*last_ret)
+		{
+			*last_ret = exec_ast(ast->right, envp, last_ret);
+			return (*last_ret);
+		}
+		return (*last_ret);
 	}
 	else if (ast->type == or_op)
 	{
-		ret_value = exec_ast(ast->left, envp);
-		if (ret_value)
-			ret_value = exec_ast(ast->right, envp);
-		return (ret_value);
+		*last_ret = exec_ast(ast->left, envp, last_ret);
+		if (*last_ret)
+			*last_ret = exec_ast(ast->right, envp, last_ret);
+		return (*last_ret);
 	}
 	else
 		return (exec_command_and_redirs(ast->cmd_block, envp));

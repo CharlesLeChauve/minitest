@@ -118,7 +118,7 @@ t_ast_node	*parse_tokens(t_dlist *tokens);
 t_ast_node	*construct_ast_from_tokens(t_dlist *token_list);
 
 // expansing
-void		expand_ast(t_ast_node *node);
+void	expand_ast(t_ast_node *node, int last_ret, char **env);
 void		fill_cmd_block(t_cmd_block *block, t_dlist *tokens);
 t_cmd_block	*init_cmd_block(void);
 void	print_cmd_block(t_cmd_block *cmd_block);
@@ -155,7 +155,7 @@ char	*get_env_var(char **env, char *var_id);
 int		get_env_index(char **env, char *var_id);
 
 //exec.c
-int		exec_ast(t_ast_node *ast, char **envp[]);
+int		exec_ast(t_ast_node *ast, char **envp[], int *last_ret);
 void 	create_exec_tab(t_cmd_block *cmd_block);
 
 

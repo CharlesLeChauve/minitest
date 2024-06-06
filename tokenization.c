@@ -155,14 +155,14 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		if (*tkn_info->curr_char == '|')
 		{
 			tkn_info->curr_char++;
-			return (token_new(or_op, ft_strdup("||")));
+			return (token_new(or_op, "||"));
 		}
-		return (token_new(pipe_op, ft_strdup("|")));
+		return (token_new(pipe_op, "|"));
 	}
 	else if (*tkn_info->curr_char == '&' && *(tkn_info->curr_char + 1) == '&' && tkn_info->state == reg)
 	{
 		tkn_info->curr_char += 2;
-		return (token_new(and_op, ft_strdup("&&")));
+		return (token_new(and_op, "&&"));
 	}
 	return (cmd_token(tkn_info));
 }
@@ -185,5 +185,6 @@ t_dlist	*tokenize(char *input)
 		ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(next_token(&tkn_info)));
 		last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
 	}
+	free (tkn_info.input);
 	return (tkn_info.token_lst);
 }
