@@ -285,8 +285,8 @@ void	expand_ast(t_ast_node *node)
 		node->cmd_block = init_cmd_block();
 		fill_cmd_block(node->cmd_block, node->tokens);
 	}
-	expand_ast(node->left);
-	expand_ast(node->right);
+	// expand_ast(node->left);
+	// expand_ast(node->right);
 }
 
 void	clear_cmd_block(t_cmd_block *block)
