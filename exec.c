@@ -67,6 +67,7 @@ int	exec_ast(t_ast_node *ast, char **envp[])
 	int ret_value;
 	
 	ret_value = 0;
+	expand_ast(ast);
 	if (ast->type == pipe_op)
 		return (handle_pipes(ast, envp));
 	else if (ast->type == and_op)

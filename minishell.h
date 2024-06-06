@@ -69,17 +69,6 @@ typedef struct s_cmd_block
 	t_list	*redirs;
 } t_cmd_block;
 
-/*
-typedef struct s_ast_node {
-	t_token_type    type;
-	t_dlist  	   *tokens;
-	char			*value;
-	struct s_ast_node *left;
-	struct s_ast_node *right;
-} t_ast_node;*/
-
-
-
 typedef struct s_ast_node {
 	t_token_type    type;
 	char		*value;
@@ -89,7 +78,13 @@ typedef struct s_ast_node {
 	struct s_ast_node *right;
 } t_ast_node;
 
-extern int	g_state;
+typedef struct s_shell
+{
+	t_dlist		*token_lst;
+	t_ast_node	*ast;
+	int			last_ret;
+	char		**env;
+}	t_shell;
 
 // utils
 void		swap_char(char *c1, char *c2);

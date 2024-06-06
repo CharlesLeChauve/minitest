@@ -117,52 +117,55 @@ char	*build_prompt(char **env)
 	return (prompt);
 }
 
+char *prompted_readline(char *env[])
+{
+	char *prompt;
+	char *input;
+
+	prompt = build_prompt(env);
+	input = readline(prompt);
+	return (input);
+}
+
 int	main(int argc, char *argv[], char *envp[])
 {
-	char				*input;
-	t_ast_node			*ast;
-	char				**env;
-	t_dlist				*token_lst;
-	char				*prompt;
-	int					last_ret;
+	char	*input;
+	t_shell	shl;
 
 	setup_signal_handlers();
 	input = NULL;
-	env = set_env(envp);
-	last_ret = 0;
+	shl.env = set_env(envp);
+	shl.last_ret = 0;
 	while (1)
 	{
 		if (input)
 			input = ft_strjoin_free(input, readline("> "), 1);
 		else
-		{
-			prompt = build_prompt(env);
-			input = readline(prompt);
-		}
+			input = prompted_readline(shl.env);
 		if (!input)
 			break ;
 		if (input && *input)
 		{
 			add_history(input);
-			token_lst = tokenize(input);
-			if (verify_tokens(token_lst) == -1)
+			shl.token_lst = tokenize(input);
+			if (verify_tokens(shl.token_lst) == -1)
 				continue ;
-			else if (!verify_tokens(token_lst))
+			else if (!verify_tokens(shl.token_lst))
 			{
 				fprintf(stderr, "Error: Syntax error in input\n");
 				free(input);
 				input = NULL;
 				continue ;
 			}
-			ast = parse_tokens(token_lst);
-			expand_ast(ast);
+			shl.ast = parse_tokens(shl.token_lst);
+			//expand_ast(shl.ast);
 			//print_tree(ast, 0);
-			last_ret = exec_ast(ast, &env);
-			printf("Last_return_value = %d\n", last_ret);
-			ast = NULL;
+			shl.last_ret = exec_ast(shl.ast, &shl.env);
+			printf("Last_return_value = %d\n", shl.last_ret);
+			shl.ast = NULL;
 		}
 		free(input);
 		input = NULL;
 	}
-	ft_free_tab(env);
+	ft_free_tab(shl.env);
 }
