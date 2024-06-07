@@ -41,6 +41,13 @@ typedef enum {
 	OR
 } NodeType;
 
+typedef struct s_std_fd_save
+{
+	int	std_out;
+	int	std_in;
+	int std_err;
+}		t_std_fd_save;
+
 typedef struct s_pipe_infos
 {
 	int		pipe_fds[2];
@@ -170,7 +177,7 @@ int		handle_pipes(t_ast_node *ast, char **envp[]);
 
 //tab_utils.c
 void	ft_sort_wordtab(char **tab);
-void    restore_stds_and_close_dup(int out_save, int in_save);
+void    restore_stds_and_close_dup(int in_save, int out_save, int err_save);
 void	remove_from_tab(char ***tab, int index);
 void	add_strs_to_strtab(char **strs, char ***strtab);
 
@@ -191,7 +198,7 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab);
 int is_a_builtin(char *command);
 
 //heredoc.c
-int	heredoc_handle(char *limiter);
+int	heredoc_handle(char *limiter, int save_out);
 
 int	wait_status(pid_t pid);
 void ft_exit(char **args);

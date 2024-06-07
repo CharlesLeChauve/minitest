@@ -135,6 +135,7 @@ t_token_lst	*subshell_token(t_tkn_info *tkn_info)
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len);
 		tkn_info->curr_char++;
 	}
+	buffer[ft_strlen(buffer) - 1] = '\0';
 	token->text = buffer;
 	return (token);
 }
