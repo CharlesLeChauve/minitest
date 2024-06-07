@@ -2,12 +2,26 @@
 
 int exec_command(char **envp[], t_cmd_block *cmd_block)
 {
-	char *path;
+	char	*path;
+	char	err_msg[124];
+	struct stat	path_stat;
 
+	ft_bzero(err_msg, 124);
+	stat(cmd_block->exec_tab[0], &path_stat);
+	if (S_ISDIR(path_stat.st_mode))
+	{
+		ft_sprintf(err_msg, "tash: %s: Is a directory\n", cmd_block->exec_tab[0]);
+		ft_putstr_fd(err_msg, STDERR_FILENO);
+		exit (126);
+	}
 	path = set_cmd_path(*envp, cmd_block->exec_tab[0]);
-	execve(path, cmd_block->exec_tab, *envp);
-	perror("execve");
-	exit(EXIT_FAILURE);
+	if (execve(path, cmd_block->exec_tab, *envp) == -1)
+	{
+		ft_sprintf(err_msg, "command not found: %s\n", cmd_block->exec_tab[0]);
+		ft_putstr_fd(err_msg, STDERR_FILENO);
+		//ft_freetab(cmd_arr);
+		exit (EXIT_FAILURE);
+	}
 }
 
 int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], int out_save, int in_save)
@@ -55,6 +69,7 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 	}
 	else
 	{
+
 		status = exec_not_builtin(cmd_block, envp, stdout_save, stdin_save);
 		restore_stds_and_close_dup(stdout_save, stdin_save);
 		return (status);
