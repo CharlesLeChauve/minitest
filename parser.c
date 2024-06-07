@@ -191,30 +191,3 @@ void print_ast(t_ast_node *root)
 	printf("AST Structure:\n");
 	print_tree(root, 0);
 }
-
-
-
-// int ast_contructor() {
-//     // Supposons que vous ayez une liste de jetons générés par le lexer
-//     Token *tokens = (Token *)malloc(sizeof(Token));
-//     tokens->text = "ls";
-//     tokens->type = COMMAND;
-//     tokens->next = (Token *)malloc(sizeof(Token));
-//     tokens->next->text = "|";
-//     tokens->next->type = PIPE;
-//     tokens->next->next = (Token *)malloc(sizeof(Token));
-//     tokens->next->next->text = "grep";
-//     tokens->next->next->type = COMMAND;
-//     tokens->next->next->next = NULL;
-
-//     // Construire l'arbre syntaxique
-//     t_ast_node *root = parse_tokens(tokens);
-
-//     // Afficher l'arbre syntaxique (à des fins de débogage)
-//     print_tree(root);
-
-//     // Libérer la mémoire utilisée par l'arbre et les jetons
-//     free_tree(root);
-
-//     return 0;
-// }

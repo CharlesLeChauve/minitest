@@ -22,26 +22,21 @@ void create_exec_tab(t_cmd_block *cmd_block) {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-
     int index = 0;
-
     // Ajouter la command
     cmd_block->exec_tab[index++] = cmd_block->command;
-
     // Ajouter les options
-    t_list *current = cmd_block->option;
-    while (current) {
-        cmd_block->exec_tab[index++] = (char *)current->content;
-        current = current->next;
-    }
-
+    // while (current) {
+    //     cmd_block->exec_tab[index++] = (char *)current->content;
+    //     current = current->next;
+    // }
     // Ajouter les arguments
+    t_list *current = cmd_block->option;
     current = cmd_block->arg;
     while (current) {
         cmd_block->exec_tab[index++] = (char *)current->content;
         current = current->next;
     }
-
     // Terminer le tableau avec NULL
     cmd_block->exec_tab[index] = NULL;
 }

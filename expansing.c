@@ -159,12 +159,13 @@ void	process_sub_token(char *sub_token, t_cmd_block *block)
 	t_list	*new_opt;
 	t_list	*new_arg;
 
-	if (sub_token[0] == '-')
+/* 	if (sub_token[0] == '-')
 	{
 		new_opt = ft_lstnew(sub_token);
 		ft_lstadd_back(&(block->option), new_opt);
 	}
-	else if (sub_token[0] == '>' || sub_token[0] == '<')
+	else  */
+	if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
 		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<'))
 		{
