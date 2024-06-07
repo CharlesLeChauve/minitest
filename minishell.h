@@ -198,7 +198,7 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab);
 int is_a_builtin(char *command);
 
 //heredoc.c
-int	heredoc_handle(char *limiter, int save_out);
+int	heredoc_handle(char *limiter);
 
 int	wait_status(pid_t pid);
 void ft_exit(char **args);

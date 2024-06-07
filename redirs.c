@@ -6,13 +6,13 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/07 11:38:01 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/07 17:17:28 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void    restore_stds_and_close_dup(int out_save, int in_save)
+void    restore_stds_and_close_dup(int out_save, int in_save, int err_save)
 {
 	if  (out_save != -1)
 	{
@@ -23,6 +23,11 @@ void    restore_stds_and_close_dup(int out_save, int in_save)
 	{
 		dup2(in_save, STDIN_FILENO);
 		close(in_save);
+	}
+	if  (err_save != -1)
+	{
+		dup2(err_save, STDOUT_FILENO);
+		close(err_save);
 	}
 }
 
@@ -45,9 +50,9 @@ int    make_redir_in(t_token_lst *redir, int save_out)
 	else if (redir->type == heredoc)
 	{
 		fd_save = dup(STDOUT_FILENO);
-		restore_stds_and_close_dup(save_out, -1);
+		restore_stds_and_close_dup(save_out, -1, -1);
 		heredoc_handle(redir->text);
-		restore_stds_and_close_dup(fd_save, -1);
+		restore_stds_and_close_dup(fd_save, -1, -1);
 	}
 	return (0);
 }
