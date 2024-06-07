@@ -168,6 +168,7 @@ int	main(int argc, char *argv[], char *envp[])
 	shl.last_ret = 0;
 	while (1)
 	{
+		printf("Last_return_value = %d\n", shl.last_ret);
 		if (input)
 			input = ft_strjoin_free(input, readline("> "), 1);
 		else
@@ -184,6 +185,7 @@ int	main(int argc, char *argv[], char *envp[])
 			{
 				fprintf(stderr, "Error: Syntax error in input\n");
 				free(input);
+				shl.last_ret = 2;
 				input = NULL;
 				continue ;
 			}
@@ -191,7 +193,6 @@ int	main(int argc, char *argv[], char *envp[])
 			//expand_ast(shl.ast);
 			//print_tree(ast, 0);
 			shl.last_ret = exec_ast(shl.ast, &shl.env, &shl.last_ret);
-			printf("Last_return_value = %d\n", shl.last_ret);
 			clean_shell_instance(&shl);
 		}
 		free(input);

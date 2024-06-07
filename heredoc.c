@@ -6,11 +6,44 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:03 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/05 07:18:04 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/07 11:40:01 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	handle_sigint_h(int sig)
+{
+	exit(13);
+}
+
+void	handle_sigquit_h()
+{
+	return ;
+}
+
+struct sigaction	*setup_signal_handlers_h(void)
+{
+	struct sigaction	sa_int;
+	struct sigaction	sa_old_int;
+	struct sigaction	sa_quit;
+
+	sa_int.sa_handler = handle_sigint_h;
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = SA_RESTART;
+	if (sigaction(SIGINT, &sa_int, &sa_old_int) == -1)
+	{
+		perror("sigaction");
+		exit(EXIT_FAILURE);
+	}
+	sa_quit.sa_handler = handle_sigquit_h;
+    sa_quit.sa_flags = 0;
+    sigemptyset(&sa_quit.sa_mask);
+    if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
+}
 
 void	read_heredoc(char *limiter)
 {
@@ -22,7 +55,7 @@ void	read_heredoc(char *limiter)
 		if (nl == NULL)
 		{
 			ft_putstr_fd(
-				"Error : End Of File before finding here_doc LIMITER", 2);
+				"Error : End Of File before finding here_doc LIMITER\n", 2);
 			exit(EXIT_FAILURE);
 		}
 		if (!ft_strncmp(nl, limiter, ft_strlen(limiter))
@@ -36,24 +69,34 @@ void	read_heredoc(char *limiter)
 	}
 }
 
-void	heredoc_handle(char *limiter)
+int	heredoc_handle(char *limiter)
 {
 	int	pipe_fd[2];
 	int	pid;
+	int	status;
 
 	if (pipe(pipe_fd) == -1)
 		exit(-1);
 	pid = fork();
 	if (pid == 0)
 	{
+		setup_signal_handlers_h();
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1], 1);
 		read_heredoc(limiter);
 	}
-	else if (pid > 0)
+	else
 	{
-		waitpid(pid, &(int){0}, 0);
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
+		if (waitpid(pid, &status, 0) == -1)
+		{
+			perror("waitpid");
+			return (-1);
+		}
+		if (WIFEXITED(status))
+		{
+			return (WEXITSTATUS(status));
+		}
 	}
 }

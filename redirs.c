@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/05 13:27:21 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/07 11:38:01 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,10 @@ void    restore_stds_and_close_dup(int out_save, int in_save)
 	}
 }
 
-int    make_redir_in(t_token_lst *redir)
+int    make_redir_in(t_token_lst *redir, int save_out)
 {
 	int fd;
+	int	fd_save;
 
 	fd = -1;
 	if (redir->type == redir_in)
@@ -42,7 +43,12 @@ int    make_redir_in(t_token_lst *redir)
 			return (1);
 	}
 	else if (redir->type == heredoc)
+	{
+		fd_save = dup(STDOUT_FILENO);
+		restore_stds_and_close_dup(save_out, -1);
 		heredoc_handle(redir->text);
+		restore_stds_and_close_dup(fd_save, -1);
+	}
 	return (0);
 }
 
@@ -75,7 +81,7 @@ int    make_redir_out(t_token_lst *redir)
 	return (0);
 }
 
-int    handle_redirs(t_cmd_block *cmd_block)
+int    handle_redirs(t_cmd_block *cmd_block, int save_out)
 {
 	t_list  *redirs;
 
@@ -90,7 +96,7 @@ int    handle_redirs(t_cmd_block *cmd_block)
 				if (make_redir_out((t_token_lst *)redirs->content))
 					return (-1) ;
 			if (((t_token_lst *)redirs->content)->type == redir_in || ((t_token_lst *)redirs->content)->type == heredoc)
-				if (make_redir_in((t_token_lst *)redirs->content))
+				if (make_redir_in((t_token_lst *)redirs->content, save_out))
 					return (-1);
 			redirs = redirs->next;
 		}

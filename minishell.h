@@ -175,7 +175,8 @@ void	remove_from_tab(char ***tab, int index);
 void	add_strs_to_strtab(char **strs, char ***strtab);
 
 //redirs.c
-int		handle_redirs(t_cmd_block *cmd_block);
+int    handle_redirs(t_cmd_block *cmd_block, int save_out);
+int    make_redir_in(t_token_lst *redir, int save_out);
 
 //path_utils.c
 char    *set_cmd_path(char *envp[], char *cmd);
@@ -190,12 +191,14 @@ int do_the_builtin(char **env[], char *cmd, char **cmd_tab);
 int is_a_builtin(char *command);
 
 //heredoc.c
-void	heredoc_handle(char *limiter);
+int	heredoc_handle(char *limiter);
 
 int	wait_status(pid_t pid);
 void ft_exit(char **args);
 
 //echo.c
 void ft_echo(char **args);
+
+
 
 #endif

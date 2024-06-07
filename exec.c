@@ -17,10 +17,10 @@ int exec_command(char **envp[], t_cmd_block *cmd_block)
 	path = set_cmd_path(*envp, cmd_block->exec_tab[0]);
 	if (execve(path, cmd_block->exec_tab, *envp) == -1)
 	{
-		ft_sprintf(err_msg, "command not found: %s\n", cmd_block->exec_tab[0]);
+		ft_sprintf(err_msg, "tash: %s: command not found\n", cmd_block->exec_tab[0]);
 		ft_putstr_fd(err_msg, STDERR_FILENO);
 		//ft_freetab(cmd_arr);
-		exit (EXIT_FAILURE);
+		exit (127);
 	}
 }
 
@@ -38,7 +38,7 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], int out_save, int in
 	}
 	if (pid == 0) 
 	{
-		handle_redirs(cmd_block);
+		handle_redirs(cmd_block, out_save);
 		exec_command(envp, cmd_block);
 	}
 	else
@@ -56,13 +56,13 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 	stdin_save = dup(STDIN_FILENO);
 	if (!cmd_block->exec_tab[0])
 	{
-		status = handle_redirs(cmd_block);
+		status = handle_redirs(cmd_block, stdout_save);
 		restore_stds_and_close_dup(stdout_save, stdin_save);
 		return (status);
 	}
 	if (is_a_builtin(cmd_block->exec_tab[0]))
 	{
-		handle_redirs(cmd_block);
+		handle_redirs(cmd_block, stdout_save);
 		status = do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
 		restore_stds_and_close_dup(stdout_save, stdin_save);
 		return(status);
