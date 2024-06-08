@@ -156,14 +156,26 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		if (*tkn_info->curr_char == '|')
 		{
 			tkn_info->curr_char++;
+			if (*tkn_info->curr_char == '|')
+				return (NULL);
 			return (token_new(or_op, "||"));
 		}
+		else if (*tkn_info->curr_char == '&')
+			return (NULL);
 		return (token_new(pipe_op, "|"));
 	}
-	else if (*tkn_info->curr_char == '&' && *(tkn_info->curr_char + 1) == '&' && tkn_info->state == reg)
+	else if (*tkn_info->curr_char == '&' && tkn_info->state == reg)
 	{
-		tkn_info->curr_char += 2;
-		return (token_new(and_op, "&&"));
+		tkn_info->curr_char++;
+		if (*tkn_info->curr_char == '&')
+		{
+			tkn_info->curr_char++;
+			if (*tkn_info->curr_char == '&')
+				return (NULL);
+			return (token_new(and_op, "&&"));
+		}
+		else if (*tkn_info->curr_char == '|')
+			return (NULL);
 	}
 	return (cmd_token(tkn_info));
 }
@@ -172,6 +184,7 @@ t_dlist	*tokenize(char *input)
 {
 	t_dlist		*last;
 	t_tkn_info	tkn_info;
+	t_token_lst	*new_token;
 
 	if (!input || !*input)
 		return (NULL);
@@ -183,9 +196,16 @@ t_dlist	*tokenize(char *input)
 	last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
 	while (last && ((t_token_lst *)(last->content))->type != eol)
 	{
-		ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(next_token(&tkn_info)));
+		new_token = next_token(&tkn_info);
+		if (!new_token)
+		{
+			free(tkn_info.input);
+			return (NULL);
+		}
+		ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
 		last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
 	}
-	free (tkn_info.input);
+	free(tkn_info.input);
 	return (tkn_info.token_lst);
 }
+
