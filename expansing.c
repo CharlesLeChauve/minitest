@@ -113,34 +113,27 @@ char	*extract_sub_token(char **ptr)
 {
 	char	*start = *ptr;
 	char	*token;
-	int		in_quotes = 0;
-	char	quote_char = '\0';
+	t_sm	state;
 	size_t	len = 0;
 
-	if (**ptr == '<' || **ptr =='>')
+	state = reg;
+	if (**ptr == '<' || **ptr == '>')
 	{
 		while (**ptr == '>' || **ptr == '<')
 			(*ptr)++;
 		while (**ptr == ' ')
 			(*ptr)++;
 	}
-	while (**ptr && (in_quotes || !ft_isspace(**ptr)))
+	while (**ptr && (state != reg || !ft_isspace(**ptr)))
 	{
-		if (**ptr == '"' || **ptr == '\'')
-		{
-			if (in_quotes && **ptr == quote_char)
-				in_quotes = 0;
-			else if (!in_quotes)
-			{
-				in_quotes = 1;
-				quote_char = **ptr;
-			}
-		}
-		else
+		set_quotes_state_in_cmd_block(ptr, &state);
+		if (state == reg && (ft_isspace(**ptr) || ft_isshelloperator(**ptr)))
+			break;
+		if (**ptr != '"' && **ptr != '\'')
 			len++;
 		(*ptr)++;
 	}
-	token = malloc(len + 3);
+	token = malloc(len + 4);
 	if (!token)
 		return (NULL);
 	len = 0;
@@ -151,20 +144,33 @@ char	*extract_sub_token(char **ptr)
 		start++;
 	}
 	token[len] = '\0';
+	printf("token = %s\n",token);
 	return (token);
 }
 
-void	process_sub_token(char *sub_token, t_cmd_block *block)
+void	process_sub_token(char *sub_token, t_cmd_block *block, char **env)
 {
 	t_list	*new_opt;
 	t_list	*new_arg;
+	char	*env_var_value;
 
-/* 	if (sub_token[0] == '-')
+	if (sub_token[0] == '$')
 	{
-		new_opt = ft_lstnew(sub_token);
-		ft_lstadd_back(&(block->option), new_opt);
+		env_var_value = get_env_var(env, sub_token + 1);
+		if (env_var_value)
+		{
+			// Remplacer sub_token par la valeur de la variable d'environnement
+			free(sub_token);
+			sub_token = ft_strdup(env_var_value);
+		}
+		else
+		{
+			// Si la variable n'est pas trouvée, gérer l'erreur ou l'ignorer
+			fprintf(stderr, "tash: %s: Undefined variable\n", sub_token + 1);
+			free(sub_token);
+			return;
+		}
 	}
-	else  */
 	if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
 		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<'))
@@ -175,11 +181,11 @@ void	process_sub_token(char *sub_token, t_cmd_block *block)
 		new_arg = ft_lstnew(redir_token(sub_token));
 		if (new_arg)
 			ft_lstadd_back(&(block->redirs), new_arg);
-		else
-		{
-			free(sub_token);
-			sub_token = NULL;
-		}
+		// else
+		// {
+		// 	free(sub_token);
+		// 	sub_token = NULL;
+		// }
 	}
 	else
 	{
@@ -188,7 +194,7 @@ void	process_sub_token(char *sub_token, t_cmd_block *block)
 	}
 }
 
-void	parse_command_option(char *token, t_cmd_block *block)
+void	parse_command_option(char *token, t_cmd_block *block, char **env)
 {
 	char	*ptr = token;
 	char	*sub_token;
@@ -209,13 +215,13 @@ void	parse_command_option(char *token, t_cmd_block *block)
 			else
 			{
 				sub_token = extract_sub_token(&ptr);
-				process_sub_token(sub_token, block);
+				process_sub_token(sub_token, block, env);
 			}
 		}
 	}
 }
 
-void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
+void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 {
 	t_dlist		*current;
 	t_list		*new_redir;
@@ -235,10 +241,27 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens)
 			current = current->next;
 			continue;
 		}
-		parse_command_option(token_text, block);
+		parse_command_option(token_text, block, env);
 		current = current->next;
 	}
 }
+
+// ==3495== 8 bytes in 1 blocks are definitely lost in loss record 8 of 93
+// ==3495==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+// ==3495==    by 0x10B977: extract_sub_token (expansing.c:143)
+// ==3495==    by 0x10BBC7: parse_command_option (expansing.c:211)
+// ==3495==    by 0x10BC6F: fill_cmd_block (expansing.c:238)
+// ==3495==    by 0x10BE0B: expand_ast (expansing.c:288)
+// ==3495==    by 0x10C19B: exec_ast (exec.c:80)
+// ==3495==    by 0x10C58B: do_pipe_side (pipes.c:22)
+// ==3495==    by 0x10C5F7: do_pipes (pipes.c:29)
+// ==3495==    by 0x10C6C3: handle_pipes (pipes.c:54)
+// ==3495==    by 0x10C1B7: exec_ast (exec.c:83)
+// ==3495==    by 0x10987F: main (parsing.c:195)
+
+// probablememt devoir appeler ces deux lignes quelques part :
+// clear_cmd_block(node->cmd_block);
+// node->cmd_block = NULL;
 
 void	print_cmd_block(t_cmd_block *cmd_block)
 {
@@ -285,7 +308,7 @@ void	expand_ast(t_ast_node *node, int last_ret, char **env)
 	if (node->type == command)
 	{
 		node->cmd_block = init_cmd_block();
-		fill_cmd_block(node->cmd_block, node->tokens);
+		fill_cmd_block(node->cmd_block, node->tokens, env);
 	}
 	// expand_ast(node->left);
 	// expand_ast(node->right);

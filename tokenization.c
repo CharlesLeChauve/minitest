@@ -135,7 +135,7 @@ t_token_lst	*subshell_token(t_tkn_info *tkn_info)
 		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len);
 		tkn_info->curr_char++;
 	}
-	buffer[ft_strlen(buffer) - 1] = '\0';
+	buffer[ft_strlen(buffer)] = '\0';
 	token->text = buffer;
 	return (token);
 }
@@ -176,6 +176,7 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		}
 		else if (*tkn_info->curr_char == '|')
 			return (NULL);
+		return (NULL);
 	}
 	return (cmd_token(tkn_info));
 }
@@ -208,4 +209,3 @@ t_dlist	*tokenize(char *input)
 	free(tkn_info.input);
 	return (tkn_info.token_lst);
 }
-

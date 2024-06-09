@@ -16,10 +16,10 @@ int ft_is_numeric(char *str)
     return (1);
 }
 
-// void    free_ressources()
-// {
+void    free_ressources()
+{
     
-// }
+}
 
 void ft_exit(char **args)
 {
