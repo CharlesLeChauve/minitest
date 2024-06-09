@@ -150,25 +150,32 @@ char	*extract_sub_token(char **ptr)
 
 void	process_sub_token(char *sub_token, t_cmd_block *block, char **env)
 {
-	t_list	*new_opt;
 	t_list	*new_arg;
 	char	*env_var_value;
 
 	if (sub_token[0] == '$')
 	{
-		env_var_value = get_env_var(env, sub_token + 1);
-		if (env_var_value)
+		// if (sub_token[1] == '?' && sub_token[2] == '\0')
+		// {
+		// 	char last_ret_str[12]; 12 parce que l'int min c'est 11 pour la longueur de int min + \0
+		// 	sprintf(last_ret_str, "%d", shell->last_ret);
+		// 	free(sub_token);
+		// 	sub_token = ft_strdup(last_ret_str);
+		// }
+		// else
 		{
-			// Remplacer sub_token par la valeur de la variable d'environnement
-			free(sub_token);
-			sub_token = ft_strdup(env_var_value);
-		}
-		else
-		{
-			// Si la variable n'est pas trouvée, gérer l'erreur ou l'ignorer
-			fprintf(stderr, "tash: %s: Undefined variable\n", sub_token + 1);
-			free(sub_token);
-			return;
+			env_var_value = get_env_var(env, sub_token + 1);
+			if (env_var_value)
+			{
+				free(sub_token);
+				sub_token = ft_strdup(env_var_value);
+			}
+			else
+			{
+				fprintf(stderr, "tash: %s: Undefined variable\n", sub_token + 1);
+				free(sub_token);
+				return ;
+			}
 		}
 	}
 	if (sub_token[0] == '>' || sub_token[0] == '<')
@@ -185,7 +192,7 @@ void	process_sub_token(char *sub_token, t_cmd_block *block, char **env)
 		// {
 		// 	free(sub_token);
 		// 	sub_token = NULL;
-		// }
+		// } ca free trop tot je crois tonton
 	}
 	else
 	{
@@ -246,23 +253,6 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 	}
 }
 
-// ==3495== 8 bytes in 1 blocks are definitely lost in loss record 8 of 93
-// ==3495==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
-// ==3495==    by 0x10B977: extract_sub_token (expansing.c:143)
-// ==3495==    by 0x10BBC7: parse_command_option (expansing.c:211)
-// ==3495==    by 0x10BC6F: fill_cmd_block (expansing.c:238)
-// ==3495==    by 0x10BE0B: expand_ast (expansing.c:288)
-// ==3495==    by 0x10C19B: exec_ast (exec.c:80)
-// ==3495==    by 0x10C58B: do_pipe_side (pipes.c:22)
-// ==3495==    by 0x10C5F7: do_pipes (pipes.c:29)
-// ==3495==    by 0x10C6C3: handle_pipes (pipes.c:54)
-// ==3495==    by 0x10C1B7: exec_ast (exec.c:83)
-// ==3495==    by 0x10987F: main (parsing.c:195)
-
-// probablememt devoir appeler ces deux lignes quelques part :
-// clear_cmd_block(node->cmd_block);
-// node->cmd_block = NULL;
-
 void	print_cmd_block(t_cmd_block *cmd_block)
 {
 		t_list		*opt;
@@ -310,8 +300,6 @@ void	expand_ast(t_ast_node *node, int last_ret, char **env)
 		node->cmd_block = init_cmd_block();
 		fill_cmd_block(node->cmd_block, node->tokens, env);
 	}
-	// expand_ast(node->left);
-	// expand_ast(node->right);
 }
 
 void	clear_cmd_block(t_cmd_block *block)
