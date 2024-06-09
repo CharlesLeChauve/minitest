@@ -107,6 +107,7 @@ void	extract_command(char **ptr, t_cmd_block *block)
 	}
 	if (*ptr > start)
 		block->command = ft_strndup(start, *ptr - start);
+	printf("commande = %s\n", block->command);
 }
 
 char	*extract_sub_token(char **ptr)
