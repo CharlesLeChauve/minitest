@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void do_pipe_side(t_pipe_info *pipe_info, char **envp[], t_ast_node *ast, int side)
+void do_pipe_side(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast, int side)
 {
 	pipe_info->pids[side] = fork();
 	if (pipe_info->pids[side] == -1)
@@ -17,16 +17,16 @@ void do_pipe_side(t_pipe_info *pipe_info, char **envp[], t_ast_node *ast, int si
 			dup2(pipe_info->pipe_fds[side ^ 1], STDIN_FILENO);
 		close(pipe_info->pipe_fds[side ^ 1]);
 		if (side == 0)
-			exit(exec_ast(ast->left, envp, &(int){0}));
+			exit(exec_ast(ast->left, shl));
 		else
-			exit(exec_ast(ast->right, envp, &(int){0}));
+			exit(exec_ast(ast->right, shl));
 	}
 }
 
-void do_pipes(t_pipe_info *pipe_info, char **envp[], t_ast_node *ast)
+void do_pipes(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast)
 {
-	do_pipe_side(pipe_info, envp, ast, 0);
-	do_pipe_side(pipe_info, envp, ast, 1);
+	do_pipe_side(pipe_info, shl, ast, 0);
+	do_pipe_side(pipe_info, shl, ast, 1);
 	close(pipe_info->pipe_fds[0]);
 	close(pipe_info->pipe_fds[1]);
 }
@@ -45,13 +45,13 @@ void	init_pipe_info(t_pipe_info *pipe_info)
 	}
 }
 
-int	handle_pipes(t_ast_node *ast, char **envp[])
+int	handle_pipes(t_ast_node *ast, t_shell *shl)
 {
 	t_pipe_info	pipe_info;
 	int			ret_value;
 
 	init_pipe_info(&pipe_info);
-	do_pipes(&pipe_info, envp, ast);
+	do_pipes(&pipe_info, shl, ast);
 	waitpid(pipe_info.pids[0], NULL, 0);
 	ret_value = wait_status(pipe_info.pids[1]);
 	return (ret_value);

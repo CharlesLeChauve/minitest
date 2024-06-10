@@ -75,31 +75,31 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 	return (-1);
 }
 
-int	exec_ast(t_ast_node *ast, char **envp[], int *last_ret)
+int	exec_ast(t_ast_node *ast, t_shell *shl)
 {
-	expand_ast(ast, *last_ret, *envp);
+	expand_ast(ast, shl);
 	if (ast->type == pipe_op)
 	{
-		*last_ret = handle_pipes(ast, envp);
-		return (*last_ret);
+		shl->last_ret = handle_pipes(ast, shl);
+		return (shl->last_ret );
 	}
 	else if (ast->type == and_op)
 	{
-		*last_ret = exec_ast(ast->left, envp, last_ret);
-		if (!*last_ret)
+		shl->last_ret  = exec_ast(ast->left, shl);
+		if (!shl->last_ret)
 		{
-			*last_ret = exec_ast(ast->right, envp, last_ret);
-			return (*last_ret);
+			shl->last_ret  = exec_ast(ast->right, shl);
+			return (shl->last_ret );
 		}
-		return (*last_ret);
+		return (shl->last_ret);
 	}
 	else if (ast->type == or_op)
 	{
-		*last_ret = exec_ast(ast->left, envp, last_ret);
-		if (*last_ret)
-			*last_ret = exec_ast(ast->right, envp, last_ret);
-		return (*last_ret);
+		shl->last_ret = exec_ast(ast->left, shl);
+		if (shl->last_ret )
+			shl->last_ret  = exec_ast(ast->right, shl);
+		return (shl->last_ret );
 	}
 	else
-		return (exec_command_and_redirs(ast->cmd_block, envp));
+		return (exec_command_and_redirs(ast->cmd_block, &shl->env));
 }

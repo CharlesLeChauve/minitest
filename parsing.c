@@ -192,7 +192,7 @@ int	main(int argc, char *argv[], char *envp[])
 			shl.ast = parse_tokens(shl.token_lst);
 			//expand_ast(shl.ast);
 			//print_tree(ast, 0);
-			shl.last_ret = exec_ast(shl.ast, &shl.env, &shl.last_ret);
+			shl.last_ret = exec_ast(shl.ast, &shl);
 			clean_shell_instance(&shl);
 		}
 		free(input);

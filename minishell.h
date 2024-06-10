@@ -126,7 +126,7 @@ t_ast_node	*parse_tokens(t_dlist *tokens);
 t_ast_node	*construct_ast_from_tokens(t_dlist *token_list);
 
 // expansing
-void	expand_ast(t_ast_node *node, int last_ret, char **env);
+void	expand_ast(t_ast_node *node, t_shell *shl);
 void		fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env);
 t_cmd_block	*init_cmd_block(void);
 void	print_cmd_block(t_cmd_block *cmd_block);
@@ -163,7 +163,7 @@ char	*get_env_var(char **env, char *var_id);
 int		get_env_index(char **env, char *var_id);
 
 //exec.c
-int		exec_ast(t_ast_node *ast, char **envp[], int *last_ret);
+int		exec_ast(t_ast_node *ast, t_shell *shl);
 void 	create_exec_tab(t_cmd_block *cmd_block);
 
 
@@ -173,7 +173,7 @@ void	replace_var(char ***env, char *new_var, char *old_var);
 void	replace_existing_vars(char ***arg, char ***env);
 
 //pipes
-int		handle_pipes(t_ast_node *ast, char **envp[]);
+int	handle_pipes(t_ast_node *ast, t_shell *shl);
 
 //tab_utils.c
 void	ft_sort_wordtab(char **tab);

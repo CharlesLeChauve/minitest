@@ -107,7 +107,7 @@ void	extract_command(char **ptr, t_cmd_block *block)
 	}
 	if (*ptr > start)
 		block->command = ft_strndup(start, *ptr - start);
-	printf("commande = %s\n", block->command);
+	//printf("commande = %s\n", block->command);
 }
 
 char	*extract_sub_token(char **ptr)
@@ -145,7 +145,7 @@ char	*extract_sub_token(char **ptr)
 		start++;
 	}
 	token[len] = '\0';
-	printf("token = %s\n",token);
+	//printf("token = %s\n",token);
 	return (token);
 }
 
@@ -290,7 +290,7 @@ void	print_cmd_block(t_cmd_block *cmd_block)
 		}
 }
 
-void	expand_ast(t_ast_node *node, int last_ret, char **env)
+void	expand_ast(t_ast_node *node, t_shell *shl)
 {
 	t_cmd_block	*cmd_block;
 
@@ -299,7 +299,7 @@ void	expand_ast(t_ast_node *node, int last_ret, char **env)
 	if (node->type == command)
 	{
 		node->cmd_block = init_cmd_block();
-		fill_cmd_block(node->cmd_block, node->tokens, env);
+		fill_cmd_block(node->cmd_block, node->tokens, shl->env);
 	}
 }
 
