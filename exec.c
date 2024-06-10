@@ -38,7 +38,7 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], t_std_fd_save save)
 	}
 	if (pid == 0) 
 	{
-		handle_redirs(cmd_block, save.std_out);
+		handle_redirs(cmd_block, save);
 		exec_command(envp, cmd_block);
 	}
 	else
@@ -55,13 +55,13 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 	save.std_in = dup(STDIN_FILENO);
 	if (!cmd_block->exec_tab[0])
 	{
-		status = handle_redirs(cmd_block, save.std_out);
+		status = handle_redirs(cmd_block, save);
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);
 	}
 	if (is_a_builtin(cmd_block->exec_tab[0]))
 	{
-		handle_redirs(cmd_block, save.std_out);
+		handle_redirs(cmd_block, save);
 		status = do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
 		restore_stds_and_close_dup(save.std_out, save. std_in, -1);
 		return(status);

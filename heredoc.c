@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:03 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/07 11:40:01 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/10 13:37:20 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	read_heredoc(char *limiter)
 	}
 }
 
-int	heredoc_handle(char *limiter)
+int	heredoc_handle(char *limiter, t_std_fd_save save)
 {
 	int	pipe_fd[2];
 	int	pid;
