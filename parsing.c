@@ -161,11 +161,13 @@ int	main(int argc, char *argv[], char *envp[])
 {
 	char	*input;
 	t_shell	shl;
+	int		verif;
 
 	setup_signal_handlers();
 	input = NULL;
 	shl.env = set_env(envp);
 	shl.last_ret = 0;
+	verif = 0;
 	while (1)
 	{
 		printf("Last_return_value = %d\n", shl.last_ret);
@@ -179,11 +181,12 @@ int	main(int argc, char *argv[], char *envp[])
 		{
 			add_history(input);
 			shl.token_lst = tokenize(input);
-			if (verify_tokens(shl.token_lst) == -1)
+			verif = verify_tokens(shl.token_lst);
+			if (verif == -1)
 				continue ;
-			else if (!verify_tokens(shl.token_lst))
+			else if (!verif)
 			{
-				fprintf(stderr, "Error: Syntax error in input\n");
+				//fprintf(stderr, "Error: Syntax error in input\n");
 				free(input);
 				shl.last_ret = 2;
 				input = NULL;

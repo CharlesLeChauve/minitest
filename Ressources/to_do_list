@@ -4,3 +4,11 @@
 
 - Heredoc histo ?
 
+- () subshell vide 
+
+- On garde un guillemtet en trop parfois (╰─tash > ""echo
+        tash: "echo: command not found
+        Last_return_value = 127
+        )
+
+

@@ -18,6 +18,18 @@ int	is_operator(t_token_type type)
 	return (type == and_op || type == or_op || type == pipe_op);
 }
 
+int	no_text(char *text)
+{
+	if (!text)
+		return (1);
+	while (*text)
+	{
+		if (*text != '(' && *text != ')' && !ft_isspace(*text))
+			return (0);
+		text++;
+	}
+	return (1);
+}
 
 int	verify_tokens(t_dlist *tokens)
 {
@@ -37,7 +49,11 @@ int	verify_tokens(t_dlist *tokens)
 			if (!prev)
 				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", token->text), 0);
 		}
-		if (is_redir(token->type))
+		else if (token->type == subshell && (!token->text || no_text(token->text)))
+		{
+			return (fprintf(stderr, "tash: syntax error near unexpected token `)'\n"), 0);
+		}
+		else if (is_redir(token->type))
 		{
 			if (!current->next)
 				return (fprintf(stderr, "Error: Redirection '%s' not followed by a command\n", token->text), 0);
@@ -45,7 +61,7 @@ int	verify_tokens(t_dlist *tokens)
 			// 	return (fprintf(stderr, "Error: Invalid redirection sequence '%s%s'\n",
 					// token->text, ((t_token_lst *)current->next->content)->text), 0);
 		}
-		if (current->next \
+		else if (current->next \
 			&& is_operator(((t_token_lst *)current->next->content)->type) \
 			&& ((t_token_lst *)current->next->content)->type == pipe_op) {
 			if (!current->next->next \

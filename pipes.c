@@ -11,10 +11,7 @@ void do_pipe_side(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast, int sid
 	if (pipe_info->pids[side] == 0)
 	{
 		close(pipe_info->pipe_fds[side]);
-		if (side == 0)
-			dup2(pipe_info->pipe_fds[side ^ 1], STDOUT_FILENO);
-		else
-			dup2(pipe_info->pipe_fds[side ^ 1], STDIN_FILENO);
+		dup2(pipe_info->pipe_fds[side ^ 1], side ^ 1);
 		close(pipe_info->pipe_fds[side ^ 1]);
 		if (side == 0)
 			exit(exec_ast(ast->left, shl));
