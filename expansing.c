@@ -92,31 +92,40 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 
 void	extract_command(char **ptr, t_cmd_block *block)
 {
+	size_t	len;
+	char	*buffer;
 	t_sm	state;
-	char	*start;
-	
-	start = *ptr;
+
+	len = 0;
+	buffer = NULL;
 	state = reg;
-	set_quotes_state_in_cmd_block(ptr, &state);
 	while (**ptr)
 	{
-		if (state == reg && (**ptr == '>' || **ptr == '<') || (ft_isspace(**ptr) && state == reg))
-			break;
 		set_quotes_state_in_cmd_block(ptr, &state);
+		if (state == reg && (**ptr == '>' || **ptr == '<') || (ft_isspace(**ptr) && state == reg))
+			break ;
+		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
 	}
-	if (*ptr > start)
-		block->command = ft_strndup(start, *ptr - start);
-	//printf("commande = %s\n", block->command);
+	while (len > 0 && ft_isspace(buffer[len - 1]))
+	{
+		buffer[len - 1] = '\0';
+		len--;
+	}
+	block->command = buffer;
+	printf("commande = %s\n", block->command);
 }
 
 char	*extract_sub_token(char **ptr)
 {
-	char	*start = *ptr;
-	char	*token;
+	char	*start;
+	char	*buffer;
 	t_sm	state;
-	size_t	len = 0;
+	size_t	len;
 
+	start = *ptr;
+	buffer = NULL;
+	len = 0;
 	state = reg;
 	if (**ptr == '<' || **ptr == '>')
 	{
@@ -130,23 +139,15 @@ char	*extract_sub_token(char **ptr)
 		set_quotes_state_in_cmd_block(ptr, &state);
 		if (state == reg && (ft_isspace(**ptr) || ft_isshelloperator(**ptr)))
 			break;
-		if (**ptr != '"' && **ptr != '\'')
-			len++;
+		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
 	}
-	token = malloc(len + 4);
-	if (!token)
-		return (NULL);
-	len = 0;
-	while (start < *ptr)
+	while (len > 0 && ft_isspace(buffer[len - 1]))
 	{
-		if (*start != '"' && *start != '\'')
-			token[len++] = *start;
-		start++;
+		buffer[len - 1] = '\0';
+		len--;
 	}
-	token[len] = '\0';
-	//printf("token = %s\n",token);
-	return (token);
+	return (buffer);
 }
 
 void	process_sub_token(char *sub_token, t_cmd_block *block, char **env)
