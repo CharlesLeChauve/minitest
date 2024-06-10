@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:03 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/10 13:37:20 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/10 14:51:15 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,12 @@ struct sigaction	*setup_signal_handlers_h(void)
 void	read_heredoc(char *limiter)
 {
 	char	*nl;
+	int		tty_fd;
 
+	tty_fd = open("/dev/tty", O_RDONLY);
 	while (1)
 	{
-		nl = get_next_line(0);
+		nl = get_next_line(tty_fd);
 		if (nl == NULL)
 		{
 			ft_putstr_fd(
@@ -62,6 +64,8 @@ void	read_heredoc(char *limiter)
 			&& nl[ft_strlen(limiter)] == '\n')
 		{
 			free(nl);
+			nl = NULL;
+			close(tty_fd);
 			exit(0);
 		}
 		ft_putstr_fd(nl, 1);
