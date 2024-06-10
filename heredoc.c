@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:03 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/10 14:51:15 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/10 15:15:10 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ void	read_heredoc(char *limiter)
 		{
 			free(nl);
 			nl = NULL;
+			fflush(tty_fd);
 			close(tty_fd);
 			exit(0);
 		}
@@ -100,6 +101,8 @@ int	heredoc_handle(char *limiter, t_std_fd_save save)
 		}
 		if (WIFEXITED(status))
 		{
+			if (WEXITSTATUS(status) == 13)
+				return (130);
 			return (WEXITSTATUS(status));
 		}
 	}
