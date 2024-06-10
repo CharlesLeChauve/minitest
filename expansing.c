@@ -113,7 +113,7 @@ void	extract_command(char **ptr, t_cmd_block *block)
 		len--;
 	}
 	block->command = buffer;
-	printf("commande = %s\n", block->command);
+	// printf("commande = %s\n", block->command);
 }
 
 char	*extract_sub_token(char **ptr)
@@ -150,7 +150,7 @@ char	*extract_sub_token(char **ptr)
 		buffer[len - 1] = '\0';
 		len--;
 	}
-	printf("%s\n", buffer);
+	// printf("%s\n", buffer);
 	return (buffer);
 }
 
