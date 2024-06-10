@@ -130,7 +130,10 @@ char	*extract_sub_token(char **ptr)
 	if (**ptr == '<' || **ptr == '>')
 	{
 		while (**ptr == '>' || **ptr == '<')
+		{
+			ft_add_char_to_buffer(&buffer, **ptr, &len);
 			(*ptr)++;
+		}
 		while (**ptr == ' ')
 			(*ptr)++;
 	}
@@ -147,6 +150,7 @@ char	*extract_sub_token(char **ptr)
 		buffer[len - 1] = '\0';
 		len--;
 	}
+	printf("%s\n", buffer);
 	return (buffer);
 }
 
