@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:03 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/10 15:54:04 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/11 16:16:31 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	handle_sigint_h(int sig)
 
 void	handle_sigquit_h()
 {
-	return ;
+	exit(EXIT_FAILURE) ;
 }
 
 struct sigaction	*setup_signal_handlers_h(void)
@@ -45,38 +45,38 @@ struct sigaction	*setup_signal_handlers_h(void)
     }
 }
 
-void	read_heredoc(char *limiter)
-{
-	char	*nl;
-	char	*hd;
-	int		tty_fd;
+// void	read_heredoc(char *limiter)
+// {
+// 	char	*nl;
+// 	char	*hd;
+// 	int		tty_fd;
 
-	tty_fd = open("/dev/tty", O_RDONLY);
-	hd = ft_strdup("");
-	while (1)
-	{
-		nl = get_next_line(tty_fd);
-		if (nl == NULL)
-		{
-			ft_putstr_fd(
-				"Error : End Of File before finding here_doc LIMITER\n", 2);
-			exit(EXIT_FAILURE);
-		}
-		if (!ft_strncmp(nl, limiter, ft_strlen(limiter))
-			&& nl[ft_strlen(limiter)] == '\n')
-		{
-			free(nl);
-			nl = NULL;
-			break;
-		}
-		else
-			hd = ft_strjoin_free(hd, nl, 2);
-	}
-	ft_putstr_fd(hd, 1);
-	free(hd);
-	close(tty_fd);
-	exit(0);
-}
+// 	tty_fd = open("/dev/tty", O_RDONLY);
+// 	hd = ft_strdup("");
+// 	while (1)
+// 	{
+// 		nl = get_next_line(tty_fd);
+// 		if (nl == NULL)
+// 		{
+// 			ft_putstr_fd(
+// 				"Error : End Of File before finding here_doc LIMITER\n", 2);
+// 			exit(EXIT_FAILURE);
+// 		}
+// 		if (!ft_strncmp(nl, limiter, ft_strlen(limiter))
+// 			&& nl[ft_strlen(limiter)] == '\n')
+// 		{
+// 			free(nl);
+// 			nl = NULL;
+// 			break;
+// 		}
+// 		else
+// 			hd = ft_strjoin_free(hd, nl, 2);
+// 	}
+// 	ft_putstr_fd(hd, 1);
+// 	free(hd);
+// 	close(tty_fd);
+// 	exit(0);
+// }
 
 int	heredoc_handle(char *limiter, t_std_fd_save save)
 {

@@ -316,9 +316,14 @@ void	expand_ast(t_ast_node *node, t_shell *shl)
 		return ;
 	if (node->type == command)
 	{
-		node->cmd_block = init_cmd_block();
-		fill_cmd_block(node->cmd_block, node->tokens, shl->env);
+		cmd_block = init_cmd_block();
+		fill_cmd_block(cmd_block, node->tokens, shl->env);
+		create_exec_tab(cmd_block);
+		get_heredocs(cmd_block);
+		node->cmd_block = cmd_block;
 	}
+	expand_ast(node->left, shl);
+	expand_ast(node->right, shl);
 }
 
 void	clear_cmd_block(t_cmd_block *block)

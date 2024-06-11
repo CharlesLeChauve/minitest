@@ -206,6 +206,6 @@ void ft_exit(char **args);
 //echo.c
 void ft_echo(char **args);
 
-
+int	get_heredocs(t_cmd_block *cmd_block);
 
 #endif

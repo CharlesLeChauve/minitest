@@ -1,14 +1,15 @@
 #include "minishell.h"
+#include <errno.h>
 
 int exec_command(char **envp[], t_cmd_block *cmd_block)
 {
 	char	*path;
 	char	err_msg[124];
 	struct stat	path_stat;
+	int		stat_ret;
 
 	ft_bzero(err_msg, 124);
-	stat(cmd_block->exec_tab[0], &path_stat);
-	if (S_ISDIR(path_stat.st_mode))
+	if (stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
 	{
 		ft_sprintf(err_msg, "tash: %s: Is a directory\n", cmd_block->exec_tab[0]);
 		ft_putstr_fd(err_msg, STDERR_FILENO);
@@ -44,6 +45,7 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], t_std_fd_save save)
 	}
 	else
 		ret_val = wait_status(pid);
+	return (ret_val);
 }
 
 int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
@@ -51,7 +53,6 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 	int     		status;
 	t_std_fd_save	save;
 
-	create_exec_tab(cmd_block);
 	save.std_out = dup(STDOUT_FILENO);
 	save.std_in = dup(STDIN_FILENO);
 	if (!cmd_block->exec_tab[0])
@@ -78,7 +79,6 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 
 int	exec_ast(t_ast_node *ast, t_shell *shl)
 {
-	expand_ast(ast, shl);
 	if (ast->type == pipe_op)
 	{
 		shl->last_ret = handle_pipes(ast, shl);
