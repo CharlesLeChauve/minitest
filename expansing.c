@@ -73,13 +73,17 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 	if ((**curr_char == '"' || **curr_char == '\'') && *state == reg)
 	{
 		if (**curr_char == '"')
+		{
 			*state = dquote;
+			// printf("a\n");
+		}
 		else
 			*state = quote;
 		(*curr_char)++;
 	}
 	else if (**curr_char == '"' && *state == dquote)
 	{
+		// printf("b\n");
 		*state = reg;
 		(*curr_char)++;
 	}
@@ -102,6 +106,8 @@ void	extract_command(char **ptr, t_cmd_block *block)
 	while (**ptr)
 	{
 		set_quotes_state_in_cmd_block(ptr, &state);
+		if (**ptr == '"' || **ptr == '\'')
+			continue ;
 		if (state == reg && (**ptr == '>' || **ptr == '<') || (ft_isspace(**ptr) && state == reg))
 			break ;
 		ft_add_char_to_buffer(&buffer, **ptr, &len);
@@ -169,6 +175,13 @@ void	process_sub_token(char *sub_token, t_cmd_block *block, char **env)
 		// 	sub_token = ft_strdup(last_ret_str);
 		// }
 		// else
+		if (!sub_token[1])
+		{
+			new_arg = ft_lstnew(sub_token);
+			ft_lstadd_back(&(block->arg), new_arg);
+			printf("sub token = %s\n", sub_token);
+			return ;
+		}
 		{
 			env_var_value = get_env_var(env, sub_token + 1);
 			if (env_var_value)
@@ -186,9 +199,9 @@ void	process_sub_token(char *sub_token, t_cmd_block *block, char **env)
 	}
 	if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
-		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<'))
+		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<') || (sub_token[2] == '>') || (sub_token[2] == '<'))
 		{
-			fprintf(stderr, "tash: wrong redir operator\n");
+			fprintf(stderr, "tash: Wrong redir operator.\n");
 			return ;
 		}
 		new_arg = ft_lstnew(redir_token(sub_token));
