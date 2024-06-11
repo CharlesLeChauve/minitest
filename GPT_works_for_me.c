@@ -12,9 +12,9 @@ int list_size(t_list *list) {
 
 // Fonction pour remplir exec_tab à partir de t_cmd_block
 void create_exec_tab(t_cmd_block *cmd_block) {
-    int option_count = list_size(cmd_block->option);
     int arg_count = list_size(cmd_block->arg);
-    int total_size = 1 + option_count + arg_count + 1; // command + options + arguments + NULL
+    int total_size = 1 + arg_count + 1; // command + options + arguments + NULL
+    t_list *current;
 
     // Allouer de la mémoire pour exec_tab
     cmd_block->exec_tab = (char **)malloc(total_size * sizeof(char *));
@@ -31,10 +31,9 @@ void create_exec_tab(t_cmd_block *cmd_block) {
     //     current = current->next;
     // }
     // Ajouter les arguments
-    t_list *current = cmd_block->option;
     current = cmd_block->arg;
     while (current) {
-        cmd_block->exec_tab[index++] = (char *)current->content;
+        cmd_block->exec_tab[index++] = ft_strdup((char *)current->content);
         current = current->next;
     }
     // Terminer le tableau avec NULL

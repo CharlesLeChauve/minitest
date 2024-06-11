@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/10 13:33:27 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/11 15:08:23 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ int    make_redir_in(t_token_lst *redir, t_std_fd_save save)
 		else
 			return (1);
 	}
-	else if (redir->type == heredoc)
-	{
-		fd_save = dup(STDOUT_FILENO);
-		restore_stds_and_close_dup(save.std_out, -1, -1);
-		heredoc_handle(redir->text, save);
-		restore_stds_and_close_dup(fd_save, -1, -1);
-	}
+	// else if (redir->type == heredoc)
+	// {
+	// 	fd_save = dup(STDOUT_FILENO);
+	// 	restore_stds_and_close_dup(save.std_out, -1, -1);
+	// 	heredoc_handle(redir->text, save);
+	// 	restore_stds_and_close_dup(fd_save, -1, -1);
+	// }
 	return (0);
 }
 
@@ -95,6 +95,7 @@ int    handle_redirs(t_cmd_block *cmd_block, t_std_fd_save save)
 		redirs = cmd_block->redirs;
 		while (redirs)
 		{
+			//printf("redir = %s, %d\n",((t_token_lst *)redirs->content)->text, ((t_token_lst *)redirs->content)->type);
 			if (redirs->content == NULL)
 			 	return (2);
 			if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)

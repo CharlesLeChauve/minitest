@@ -149,9 +149,38 @@ void	free_ast(t_ast_node *ast)
 	free(ast);
 }
 
+void	destroy_heredocs(t_ast_node *node)
+{
+	int 	hd_1;
+	int		hd_2;
+	int		found;
+	char	path[15];
+
+	hd_1 = 0;
+	while (1)
+	{
+		hd_2 = 0;
+		ft_bzero(path, 15);
+		ft_sprintf(path, ".heredoc%d.%d", hd_1, hd_2);
+		found = 0;
+		while (access(path, W_OK) == 0)
+		{
+			unlink(path);
+			found++;
+			hd_2++;
+			ft_bzero(path, 15);
+			ft_sprintf(path, ".heredoc%d.%d", hd_1, hd_2);
+		}
+		if (!found)
+			break ;
+		hd_1++;
+	}
+}
+
 void	clean_shell_instance(t_shell *shl)
 {
 	// free_ast(shl->ast);
+	destroy_heredocs(shl->ast);
 	shl->ast = NULL;
 	ft_dlstclear(&(shl->token_lst), del_tkn_node);
 	shl->token_lst = NULL;
@@ -195,6 +224,7 @@ int	main(int argc, char *argv[], char *envp[])
 			shl.ast = parse_tokens(shl.token_lst);
 			//expand_ast(shl.ast);
 			//print_tree(ast, 0);
+			expand_ast(shl.ast, &shl);
 			shl.last_ret = exec_ast(shl.ast, &shl);
 			clean_shell_instance(&shl);
 		}
