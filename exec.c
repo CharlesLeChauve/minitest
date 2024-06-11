@@ -38,7 +38,8 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], t_std_fd_save save)
 	}
 	if (pid == 0) 
 	{
-		handle_redirs(cmd_block, save);
+		if (handle_redirs(cmd_block, save))
+			return (1);
 		exec_command(envp, cmd_block);
 	}
 	else
