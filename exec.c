@@ -6,7 +6,6 @@ int exec_command(char **envp[], t_cmd_block *cmd_block)
 	char	*path;
 	char	err_msg[124];
 	struct stat	path_stat;
-	int		stat_ret;
 
 	ft_bzero(err_msg, 124);
 	if (stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
@@ -23,12 +22,12 @@ int exec_command(char **envp[], t_cmd_block *cmd_block)
 		//ft_freetab(cmd_arr);
 		exit (127);
 	}
+	return (0);
 }
 
-int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], t_std_fd_save save)
+int exec_not_builtin(t_cmd_block *cmd_block, char **envp[])
 {
 	pid_t   pid;
-	int     status;
 	int		ret_val;
 
 	pid = fork();
@@ -39,7 +38,7 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[], t_std_fd_save save)
 	}
 	if (pid == 0) 
 	{
-		if (handle_redirs(cmd_block, save))
+		if (handle_redirs(cmd_block))
 			return (1);
 		exec_command(envp, cmd_block);
 	}
@@ -57,20 +56,20 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 	save.std_in = dup(STDIN_FILENO);
 	if (!cmd_block->exec_tab[0])
 	{
-		status = handle_redirs(cmd_block, save);
+		status = handle_redirs(cmd_block);
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);
 	}
 	if (is_a_builtin(cmd_block->exec_tab[0]))
 	{
-		handle_redirs(cmd_block, save);
+		handle_redirs(cmd_block);
 		status = do_the_builtin(envp, cmd_block->exec_tab[0], cmd_block->exec_tab);
 		restore_stds_and_close_dup(save.std_out, save. std_in, -1);
 		return(status);
 	}
 	else
 	{
-		status = exec_not_builtin(cmd_block, envp, save);
+		status = exec_not_builtin(cmd_block, envp);
 		restore_stds_and_close_dup(save.std_out, save. std_in, -1);
 		return (status);
 	}

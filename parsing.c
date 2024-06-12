@@ -101,12 +101,10 @@ t_ast_node *build_ast(char *input)
 	return (ast);
 }
 
-char	*build_prompt(char **env)
+char	*build_prompt(void)
 {
 	char	*pwd;
-	char	*pwd_ptr;
 	char	*prompt;
-	int		len;
 
 	pwd = get_cwd();
 	if (pwd == NULL)
@@ -117,12 +115,12 @@ char	*build_prompt(char **env)
 	return (prompt);
 }
 
-char *prompted_readline(char *env[])
+char *prompted_readline(void)
 {
 	char *prompt;
 	char *input;
 
-	prompt = build_prompt(env);
+	prompt = build_prompt();
 	input = readline(prompt);
 	free(prompt);
 	return (input);
@@ -149,7 +147,7 @@ void	free_ast(t_ast_node *ast)
 	free(ast);
 }
 
-void	destroy_heredocs(t_ast_node *node)
+void	destroy_heredocs(void)
 {
 	int 	hd_1;
 	int		hd_2;
@@ -180,7 +178,7 @@ void	destroy_heredocs(t_ast_node *node)
 void	clean_shell_instance(t_shell *shl)
 {
 	// free_ast(shl->ast);
-	destroy_heredocs(shl->ast);
+	destroy_heredocs();
 	shl->ast = NULL;
 	ft_dlstclear(&(shl->token_lst), del_tkn_node);
 	shl->token_lst = NULL;
@@ -192,6 +190,8 @@ int	main(int argc, char *argv[], char *envp[])
 	t_shell	shl;
 	int		verif;
 
+	if (argc > 1)
+		printf("Usage : %s. point. pas d'argument quoi.\n", argv[0]);
 	setup_signal_handlers();
 	input = NULL;
 	shl.env = set_env(envp);
@@ -203,7 +203,7 @@ int	main(int argc, char *argv[], char *envp[])
 		if (input)
 			input = ft_strjoin_free(input, readline("> "), 1);
 		else
-			input = prompted_readline(shl.env);
+			input = prompted_readline();
 		if (!input)
 			break ;
 		if (input && *input)

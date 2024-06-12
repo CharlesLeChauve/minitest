@@ -142,7 +142,6 @@ int is_logical(t_token_type type)
 
 void	print_tree(t_ast_node *node, int depth)
 {
-	t_dlist	*token_node;
 	char	*indent;
 	int		i;
 

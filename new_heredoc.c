@@ -2,11 +2,13 @@
 
 void	handle_sigint_h(int sig)
 {
+	(void)sig;
 	exit(13);
 }
 
 void	handle_sigquit_h(int sig)
 {
+	(void)sig;
 	exit(1) ;
 }
 
@@ -30,6 +32,7 @@ struct sigaction	*setup_signal_handlers_h(void)
         perror("sigaction");
         exit(EXIT_FAILURE);
     }
+	return (NULL);
 }
 
 int	read_heredoc(char *limiter, int fd)
@@ -91,7 +94,6 @@ int	get_heredocs(t_cmd_block *cmd_block)
 	int		tmp_fd;
 	int		hd_no_1;
 	int		hd_no_2;
-	int		ret;
 
 	hd_no_1 = get_hd_no_1();
 	hd_no_2 = 0;

@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:25:38 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/05 10:06:51 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:39:09 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ int	print_env(char **env)
 
 int	unset(char ***env, char **args)
 {
-	char	**new_env;
 	int		i;
 	int		env_idx;
 

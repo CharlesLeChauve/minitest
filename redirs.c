@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/11 15:08:23 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/12 15:13:41 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,9 @@ void    restore_stds_and_close_dup(int out_save, int in_save, int err_save)
 	}
 }
 
-int    make_redir_in(t_token_lst *redir, t_std_fd_save save)
+int    make_redir_in(t_token_lst *redir)
 {
 	int fd;
-	int	fd_save;
 
 	fd = -1;
 	if (redir->type == redir_in)
@@ -86,7 +85,7 @@ int    make_redir_out(t_token_lst *redir)
 	return (0);
 }
 
-int    handle_redirs(t_cmd_block *cmd_block, t_std_fd_save save)
+int    handle_redirs(t_cmd_block *cmd_block)
 {
 	t_list  *redirs;
 
@@ -102,7 +101,7 @@ int    handle_redirs(t_cmd_block *cmd_block, t_std_fd_save save)
 				if (make_redir_out((t_token_lst *)redirs->content))
 					return (-1) ;
 			if (((t_token_lst *)redirs->content)->type == redir_in || ((t_token_lst *)redirs->content)->type == heredoc)
-				if (make_redir_in((t_token_lst *)redirs->content, save))
+				if (make_redir_in((t_token_lst *)redirs->content))
 					return (-1);
 			redirs = redirs->next;
 		}

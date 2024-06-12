@@ -108,7 +108,7 @@ void	extract_command(char **ptr, t_cmd_block *block)
 		set_quotes_state_in_cmd_block(ptr, &state);
 		if (**ptr == '"' || **ptr == '\'')
 			continue ;
-		if (state == reg && (**ptr == '>' || **ptr == '<') || (ft_isspace(**ptr) && state == reg))
+		if ((state == reg && (**ptr == '>' || **ptr == '<')) || (ft_isspace(**ptr) && state == reg))
 			break ;
 		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
@@ -124,12 +124,10 @@ void	extract_command(char **ptr, t_cmd_block *block)
 
 char	*extract_sub_token(char **ptr)
 {
-	char	*start;
 	char	*buffer;
 	t_sm	state;
 	size_t	len;
 
-	start = *ptr;
 	buffer = NULL;
 	len = 0;
 	state = reg;
@@ -250,11 +248,7 @@ void	parse_command_option(char *token, t_cmd_block *block, char **env)
 void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 {
 	t_dlist		*current;
-	t_list		*new_redir;
-	t_list		*redir;
 	t_token_lst	*token;
-	t_list		*opt;
-	t_list		*arg;
 	char		*token_text;
 
 	current = tokens;

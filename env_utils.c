@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:32:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/05 13:31:47 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/12 15:16:35 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 char *extract_var_id(char *var)
 {
-	char *var_id;
 	int i = 0;
 	int	index = -1;
 	

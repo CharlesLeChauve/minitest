@@ -147,7 +147,7 @@ void		clear_cmd_block(t_cmd_block *block);
 
 //dirs_handling
 void	pwd(void);
-void	act_env_pwd(char ***env, char *pwd);
+void	act_env_pwd(char ***env);
 int 	change_directory(char *path, char ***env);
 char	*get_cwd(void);
 
@@ -182,8 +182,8 @@ void	remove_from_tab(char ***tab, int index);
 void	add_strs_to_strtab(char **strs, char ***strtab);
 
 //redirs.c
-int    handle_redirs(t_cmd_block *cmd_block, t_std_fd_save save);
-int    make_redir_in(t_token_lst *redir, t_std_fd_save save);
+int    handle_redirs(t_cmd_block *cmd_block);
+int    make_redir_in(t_token_lst *redir);
 
 //path_utils.c
 char    *set_cmd_path(char *envp[], char *cmd);

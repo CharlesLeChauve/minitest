@@ -1,8 +1,8 @@
 #include "minishell.h"
 
-void create_exec_tab(t_cmd_block *cmd_block) {
+void create_exec_tab(t_cmd_block *cmd_block) 
+{
 	int i;
-	int total_size;
 	t_list *current;
 
 	i = ft_lstsize(cmd_block->arg);
