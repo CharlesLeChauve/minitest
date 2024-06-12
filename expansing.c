@@ -319,7 +319,8 @@ void	expand_ast(t_ast_node *node, t_shell *shl)
 		cmd_block = init_cmd_block();
 		fill_cmd_block(cmd_block, node->tokens, shl->env);
 		create_exec_tab(cmd_block);
-		get_heredocs(cmd_block);
+		if (get_heredocs(cmd_block))
+			return ;
 		node->cmd_block = cmd_block;
 	}
 	expand_ast(node->left, shl);

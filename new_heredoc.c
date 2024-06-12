@@ -32,17 +32,17 @@ struct sigaction	*setup_signal_handlers_h(void)
     }
 }
 
-void	read_heredoc(char *limiter, int fd)
+int	read_heredoc(char *limiter, int fd)
 {
 	char	*nl;
 	int		tty_fd;
 
-	setup_signal_handlers();
+	//setup_signal_handlers();
 	tty_fd = open("/dev/tty", O_RDONLY);
 	if (tty_fd == -1)
 	{
 		perror("open");
-		return;
+		return (1);
 	}
 	while (1)
 	{
@@ -52,18 +52,19 @@ void	read_heredoc(char *limiter, int fd)
 			ft_putstr_fd(
 				"Error : End Of File before finding here_doc LIMITER", 2);
 			close(tty_fd);
-			return ;
+			return (1);
 		}
 		if (!ft_strncmp(nl, limiter, ft_strlen(limiter))
 			&& nl[ft_strlen(limiter)] == '\n')
 		{
 			free(nl);
 			close(tty_fd);
-			exit(EXIT_SUCCESS);
+			return(0);
 		}
 		ft_putstr_fd(nl, fd);
 		free(nl);
 	}
+	return (0);
 }
 
 int	get_hd_no_1(void)
@@ -105,22 +106,28 @@ int	get_heredocs(t_cmd_block *cmd_block)
 			if (tmp_fd == -1)
 			{
 				perror("open");
-				exit(EXIT_FAILURE);
+				return (-1);
 			}
-			pid_t pid = fork();
-			if (pid == 0)
-				read_heredoc(((t_token_lst *)(current->content))->text, tmp_fd);
-			else
-			{
-				ret = wait_status(0);
-				close(tmp_fd);
-				((t_token_lst *)(current->content))->type = redir_in;
-				free(((t_token_lst *)(current->content))->text);
-				((t_token_lst *)(current->content))->text = ft_strdup(tmp_name);
-				if (ret)
-					return (1);
-				hd_no_2++;
-			}
+			// pid_t pid = fork();
+			// if (pid == 0)
+			if (read_heredoc(((t_token_lst *)(current->content))->text, tmp_fd))
+				return (1);
+			close(tmp_fd);
+			((t_token_lst *)(current->content))->type = redir_in;
+			free(((t_token_lst *)(current->content))->text);
+			((t_token_lst *)(current->content))->text = ft_strdup(tmp_name);
+			hd_no_2++;
+			// else
+			// {
+			// 	ret = wait_status(0);
+			// 	close(tmp_fd);
+			// 	((t_token_lst *)(current->content))->type = redir_in;
+			// 	free(((t_token_lst *)(current->content))->text);
+			// 	((t_token_lst *)(current->content))->text = ft_strdup(tmp_name);
+			// 	if (ret)
+			// 		return (1);
+			// 	hd_no_2++;
+			// }
 		}
 		current = current->next;
 	}
