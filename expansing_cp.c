@@ -94,47 +94,46 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 
 char* extrapolate(char *token, char **env)
 {
-    char *env_var_value;
-    char *value_start;
+	char *env_var_value;
+	char *value_start;
 
-    if (token[0] == '$')
+	if (token[0] == '$')
 	{
-        // if (token[1] == '?' && token[2] == '\0')
+		// if (token[1] == '?' && token[2] == '\0')
 		// {
-        //     char last_ret_str[12]; // Remplacer par votre propre gestion de l'état de retour
-        //     sprintf(last_ret_str, "%d", 0); // Remplacer par shell->last_ret
-        //     free(token);
-        //     return strdup(last_ret_str);
-        // }
+		//     char last_ret_str[12]; // Remplacer par votre propre gestion de l'état de retour
+		//     sprintf(last_ret_str, "%d", 0); // Remplacer par shell->last_ret
+		//     free(token);
+		//     return strdup(last_ret_str);
+		// }
 		if (!token[1])
-            return (token);
+			return (token);
 		else
 		{
-            env_var_value = get_env_var(env, token + 1);
-            if (env_var_value)
+			env_var_value = get_env_var(env, token + 1);
+			if (env_var_value)
 			{
-                value_start = ft_strchr(env_var_value, '=');
-                if (value_start)
-                    value_start++;
+				value_start = ft_strchr(env_var_value, '=');
+				if (value_start)
+					value_start++;
 				else
-                    value_start = env_var_value;
-                free(token);
-                return (ft_strdup(value_start));
-            }
-			else
-			{
-                fprintf(stderr, "tash: %s: Undefined variable\n", token + 1);
-                free(token);
-                return (NULL);
-            }
-        }
-    }
-    return (token);
+					value_start = env_var_value;
+				free(token);
+				return (ft_strdup(value_start));
+			}
+			// else
+			// {
+			// 	fprintf(stderr, "tash: %s: Undefined variable\n", token + 1);
+			// 	free(token);
+			// 	return (NULL);
+			// }
+		}
+	}
+	return (token);
 }
 
 void	extract_command(char **ptr, t_cmd_block *block, char **env)
 {
-	// asm volatile("push $42; call ft_putnbr; pop %eax");
 	size_t	len;
 	char	*buffer;
 	t_sm	state;
@@ -161,13 +160,12 @@ void	extract_command(char **ptr, t_cmd_block *block, char **env)
 	 if (buffer)
 	 {
 		expanded = extrapolate(buffer, env);
-        if (expanded)
-            buffer = expanded;
+		if (expanded)
+			buffer = expanded;
 		else
-		{
-			printf("saucisson\n");
-		}
-    }
+			printf("\n");
+		printf("buffer = %s\n", buffer);
+	}
 	block->command = buffer;
 	// printf("commande = %s\n", block->command);
 }
@@ -210,61 +208,33 @@ char	*extract_sub_token(char **ptr)
 	return (buffer);
 }
 
-void process_sub_token(char *sub_token, t_cmd_block *block, char **env)
-{
-    t_list *new_arg;
 
-    sub_token = extrapolate(sub_token, env);
-    if (!sub_token)
-        return ;
-    if (sub_token[0] == '>' || sub_token[0] == '<')
-	{
-        if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<') || (sub_token[2] == '>') || (sub_token[2] == '<'))
-		{
-            fprintf(stderr, "tash: Wrong redir operator.\n");
-            return;
-        }
-        new_arg = ft_lstnew(redir_token(sub_token));
-        if (new_arg)
-            ft_lstadd_back(&(block->redirs), new_arg);
-        // else
-        // {
-        //     free(sub_token);
-        //     sub_token = NULL;
-        // } ca free trop tot je crois tonton
-    }
-	else
-	{
-        new_arg = ft_lstnew(sub_token);
-        ft_lstadd_back(&(block->arg), new_arg);
-    }
-}
 
 void parse_command_option(char *token, t_cmd_block *block, char **env)
 {
-    char *ptr = token;
-    char *sub_token;
-    int command_found;
+	char *ptr = token;
+	char *sub_token;
+	int command_found;
 
-    command_found = 0;
-    while (*ptr)
+	command_found = 0;
+	while (*ptr)
 	{
-        while (ft_isspace(*ptr))
-            ptr++;
-        if (*ptr)
+		while (ft_isspace(*ptr))
+			ptr++;
+		if (*ptr)
 		{
-            if (!command_found && *ptr != '>' && *ptr != '<')
+			if (!command_found && *ptr != '>' && *ptr != '<')
 			{
-                extract_command(&ptr, block, env);
-                command_found = 1;
-            }
+				extract_command(&ptr, block, env);
+				command_found = 1;
+			}
 			else
 			{
-                sub_token = extract_sub_token(&ptr);
-                process_sub_token(sub_token, block, env);
-            }
-        }
-    }
+				sub_token = extract_sub_token(&ptr);
+				process_sub_token(sub_token, block, env);
+			}
+		}
+	}
 }
 
 void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)

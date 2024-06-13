@@ -38,3 +38,12 @@ char	*ft_strncpy(char *s1, char *s2, int len)
 	s1[i] = '\0';
 	return (s1);
 }
+
+char	*ft_strcpy(char *dest, const char *src)
+{
+	char *start = dest;
+
+	while ((*dest++ = *src++) != '\0')
+		;
+	return (start);
+}

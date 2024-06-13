@@ -73,32 +73,78 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 	if ((**curr_char == '"' || **curr_char == '\'') && *state == reg)
 	{
 		if (**curr_char == '"')
-		{
 			*state = dquote;
-			// printf("a\n");
-		}
 		else
+		{
 			*state = quote;
+			printf("a\n");
+		}
 		(*curr_char)++;
 	}
 	else if (**curr_char == '"' && *state == dquote)
 	{
-		// printf("b\n");
 		*state = reg;
 		(*curr_char)++;
 	}
 	else if (**curr_char == '\'' && *state == quote)
 	{
+		printf("b\n");
 		*state = reg;
 		(*curr_char)++;
 	}
 }
 
-void	extract_command(char **ptr, t_cmd_block *block)
+char *extrapolate(char *str, char **env, t_sm *state)
+{
+    char *result = NULL;
+    char *temp;
+    char *env_var_value;
+    char *value_start;
+    size_t len = 0;
+    size_t i = 0;
+    size_t j;
+
+	if (*state == quote)
+		return (NULL);
+    while (str[i])
+    {
+        if (str[i] == '$' && *state != quote)
+        {
+            j = i + 1;
+            while (str[j] && !ft_isspace(str[j]) && str[j] != '$' && str[j] != '%' && str[j] != '/' && str[j] != ':')
+                j++;
+            temp = ft_substr(str, i + 1, j - i - 1);
+            env_var_value = get_env_var(env, temp);
+            free(temp);
+            if (env_var_value)
+            {
+                value_start = ft_strchr(env_var_value, '=');
+                if (value_start)
+                    ft_strappend(&result, value_start + 1, &len);
+                else
+                    ft_strappend(&result, env_var_value, &len);
+            }
+            // Si la variable n'est pas définie, ne rien ajouter à result
+            i = j; // Passer la variable non définie
+        }
+        else
+        {
+            temp = ft_substr(str, i, 1);
+            ft_strappend(&result, temp, &len);
+            free(temp);
+            i++;
+        }
+    }
+    return result;
+}
+
+
+void	extract_command(char **ptr, t_cmd_block *block, char **env)
 {
 	size_t	len;
 	char	*buffer;
 	t_sm	state;
+	char	*expanded;
 
 	len = 0;
 	buffer = NULL;
@@ -118,99 +164,86 @@ void	extract_command(char **ptr, t_cmd_block *block)
 		buffer[len - 1] = '\0';
 		len--;
 	}
+	 if (buffer)
+	 {
+		expanded = extrapolate(buffer, env, &state);
+		if (expanded)
+			buffer = expanded;
+		else
+			printf("a\n");
+	}
 	block->command = buffer;
 	// printf("commande = %s\n", block->command);
 }
 
-char	*extract_sub_token(char **ptr)
+char *extract_sub_token(char **ptr, char **env)
 {
-	char	*start;
-	char	*buffer;
-	t_sm	state;
-	size_t	len;
+    char *start;
+    char *buffer;
+    char *expanded;
+    t_sm state;
+    size_t len;
 
-	start = *ptr;
-	buffer = NULL;
-	len = 0;
-	state = reg;
-	if (**ptr == '<' || **ptr == '>')
-	{
-		while (**ptr == '>' || **ptr == '<')
-		{
-			ft_add_char_to_buffer(&buffer, **ptr, &len);
-			(*ptr)++;
-		}
-		while (**ptr == ' ')
-			(*ptr)++;
-	}
-	while (**ptr && (state != reg || !ft_isspace(**ptr)))
-	{
-		set_quotes_state_in_cmd_block(ptr, &state);
-		if (state == reg && (ft_isspace(**ptr) || ft_isshelloperator(**ptr)))
-			break;
-		ft_add_char_to_buffer(&buffer, **ptr, &len);
-		(*ptr)++;
-	}
-	while (len > 0 && ft_isspace(buffer[len - 1]))
-	{
-		buffer[len - 1] = '\0';
-		len--;
-	}
-	// printf("%s\n", buffer);
-	return (buffer);
+    start = *ptr;
+    buffer = NULL;
+    len = 0;
+    state = reg;
+    if (**ptr == '<' || **ptr == '>')
+    {
+        while (**ptr == '>' || **ptr == '<')
+        {
+            ft_add_char_to_buffer(&buffer, **ptr, &len);
+            (*ptr)++;
+        }
+        while (**ptr == ' ')
+            (*ptr)++;
+    }
+    while (**ptr)
+    {
+        set_quotes_state_in_cmd_block(ptr, &state);
+        if (**ptr == '\0' || (state == reg && (ft_isspace(**ptr) || ft_isshelloperator(**ptr))))
+            break;
+        ft_add_char_to_buffer(&buffer, **ptr, &len);
+        (*ptr)++;
+    }
+    while (len > 0 && ft_isspace(buffer[len - 1]))
+    {
+        buffer[len - 1] = '\0';
+        len--;
+    }
+    if (buffer)
+    {
+        expanded = extrapolate(buffer, env, &state);
+        free(buffer); // Free the original buffer before reassigning
+        if (expanded)
+            buffer = expanded;
+        else
+            return (NULL); // Return NULL if extrapolation fails
+    }
+    // printf("buffer = %s\n", buffer);
+    return (buffer);
 }
 
-void	process_sub_token(char *sub_token, t_cmd_block *block, char **env)
+void process_sub_token(char *sub_token, t_cmd_block *block, char **env)
 {
-	t_list	*new_arg;
-	char	*env_var_value;
+	t_list *new_arg;
 
-	if (sub_token[0] == '$')
-	{
-		// if (sub_token[1] == '?' && sub_token[2] == '\0')
-		// {
-		// 	char last_ret_str[12]; 12 parce que l'int min c'est 11 pour la longueur de int min + \0
-		// 	sprintf(last_ret_str, "%d", shell->last_ret);
-		// 	free(sub_token);
-		// 	sub_token = ft_strdup(last_ret_str);
-		// }
-		// else
-		if (!sub_token[1])
-		{
-			new_arg = ft_lstnew(sub_token);
-			ft_lstadd_back(&(block->arg), new_arg);
-			printf("sub token = %s\n", sub_token);
-			return ;
-		}
-		{
-			env_var_value = get_env_var(env, sub_token + 1);
-			if (env_var_value)
-			{
-				free(sub_token);
-				sub_token = ft_strdup(env_var_value);
-			}
-			else
-			{
-				fprintf(stderr, "tash: %s: Undefined variable\n", sub_token + 1);
-				free(sub_token);
-				return ;
-			}
-		}
-	}
+	if (!sub_token)
+		return ;
 	if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
 		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<') || (sub_token[2] == '>') || (sub_token[2] == '<'))
 		{
 			fprintf(stderr, "tash: Wrong redir operator.\n");
-			return ;
+			return;
 		}
 		new_arg = ft_lstnew(redir_token(sub_token));
 		if (new_arg)
 			ft_lstadd_back(&(block->redirs), new_arg);
 		// else
 		// {
-		// 	free(sub_token);
-		// 	sub_token = NULL;
+		//     free(sub_token);
+		//     sub_token = NULL;
 		// } ca free trop tot je crois tonton
 	}
 	else
@@ -219,6 +252,7 @@ void	process_sub_token(char *sub_token, t_cmd_block *block, char **env)
 		ft_lstadd_back(&(block->arg), new_arg);
 	}
 }
+
 
 void	parse_command_option(char *token, t_cmd_block *block, char **env)
 {
@@ -235,12 +269,12 @@ void	parse_command_option(char *token, t_cmd_block *block, char **env)
 		{
 			if (!command_found && *ptr != '>' && *ptr != '<')
 			{
-				extract_command(&ptr, block);
+				extract_command(&ptr, block, env);
 				command_found = 1;
 			}
 			else
 			{
-				sub_token = extract_sub_token(&ptr);
+				sub_token = extract_sub_token(&ptr, env);
 				process_sub_token(sub_token, block, env);
 			}
 		}
@@ -265,7 +299,7 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 		if (token_text == NULL)
 		{
 			current = current->next;
-			continue;
+			continue ;
 		}
 		parse_command_option(token_text, block, env);
 		current = current->next;
