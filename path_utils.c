@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   path_utils.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/05 07:18:06 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/05 07:18:08 by tgibert          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 char	*get_env_path(char **env)
@@ -18,6 +6,7 @@ char	*get_env_path(char **env)
 	char	*env_path;
 
 	i = -1;
+	env_path = NULL;
 	while (env[++i])
 	{
 		if (!ft_strncmp(env[i], "PATH=", 5))
@@ -35,8 +24,10 @@ char	*get_cmd_path(char **env, char *cmd)
 
 	i = 0;
 	paths = get_env_path(env);
+	if (paths == NULL)
+		return (NULL);
 	paths_array = ft_split(paths, ':');
-	free(paths);
+		free(paths);
 	while (paths_array[i])
 	{
 		cmd_path = ft_strjoin(paths_array[i], "/");

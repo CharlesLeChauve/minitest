@@ -154,7 +154,7 @@ void	extract_command(char **ptr, t_cmd_block *block, char **env)
 		set_quotes_state_in_cmd_block(ptr, &state);
 		if (**ptr == '"' || **ptr == '\'')
 			continue ;
-		if (state == reg && (**ptr == '>' || **ptr == '<') || (ft_isspace(**ptr) && state == reg))
+		if ((state == reg && (**ptr == '>' || **ptr == '<')) || (ft_isspace(**ptr) && state == reg))
 			break ;
 		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
@@ -284,11 +284,7 @@ void	parse_command_option(char *token, t_cmd_block *block, char **env)
 void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 {
 	t_dlist		*current;
-	t_list		*new_redir;
-	t_list		*redir;
 	t_token_lst	*token;
-	t_list		*opt;
-	t_list		*arg;
 	char		*token_text;
 
 	current = tokens;
@@ -353,7 +349,8 @@ void	expand_ast(t_ast_node *node, t_shell *shl)
 		cmd_block = init_cmd_block();
 		fill_cmd_block(cmd_block, node->tokens, shl->env);
 		create_exec_tab(cmd_block);
-		get_heredocs(cmd_block);
+		if (get_heredocs(cmd_block))
+			return ;
 		node->cmd_block = cmd_block;
 	}
 	expand_ast(node->left, shl);

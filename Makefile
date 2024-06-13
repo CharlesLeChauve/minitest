@@ -1,6 +1,6 @@
 CC      =   gcc
 
-CFLAGS  =    -g -Iheaders/
+CFLAGS  =    -g -Iheaders -Wall -Wextra -Werror
 READLINE_INC = -I/opt/homebrew/opt/readline/include
 READLINE_LIB = -L/opt/homebrew/opt/readline/lib -lreadline
 

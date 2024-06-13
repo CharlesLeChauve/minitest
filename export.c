@@ -48,7 +48,6 @@ char	*export_format(char *str)
 // Deuxieme argument un tableau NULL termine de chaines de caracteres NULL terminees listant les variables a ajouter;
 int    export(char **env[], char **arg)
 {
-	char	**new_vars;
 	char	**env_cpy;
 	int		i;
 

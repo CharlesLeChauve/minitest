@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/05 07:24:24 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:40:28 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	pwd(void)
 	free(wd);
 }
 
-void	act_env_pwd(char ***env, char *pwd)
+void	act_env_pwd(char ***env)
 {
 	char	**pwds;
 	char	*pwd_ptr;
@@ -71,6 +71,6 @@ int	change_directory(char *path, char ***env)
 		return (1);
 	}
 	else
-		act_env_pwd(env, get_cwd());
+		act_env_pwd(env);
 	return (0);
 }
