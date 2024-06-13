@@ -17,7 +17,7 @@ char *extract_var_id(char *var)
 	char *var_id;
 	int i = 0;
 	int	index = -1;
-	
+
 	while (var[i])
 	{
 		if (var[i] == '=')
@@ -85,9 +85,7 @@ char	*get_env_var(char **env, char *var_id)
 			break ;
 		}
 	}
-	if (env_var)
-		return (env[i]);
-	return (NULL);
+	return (env_var);
 }
 
 int	get_env_index(char **env, char *var_id)
