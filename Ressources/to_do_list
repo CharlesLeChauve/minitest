@@ -11,5 +11,23 @@
         Last_return_value = 127
         )
 
+- Verifier qu'il s'egit bien d'un path avant d'essayer de le traiter comme tel -> Si je tapes minishell, ne doit pas lancer minishell car n'est pas une commande se trouvant dans la VE PATH
+
+
 
 !!!Deplacer create exec tab avec le reste de l'expansing au lieu de l'exec
+
+tgibert@c2r5p4:~/tests$ touch echo
+tgibert@c2r5p4:~/tests$ touch Hello
+tgibert@c2r5p4:~/tests$ touch World
+tgibert@c2r5p4:~/tests$ *
+Hello World
+tgibert@c2r5p4:~/tests$ 
+
+
+tgibert@c2r5p4:~/tests$ cat <<END >croute
+> Les wildcards c'est de la merde
+> END
+tgibert@c2r5p4:~/tests$ touch cat
+tgibert@c2r5p4:~/tests$ *
+Les wildcards c'est de la merde

@@ -111,7 +111,7 @@ int			ft_isshelloperator(char c);
 
 // lexing
 void		parse_input(char *input, t_token_lst **token_lst);
-int			same_quote(t_tkn_info *tkn_info);
+int			same_quote(t_sm *state, char c);
 void		lexer(char	*input, t_token_lst **tokens);
 t_token_lst	*token_new(t_token_type type, void *content);
 t_token_lst	*token_last(t_token_lst *token_lst);
@@ -207,5 +207,7 @@ void ft_exit(char **args);
 void ft_echo(char **args);
 
 int	get_heredocs(t_cmd_block *cmd_block);
+
+void	expand_wildcards_in_block(t_cmd_block *block);
 
 #endif

@@ -110,8 +110,6 @@ int	get_heredocs(t_cmd_block *cmd_block)
 				perror("open");
 				return (-1);
 			}
-			// pid_t pid = fork();
-			// if (pid == 0)
 			if (read_heredoc(((t_token_lst *)(current->content))->text, tmp_fd))
 				return (1);
 			close(tmp_fd);
@@ -119,17 +117,6 @@ int	get_heredocs(t_cmd_block *cmd_block)
 			free(((t_token_lst *)(current->content))->text);
 			((t_token_lst *)(current->content))->text = ft_strdup(tmp_name);
 			hd_no_2++;
-			// else
-			// {
-			// 	ret = wait_status(0);
-			// 	close(tmp_fd);
-			// 	((t_token_lst *)(current->content))->type = redir_in;
-			// 	free(((t_token_lst *)(current->content))->text);
-			// 	((t_token_lst *)(current->content))->text = ft_strdup(tmp_name);
-			// 	if (ret)
-			// 		return (1);
-			// 	hd_no_2++;
-			// }
 		}
 		current = current->next;
 	}

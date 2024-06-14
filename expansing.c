@@ -94,57 +94,57 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 	}
 }
 
-char *extrapolate(char *str, char **env, t_sm *state)
+int	same_quote(t_sm *state, char c)
 {
-    char *result = NULL;
-    char *temp;
-    char *env_var_value;
-    char *value_start;
-    size_t len = 0;
-    size_t i = 0;
-    size_t j;
-
-	if (*state == quote)
-		return (NULL);
-    while (str[i])
-    {
-        if (str[i] == '$' && *state != quote)
-        {
-            j = i + 1;
-            while (str[j] && !ft_isspace(str[j]) && str[j] != '$' && str[j] != '%' && str[j] != '/' && str[j] != ':')
-                j++;
-            temp = ft_substr(str, i + 1, j - i - 1);
-            env_var_value = get_env_var(env, temp);
-            free(temp);
-            if (env_var_value)
-            {
-                value_start = ft_strchr(env_var_value, '=');
-                if (value_start)
-                    ft_strappend(&result, value_start + 1, &len);
-                else
-                    ft_strappend(&result, env_var_value, &len);
-            }
-            // Si la variable n'est pas définie, ne rien ajouter à result
-            i = j; // Passer la variable non définie
-        }
-        else
-        {
-            temp = ft_substr(str, i, 1);
-            ft_strappend(&result, temp, &len);
-            free(temp);
-            i++;
-        }
-    }
-    return result;
+	if (*state == dquote && c == '"')
+		return (1);
+	else if (*state == quote && c == '\'')
+		return (1);
+	return (0);
 }
 
+char *extrapolate_2(char **str, char **env, t_sm *state, size_t *len)
+{
+	char *result;
+	char *temp;
+	char *env_var_value;
+	char *value_start;
+	size_t j;
 
-void	extract_command(char **ptr, t_cmd_block *block, char **env)
+	j = 0;
+	result = NULL;
+	temp = NULL;
+	value_start = NULL;
+	env_var_value = NULL;
+	if (*state == quote)
+		return (NULL);
+	if (**str == '$')
+	{
+		(*str)++;
+		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$' && (*str)[j] != '\'' && (*str)[j] != '"') //&& (*str)[j]  != '%' && (*str)[j]  != '/' && (*str)[j]  != ':')
+			j++;
+		temp = ft_substr(*str, 0, j);
+		*str += j;
+		env_var_value = get_env_var(env, temp);
+		free(temp);
+		if (env_var_value)
+		{
+			value_start = ft_strchr(env_var_value, '=');
+			if (value_start)
+				ft_strappend(&result, value_start + 1, len);
+			// else
+			// 	ft_strappend(&result, env_var_value, len);
+		}
+	}
+	return result;
+}
+
+char	*extract_command(char **ptr, char **env)
 {
 	size_t	len;
 	char	*buffer;
+	char	*ext;
 	t_sm	state;
-	char	*expanded;
 
 	len = 0;
 	buffer = NULL;
@@ -152,79 +152,25 @@ void	extract_command(char **ptr, t_cmd_block *block, char **env)
 	while (**ptr)
 	{
 		set_quotes_state_in_cmd_block(ptr, &state);
-		if (**ptr == '"' || **ptr == '\'')
+		ext = NULL;
+		ext = extrapolate_2(ptr, env, &state, &len);
+		if (ext)
+		{
+			ft_strappend(&buffer, ext, &len);
 			continue ;
-		if ((state == reg && (**ptr == '>' || **ptr == '<')) || (ft_isspace(**ptr) && state == reg))
+		}
+		if (same_quote(&state, **ptr))
+			continue ;
+		else if (!**ptr || (state == reg && (**ptr == '>' || **ptr == '<' || ft_isspace(**ptr))))
 			break ;
 		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
 	}
-	while (len > 0 && ft_isspace(buffer[len - 1]))
-	{
-		buffer[len - 1] = '\0';
-		len--;
-	}
-	 if (buffer)
-	 {
-		expanded = extrapolate(buffer, env, &state);
-		if (expanded)
-			buffer = expanded;
-		else
-			printf("a\n");
-	}
-	block->command = buffer;
-	// printf("commande = %s\n", block->command);
+	return (buffer);
 }
 
-char *extract_sub_token(char **ptr, char **env)
-{
-    char *start;
-    char *buffer;
-    char *expanded;
-    t_sm state;
-    size_t len;
 
-    start = *ptr;
-    buffer = NULL;
-    len = 0;
-    state = reg;
-    if (**ptr == '<' || **ptr == '>')
-    {
-        while (**ptr == '>' || **ptr == '<')
-        {
-            ft_add_char_to_buffer(&buffer, **ptr, &len);
-            (*ptr)++;
-        }
-        while (**ptr == ' ')
-            (*ptr)++;
-    }
-    while (**ptr)
-    {
-        set_quotes_state_in_cmd_block(ptr, &state);
-        if (**ptr == '\0' || (state == reg && (ft_isspace(**ptr) || ft_isshelloperator(**ptr))))
-            break;
-        ft_add_char_to_buffer(&buffer, **ptr, &len);
-        (*ptr)++;
-    }
-    while (len > 0 && ft_isspace(buffer[len - 1]))
-    {
-        buffer[len - 1] = '\0';
-        len--;
-    }
-    if (buffer)
-    {
-        expanded = extrapolate(buffer, env, &state);
-        free(buffer); // Free the original buffer before reassigning
-        if (expanded)
-            buffer = expanded;
-        else
-            return (NULL); // Return NULL if extrapolation fails
-    }
-    // printf("buffer = %s\n", buffer);
-    return (buffer);
-}
-
-void process_sub_token(char *sub_token, t_cmd_block *block, char **env)
+void process_sub_token(char *sub_token, t_cmd_block *block)
 {
 	t_list *new_arg;
 
@@ -258,25 +204,15 @@ void	parse_command_option(char *token, t_cmd_block *block, char **env)
 {
 	char	*ptr = token;
 	char	*sub_token;
-	int		command_found;
 
-	command_found = 0;
 	while (*ptr)
 	{
 		while (ft_isspace(*ptr))
 			ptr++;
 		if (*ptr)
 		{
-			if (!command_found && *ptr != '>' && *ptr != '<')
-			{
-				extract_command(&ptr, block, env);
-				command_found = 1;
-			}
-			else
-			{
-				sub_token = extract_sub_token(&ptr, env);
-				process_sub_token(sub_token, block, env);
-			}
+			sub_token = extract_command(&ptr, env);
+			process_sub_token(sub_token, block);
 		}
 	}
 }
@@ -300,6 +236,7 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 		parse_command_option(token_text, block, env);
 		current = current->next;
 	}
+	
 }
 
 void	print_cmd_block(t_cmd_block *cmd_block)
