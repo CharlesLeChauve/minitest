@@ -103,25 +103,20 @@ int	same_quote(t_sm *state, char c)
 	return (0);
 }
 
-char *extrapolate_2(char **str, char **env, t_sm *state, size_t *len)
-{
-	char *result;
-	char *temp;
-	char *env_var_value;
-	char *value_start;
-	size_t j;
+char *extrapolate_2(char **str, char **env, t_sm *state, size_t *len) {
+	char *result = NULL;
+	char *temp = NULL;
+	char *env_var_value = NULL;
+	char *value_start = NULL;
+	size_t j = 0;
 
-	j = 0;
-	result = NULL;
-	temp = NULL;
-	value_start = NULL;
-	env_var_value = NULL;
 	if (*state == quote)
-		return (NULL);
+		return NULL;
 	if (**str == '$')
 	{
 		(*str)++;
-		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$' && (*str)[j] != '\'' && (*str)[j] != '"') //&& (*str)[j]  != '%' && (*str)[j]  != '/' && (*str)[j]  != ':')
+		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
+				&& (*str)[j] != '\'' && (*str)[j] != '"')
 			j++;
 		temp = ft_substr(*str, 0, j);
 		*str += j;
@@ -131,20 +126,22 @@ char *extrapolate_2(char **str, char **env, t_sm *state, size_t *len)
 		{
 			value_start = ft_strchr(env_var_value, '=');
 			if (value_start)
-				ft_strappend(&result, value_start + 1, len);
-			// else
-			// 	ft_strappend(&result, env_var_value, len);
+				result = ft_strdup(value_start + 1);
 		}
+		else
+			result = (ft_strdup(""));
 	}
-	return result;
+	return (result);
 }
 
-char	*extract_command(char **ptr, char **env)
+
+char *extract_command(char **ptr, char **env)
 {
-	size_t	len;
-	char	*buffer;
-	char	*ext;
-	t_sm	state;
+	size_t len;
+
+	char *buffer;
+	char *ext;
+	t_sm state;
 
 	len = 0;
 	buffer = NULL;
@@ -157,11 +154,16 @@ char	*extract_command(char **ptr, char **env)
 		if (ext)
 		{
 			ft_strappend(&buffer, ext, &len);
-			continue ;
+			free(ext);
+			continue;
 		}
 		if (same_quote(&state, **ptr))
-			continue ;
-		else if (!**ptr || (state == reg && (**ptr == '>' || **ptr == '<' || ft_isspace(**ptr))))
+		{
+			(*ptr)++;
+			continue;
+		}
+		else if (!**ptr || (state == reg && (**ptr == '>' || **ptr == '<' \
+				|| ft_isspace(**ptr))))
 			break ;
 		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
@@ -169,19 +171,20 @@ char	*extract_command(char **ptr, char **env)
 	return (buffer);
 }
 
-
 void process_sub_token(char *sub_token, t_cmd_block *block)
 {
-	t_list *new_arg;
+	t_list	*new_arg;
 
 	if (!sub_token)
 		return ;
 	if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
-		if ((sub_token[1] == '<' && sub_token[0] == '>') || (sub_token[1] == '>' && sub_token[0] == '<') || (sub_token[2] == '>') || (sub_token[2] == '<'))
+		if ((sub_token[1] == '<' && sub_token[0] == '>') \
+		|| (sub_token[1] == '>' && sub_token[0] == '<') \
+		|| (sub_token[2] == '>') || (sub_token[2] == '<'))
 		{
 			fprintf(stderr, "tash: Wrong redir operator.\n");
-			return;
+			return ;
 		}
 		new_arg = ft_lstnew(redir_token(sub_token));
 		if (new_arg)
@@ -236,7 +239,7 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 		parse_command_option(token_text, block, env);
 		current = current->next;
 	}
-	
+
 }
 
 void	print_cmd_block(t_cmd_block *cmd_block)
