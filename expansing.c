@@ -1,12 +1,13 @@
 #include "minishell.h"
 
-t_token_lst *redir_token(char *str)
+t_token_lst	*redir_token(char *str)
 {
-	char	*curr_char = str;
+	char		*curr_char;
 	t_token_lst	*token;
 	char		*buffer;
 	size_t		len;
 
+	curr_char = str;
 	buffer = NULL;
 	len = 0;
 	token = (t_token_lst *)malloc(sizeof(t_token_lst));
@@ -50,7 +51,7 @@ t_token_lst *redir_token(char *str)
 		curr_char++;
 	}
 	token->text = buffer;
-	return token;
+	return (token);
 }
 
 t_cmd_block	*init_cmd_block(void)
@@ -99,15 +100,22 @@ int	same_quote(t_sm *state, char c)
 	return (0);
 }
 
-char *extrapolate_2(char **str, char **env, t_sm *state, size_t *len) {
-	char *result = NULL;
-	char *temp = NULL;
-	char *env_var_value = NULL;
-	char *value_start = NULL;
-	size_t j = 0;
+char	*extrapolate_2(char **str, char **env, t_sm *state)
+{
+	char	*result;
+	char	*temp;
+	char	*env_var_value;
+	char	*value_start;
+	size_t	j;
+
+	result = NULL;
+	temp = NULL;
+	env_var_value = NULL;
+	value_start = NULL;
+	j = 0;
 
 	if (*state == quote)
-		return NULL;
+		return (NULL);
 	if (**str == '$')
 	{
 		(*str)++;
@@ -130,13 +138,12 @@ char *extrapolate_2(char **str, char **env, t_sm *state, size_t *len) {
 	return (result);
 }
 
-
 char *extract_command(char **ptr, char **env)
 {
-	size_t len;
-	char *buffer;
-	char *ext;
-	t_sm state;
+	size_t	len;
+	char	*buffer;
+	char	*ext;
+	t_sm	state;
 
 	len = 0;
 	buffer = NULL;
@@ -145,17 +152,17 @@ char *extract_command(char **ptr, char **env)
 	{
 		set_quotes_state_in_cmd_block(ptr, &state);
 		ext = NULL;
-		ext = extrapolate_2(ptr, env, &state, &len);
+		ext = extrapolate_2(ptr, env, &state);
 		if (ext)
 		{
 			ft_strappend(&buffer, ext, &len);
 			free(ext);
-			continue;
+			continue ;
 		}
 		if (same_quote(&state, **ptr))
 		{
 			(*ptr)++;
-			continue;
+			continue ;
 		}
 		else if (!**ptr || (state == reg && (**ptr == '>' || **ptr == '<' \
 				|| ft_isspace(**ptr))))
@@ -199,9 +206,10 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 
 void	parse_command_option(char *token, t_cmd_block *block, char **env)
 {
-	char	*ptr = token;
+	char	*ptr;
 	char	*sub_token;
 
+	ptr = token;
 	while (*ptr)
 	{
 		while (ft_isspace(*ptr))
@@ -238,38 +246,38 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 
 void	print_cmd_block(t_cmd_block *cmd_block)
 {
-		t_list		*opt;
-		t_list		*arg;
-		t_list		*redir;
+	t_list	*opt;
+	t_list	*arg;
+	t_list	*redir;
 
-		if (cmd_block->option)
+	if (cmd_block->option)
+	{
+		opt = cmd_block->option;
+		while (opt)
 		{
-			opt = cmd_block->option;
-			while (opt)
-			{
-				printf("  Option: %s\n", (char *)opt->content);
-				opt = opt->next;
-			}
+			printf("  Option: %s\n", (char *)opt->content);
+			opt = opt->next;
 		}
-		if (cmd_block->arg)
+	}
+	if (cmd_block->arg)
+	{
+		arg = cmd_block->arg;
+		while (arg)
 		{
-			arg = cmd_block->arg;
-			while (arg)
-			{
-				printf("  Argument: %s\n", (char *)arg->content);
-				arg = arg->next;
-			}
+			printf("  Argument: %s\n", (char *)arg->content);
+			arg = arg->next;
 		}
-		if (cmd_block->redirs)
+	}
+	if (cmd_block->redirs)
+	{
+		redir = cmd_block->redirs;
+		while (redir)
 		{
-			redir = cmd_block->redirs;
-			while (redir)
-			{
-				printf("Redirections:\n");
-				printf("  %s\n", ((t_token_lst *)redir->content)->text);
-				redir = redir->next;
-			}
+			printf("Redirections:\n");
+			printf("  %s\n", ((t_token_lst *)redir->content)->text);
+			redir = redir->next;
 		}
+	}
 }
 
 void	expand_ast(t_ast_node *node, t_shell *shl)
