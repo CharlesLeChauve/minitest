@@ -199,7 +199,6 @@ int	main(int argc, char *argv[], char *envp[])
 	verif = 0;
 	while (1)
 	{
-		printf("Last_return_value = %d\n", shl.last_ret);
 		if (input)
 			input = ft_strjoin_free(input, readline("> "), 1);
 		else

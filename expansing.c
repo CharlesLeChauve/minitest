@@ -100,7 +100,7 @@ int	same_quote(t_sm *state, char c)
 	return (0);
 }
 
-char	*extrapolate_2(char **str, char **env, t_sm *state)
+char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
 {
 	char	*result;
 	char	*temp;
@@ -113,18 +113,23 @@ char	*extrapolate_2(char **str, char **env, t_sm *state)
 	env_var_value = NULL;
 	value_start = NULL;
 	j = 0;
-
 	if (*state == quote)
 		return (NULL);
 	if (**str == '$')
 	{
 		(*str)++;
+		if (**str == '?')
+		{
+			(*str)++;
+			result = ft_itoa(shell->last_ret);
+			return (result);
+		}
 		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
 				&& (*str)[j] != '\'' && (*str)[j] != '"')
 			j++;
 		temp = ft_substr(*str, 0, j);
 		*str += j;
-		env_var_value = get_env_var(env, temp);
+		env_var_value = get_env_var(shell->env, temp);
 		free(temp);
 		if (env_var_value)
 		{
@@ -138,7 +143,7 @@ char	*extrapolate_2(char **str, char **env, t_sm *state)
 	return (result);
 }
 
-char *extract_command(char **ptr, char **env)
+char *extract_command(char **ptr, t_shell *shell)
 {
 	size_t	len;
 	char	*buffer;
@@ -152,7 +157,7 @@ char *extract_command(char **ptr, char **env)
 	{
 		set_quotes_state_in_cmd_block(ptr, &state);
 		ext = NULL;
-		ext = extrapolate_2(ptr, env, &state);
+		ext = extrapolate_2(ptr, shell, &state);
 		if (ext)
 		{
 			ft_strappend(&buffer, ext, &len);
@@ -204,7 +209,7 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 	}
 }
 
-void	parse_command_option(char *token, t_cmd_block *block, char **env)
+void	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 {
 	char	*ptr;
 	char	*sub_token;
@@ -216,13 +221,13 @@ void	parse_command_option(char *token, t_cmd_block *block, char **env)
 			ptr++;
 		if (*ptr)
 		{
-			sub_token = extract_command(&ptr, env);
+			sub_token = extract_command(&ptr, shell);
 			process_sub_token(sub_token, block);
 		}
 	}
 }
 
-void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
+void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell)
 {
 	t_dlist		*current;
 	t_token_lst	*token;
@@ -238,7 +243,7 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, char **env)
 			current = current->next;
 			continue ;
 		}
-		parse_command_option(token_text, block, env);
+		parse_command_option(token_text, block, shell);
 		current = current->next;
 	}
 
@@ -289,7 +294,7 @@ void	expand_ast(t_ast_node *node, t_shell *shl)
 	if (node->type == command)
 	{
 		cmd_block = init_cmd_block();
-		fill_cmd_block(cmd_block, node->tokens, shl->env);
+		fill_cmd_block(cmd_block, node->tokens, shl);
 		create_exec_tab(cmd_block);
 		if (get_heredocs(cmd_block))
 			return ;
