@@ -1,36 +1,30 @@
 #include "libft.h"
 
-void	ft_strappend(char **dest, const char *src, size_t *len)
+void ft_strappend(char **dest, const char *src, size_t *len)
 {
-	size_t	src_len;
-	char	*new_str;
+    size_t	src_len;
+    char	*new_str;
 
-	if (!src)
-		return ;
-	src_len = ft_strlen(src);
-	if (*dest == NULL)
+    if (!src)
+        return;
+    src_len = ft_strlen(src);
+    if (*dest == NULL)
 	{
-		*dest = (char *)malloc(src_len + 1);
-		if (!*dest)
-		{
-			perror("Allocation Failed");
-			exit(EXIT_FAILURE);
-		}
-		ft_strcpy(*dest, src);
-		*len = src_len;
-	}
+        *dest = (char *)malloc(src_len + 1);
+			if (!*dest)
+				return ;
+        ft_memcpy(*dest, src, src_len + 1);
+        *len = src_len;
+    }
 	else
 	{
-		new_str = (char *)malloc(*len + src_len + 1);
-		if (!new_str)
-		{
-			perror("Allocation Failed");
-			exit(EXIT_FAILURE);
-		}
-		ft_strcpy(new_str, *dest);
-		ft_strcat(new_str, src);
-		free(*dest);
-		*dest = new_str;
-		*len += src_len;
-	}
+        new_str = (char *)realloc(*dest, *len + src_len + 1);
+        if (!new_str)
+			return ;
+        *dest = new_str;
+        ft_memcpy(*dest + *len, src, src_len + 1);
+        *len += src_len;
+    }
 }
+
+
