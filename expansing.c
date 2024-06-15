@@ -75,10 +75,7 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 		if (**curr_char == '"')
 			*state = dquote;
 		else
-		{
 			*state = quote;
-			printf("a\n");
-		}
 		(*curr_char)++;
 	}
 	else if (**curr_char == '"' && *state == dquote)
@@ -88,7 +85,6 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 	}
 	else if (**curr_char == '\'' && *state == quote)
 	{
-		printf("b\n");
 		*state = reg;
 		(*curr_char)++;
 	}
@@ -138,7 +134,6 @@ char *extrapolate_2(char **str, char **env, t_sm *state, size_t *len) {
 char *extract_command(char **ptr, char **env)
 {
 	size_t len;
-
 	char *buffer;
 	char *ext;
 	t_sm state;
@@ -201,7 +196,6 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 		ft_lstadd_back(&(block->arg), new_arg);
 	}
 }
-
 
 void	parse_command_option(char *token, t_cmd_block *block, char **env)
 {
