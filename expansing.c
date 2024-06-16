@@ -124,6 +124,12 @@ char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
 			result = ft_itoa(shell->last_ret);
 			return (result);
 		}
+		  else if (**str == '$')
+        {
+            (*str)++;
+            result = ft_itoa(getpid());
+            return (result);
+        }
 		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
 				&& (*str)[j] != '\'' && (*str)[j] != '"')
 			j++;
