@@ -5,7 +5,7 @@ void create_exec_tab(t_cmd_block *cmd_block)
 	int i;
 	t_list *current;
 
-	//expand_wildcards_in_block(cmd_block);
+	expand_wildcards_in_block(cmd_block);
 	i = ft_lstsize(cmd_block->arg);
 	cmd_block->exec_tab = (char **)malloc((i + 2) * sizeof(char *));
 	if (!cmd_block->exec_tab) {

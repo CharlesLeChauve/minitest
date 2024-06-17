@@ -50,6 +50,7 @@ t_list	*ft_lstnew(void *content);
 t_dlist	*ft_dlstnew(void *content);
 t_list	*ft_lstlast(t_list *lst);
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+void	ft_lst_insert(t_list *target_node, t_list *new);
 char	*ft_itoa(int n);
 void	ft_strappend(char **dest, const char *src, size_t *len);
 char	*ft_strdup(const char *s);
