@@ -78,7 +78,6 @@ char *get_stash(char *text)
 	char	*stash;
 
 	index = get_next_slash(text);
-	printf("index = %d\n", index);
 	if (index == -1)
 		return (NULL);
 	if (index == 0)
@@ -104,44 +103,41 @@ void	expand_wildcard(char *prefix, char *suffix, t_list **arg_lst)
 	char			*eval;
 	char			*res;
 	char			*new_prefix;
+	int				first;
 
 	dir = NULL;
+	first = 1;
 	if (!suffix)
 		return ;
 	if (!prefix || !*prefix)
 		new_prefix = ft_strdup("./");
 	else
 		new_prefix = prefix;
-	ft_printf("new_prefix = %s\n", new_prefix);
 	stash = NULL;
 	dir = opendir(new_prefix);
 	if (!dir)
-	{
-		perror("dir");
 		return ;
-	}
 	stash = get_stash(suffix);
 	if (stash)
-	{
-		ft_printf("Allo\n");
 		eval = get_first_dir(suffix);
-		ft_printf("eval = %s\n",eval);
-	}
 	else
 		eval = suffix;
 	ent = readdir(dir);
 	while (ent != NULL)
 	{
-		ft_printf("ent_name = %s, eval = %s\n", ent->d_name, eval);
 		if (match_pattern(ent->d_name, eval))
 		{
-			ft_printf("Matched ! : %s with eval = %s\n", ent->d_name, eval);
 			res = ft_strjoin(prefix, ent->d_name);
 			if (stash && stash[0])
 			{
-				ft_printf("Appel recursif ici avec comme valeurs \nres = %s,\nstash = %s, \narg_lst content = %s\n", res, stash, (*arg_lst)->content);
 				res = ft_strjoin_free(res, "/", 0);
 				expand_wildcard(res, stash, arg_lst);
+			}
+			else if (first)
+			{
+				first = 0;
+				free((*arg_lst)->content);
+				(*arg_lst)->content = res;
 			}
 			else
 				ft_lstadd_back(arg_lst, ft_lstnew(res));

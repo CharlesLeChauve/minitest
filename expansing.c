@@ -1,31 +1,24 @@
 #include "minishell.h"
 
-t_token_lst	*redir_token(char *str)
+int	ft_isrediroperator(char c)
 {
-	char		*curr_char;
-	t_token_lst	*token;
-	char		*buffer;
-	size_t		len;
+	if (c == '<' || c == '>')
+		return (1);
+	return (0);
+}
 
-	curr_char = str;
-	buffer = NULL;
-	len = 0;
-	token = (t_token_lst *)malloc(sizeof(t_token_lst));
-	if (!token)
-	{
-		perror("Allocation Failed");
-		exit(EXIT_FAILURE);
-	}
+t_token_type	redir_type(char *curr_char)
+{
 	if (*curr_char == '>')
 	{
 		curr_char++;
 		if (*curr_char == '>')
 		{
 			curr_char++;
-			token->type = redir_app;
+			return redir_app;
 		}
 		else
-			token->type = redir_out;
+			return redir_out;
 	}
 	else if (*curr_char == '<')
 	{
@@ -33,25 +26,47 @@ t_token_lst	*redir_token(char *str)
 		if (*curr_char == '<')
 		{
 			curr_char++;
-			token->type = heredoc;
+			return heredoc;
 		}
 		else
-			token->type = redir_in;
+			return redir_in;
 	}
-	while (*curr_char == ' ')
-		curr_char++;
-	if (ft_isshelloperator(*curr_char) || *curr_char == '\0')
+	return 11;
+}
+
+char	*redir_token(char **str)
+{
+	char		**curr_char;
+	char		*buffer;
+	size_t		len;
+
+	curr_char = str;
+	buffer = NULL;
+	len = 0;
+	ft_printf("Allo\n");
+	if (**curr_char == '>' || **curr_char == '<')
+	{
+		ft_add_char_to_buffer(&buffer, **curr_char, &len);
+		(*curr_char)++;
+	}
+	if (**curr_char == '>' || **curr_char == '<')
+	{
+		ft_add_char_to_buffer(&buffer, **curr_char, &len);
+		(*curr_char)++;
+	}
+	while (**curr_char == ' ' || **curr_char == '\t')
+		(*curr_char)++;
+	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char) || **curr_char == '\0')
 	{
 		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
 		return (NULL);
 	}
-	while (*curr_char && !ft_isshelloperator(*curr_char) && !ft_isspace(*curr_char))
+	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char) && !ft_isspace(**curr_char))
 	{
-		ft_add_char_to_buffer(&buffer, *curr_char, &len);
-		curr_char++;
+		ft_add_char_to_buffer(&buffer, **curr_char, &len);
+		(*curr_char)++;
 	}
-	token->text = buffer;
-	return (token);
+	return (buffer);
 }
 
 t_cmd_block	*init_cmd_block(void)
@@ -175,9 +190,10 @@ char *extract_command(char **ptr, t_shell *shell)
 			(*ptr)++;
 			continue ;
 		}
-		else if (!**ptr || (state == reg && (**ptr == '>' || **ptr == '<' \
-				|| ft_isspace(**ptr))))
+		else if (!**ptr || (state == reg && ft_isspace(**ptr)))
 			break ;
+		else if ((**ptr == '>' || **ptr == '<'))
+			return (redir_token(ptr));
 		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
 	}
@@ -187,9 +203,8 @@ char *extract_command(char **ptr, t_shell *shell)
 void process_sub_token(char *sub_token, t_cmd_block *block)
 {
 	t_list	*new_arg;
+	t_token_type	type;
 
-	if (!sub_token)
-		return ;
 	if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
 		if ((sub_token[1] == '<' && sub_token[0] == '>') \
@@ -199,7 +214,13 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 			fprintf(stderr, "tash: Wrong redir operator.\n");
 			return ;
 		}
-		new_arg = ft_lstnew(redir_token(sub_token));
+		type = redir_type(sub_token);
+		if (type == heredoc || type == redir_app)
+			sub_token += 2;
+		else if (type == redir_out || type == redir_in)
+			sub_token++;
+		ft_printf("sub_token = %s, type = %d\n", sub_token, type);
+		new_arg = ft_lstnew(token_new(type, ft_strdup(sub_token)));
 		if (new_arg)
 			ft_lstadd_back(&(block->redirs), new_arg);
 		// else
@@ -228,6 +249,8 @@ void	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 		if (*ptr)
 		{
 			sub_token = extract_command(&ptr, shell);
+			if (!sub_token)
+				break ;
 			process_sub_token(sub_token, block);
 		}
 	}
