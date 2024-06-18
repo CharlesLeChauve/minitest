@@ -58,7 +58,8 @@ char	*redir_token(char **str)
 	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char) || **curr_char == '\0')
 	{
 		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
-		return (NULL);
+		// shell->last_ret = 2;
+		return (buffer);
 	}
 	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char) && !ft_isspace(**curr_char))
 	{

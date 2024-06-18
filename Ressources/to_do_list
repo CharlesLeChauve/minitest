@@ -31,3 +31,6 @@ tgibert@c2r5p4:~/tests$ cat <<END >croute
 tgibert@c2r5p4:~/tests$ touch cat
 tgibert@c2r5p4:~/tests$ *
 Les wildcards c'est de la merde
+
+
+-Invalid read pout checker la nature deu deuxieme chevron dans process sub token s'il n'y a qu'un chevron

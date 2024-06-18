@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/12 15:13:41 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/18 14:46:24 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,7 @@ int    handle_redirs(t_cmd_block *cmd_block)
 		redirs = cmd_block->redirs;
 		while (redirs)
 		{
-			//printf("redir = %s, %d\n",((t_token_lst *)redirs->content)->text, ((t_token_lst *)redirs->content)->type);
-			if (redirs->content == NULL)
+			if (redirs->content == NULL || ((t_token_lst *)redirs->content)->text[0] == '\0')
 			 	return (2);
 			if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)
 				if (make_redir_out((t_token_lst *)redirs->content))
