@@ -1,22 +1,17 @@
 #include "minishell.h"
 
+int	g_state = 0;
+
 void	handle_sigint_h(int sig)
 {
 	(void)sig;
-	exit(13);
-}
-
-void	handle_sigquit_h(int sig)
-{
-	(void)sig;
-	exit(1) ;
+	g_state = 13;
 }
 
 struct sigaction	*setup_signal_handlers_h(void)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_old_int;
-	struct sigaction	sa_quit;
 
 	sa_int.sa_handler = handle_sigint_h;
 	sigemptyset(&sa_int.sa_mask);
@@ -25,13 +20,11 @@ struct sigaction	*setup_signal_handlers_h(void)
 		perror("sigaction");
 		exit(EXIT_FAILURE);
 	}
-	sa_quit.sa_handler = handle_sigquit_h;
-    sa_quit.sa_flags = 0;
-    sigemptyset(&sa_quit.sa_mask);
-    if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) {
-        perror("sigaction");
-        exit(EXIT_FAILURE);
-    }
+	// if (sigaction(SIGINT, &sa_old_int, NULL) == -1)
+	// {
+	// 	perror("sigaction");
+	// 	exit(EXIT_FAILURE);
+	// }
 	return (NULL);
 }
 
@@ -39,8 +32,12 @@ int	read_heredoc(char *limiter, int fd)
 {
 	char	*nl;
 	int		tty_fd;
+	char	*hd;
+	size_t	len;
 
-	//setup_signal_handlers();
+	len = 0;
+	hd = NULL;
+	setup_signal_handlers();
 	tty_fd = open("/dev/tty", O_RDONLY);
 	if (tty_fd == -1)
 	{
@@ -50,11 +47,15 @@ int	read_heredoc(char *limiter, int fd)
 	while (1)
 	{
 		nl = get_next_line(tty_fd);
+		/* if (la globale)
+			return (2); */
 		if (nl == NULL)
 		{
 			ft_putstr_fd(
-				"Error : End Of File before finding here_doc LIMITER", 2);
+				"Error : End Of File before finding here_doc LIMITER\n", 2);
 			close(tty_fd);
+			ft_putstr_fd(hd, fd);
+			free(hd);
 			return (1);
 		}
 		if (!ft_strncmp(nl, limiter, ft_strlen(limiter))
@@ -64,9 +65,10 @@ int	read_heredoc(char *limiter, int fd)
 			close(tty_fd);
 			return(0);
 		}
-		ft_putstr_fd(nl, fd);
-		free(nl);
+		ft_strappend(&hd, nl, &len);
 	}
+	ft_putstr_fd(hd, fd);
+	free(hd);
 	return (0);
 }
 
@@ -110,7 +112,7 @@ int	get_heredocs(t_cmd_block *cmd_block)
 				perror("open");
 				return (-1);
 			}
-			if (read_heredoc(((t_token_lst *)(current->content))->text, tmp_fd))
+			if (((t_token_lst *)(current->content))->text[0] ==  read_heredoc(((t_token_lst *)(current->content))->text, tmp_fd))
 				return (1);
 			close(tmp_fd);
 			((t_token_lst *)(current->content))->type = redir_in;
