@@ -39,35 +39,41 @@ int	read_heredoc(char *limiter, int fd)
 {
 	char	*nl;
 	int		tty_fd;
+	pid_t	pid;
 
-	//setup_signal_handlers();
-	tty_fd = open("/dev/tty", O_RDONLY);
-	if (tty_fd == -1)
+	pid = fork();
+	if (pid == 0)
 	{
-		perror("open");
-		return (1);
-	}
-	while (1)
-	{
-		nl = get_next_line(tty_fd);
-		if (nl == NULL)
+		setup_signal_handlers();
+		tty_fd = open("/dev/tty", O_RDONLY);
+		if (tty_fd == -1)
 		{
-			ft_putstr_fd(
-				"Error : End Of File before finding here_doc LIMITER", 2);
-			close(tty_fd);
+			perror("open");
 			return (1);
 		}
-		if (!ft_strncmp(nl, limiter, ft_strlen(limiter))
-			&& nl[ft_strlen(limiter)] == '\n')
+		while (1)
 		{
+			nl = get_next_line(tty_fd);
+			if (nl == NULL)
+			{
+				ft_putstr_fd(
+					"Error : End Of File before finding here_doc LIMITER", 2);
+				close(tty_fd);
+				return (1);
+			}
+			if (!ft_strncmp(nl, limiter, ft_strlen(limiter))
+				&& nl[ft_strlen(limiter)] == '\n')
+			{
+				free(nl);
+				close(tty_fd);
+				return(0);
+			}
+			ft_putstr_fd(nl, fd);
 			free(nl);
-			close(tty_fd);
-			return(0);
 		}
-		ft_putstr_fd(nl, fd);
-		free(nl);
+		return (0);
 	}
-	return (0);
+	return (wait_status(pid));
 }
 
 int	get_hd_no_1(void)

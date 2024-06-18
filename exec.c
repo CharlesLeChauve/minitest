@@ -54,6 +54,8 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, char **envp[])
 
 	save.std_out = dup(STDOUT_FILENO);
 	save.std_in = dup(STDIN_FILENO);
+	if (!cmd_block)
+		return (130);
 	if (!cmd_block->exec_tab[0])
 	{
 		status = handle_redirs(cmd_block);

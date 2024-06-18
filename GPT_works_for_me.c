@@ -2,7 +2,7 @@
 
 void create_exec_tab(t_cmd_block *cmd_block) 
 {
-	int i;
+	int 	i;
 	t_list *current;
 
 	expand_wildcards_in_block(cmd_block);
@@ -20,6 +20,7 @@ void create_exec_tab(t_cmd_block *cmd_block)
 		cmd_block->exec_tab[i++] = ft_strdup((char *)current->content);
 		current = current->next;
 	}
-	cmd_block->command = ft_strdup(cmd_block->exec_tab[0]);
+	if (cmd_block->exec_tab[0])
+		cmd_block->command = ft_strdup(cmd_block->exec_tab[0]);
 	cmd_block->exec_tab[i] = NULL;
 }

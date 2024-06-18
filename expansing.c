@@ -43,7 +43,6 @@ char	*redir_token(char **str)
 	curr_char = str;
 	buffer = NULL;
 	len = 0;
-	ft_printf("Allo\n");
 	if (**curr_char == '>' || **curr_char == '<')
 	{
 		ft_add_char_to_buffer(&buffer, **curr_char, &len);
@@ -219,7 +218,6 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 			sub_token += 2;
 		else if (type == redir_out || type == redir_in)
 			sub_token++;
-		ft_printf("sub_token = %s, type = %d\n", sub_token, type);
 		new_arg = ft_lstnew(token_new(type, ft_strdup(sub_token)));
 		if (new_arg)
 			ft_lstadd_back(&(block->redirs), new_arg);
