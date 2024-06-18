@@ -19,6 +19,8 @@
 # define TASH_PROMPT_E "\033[0;37m\n╰─\033[0;34mtash \033[0;35m> \033[0;37m"
 
 
+extern volatile sig_atomic_t g_interrupted;
+
 typedef enum e_token_type
 {
 	command, redir_in, redir_out, redir_app, heredoc, pipe_op, fd, file_path, and_op, or_op, subshell, eol
