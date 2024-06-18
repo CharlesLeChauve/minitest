@@ -20,7 +20,7 @@ void create_exec_tab(t_cmd_block *cmd_block)
 		cmd_block->exec_tab[i++] = ft_strdup((char *)current->content);
 		current = current->next;
 	}
-	if (cmd_block->exec_tab[0])
+	if (current && cmd_block->exec_tab[0])
 		cmd_block->command = ft_strdup(cmd_block->exec_tab[0]);
 	cmd_block->exec_tab[i] = NULL;
 }
