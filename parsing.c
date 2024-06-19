@@ -192,6 +192,7 @@ int	main(int argc, char *argv[], char *envp[])
 
 	if (argc > 1)
 		printf("Usage : %s. point. pas d'argument quoi.\n", argv[0]);
+	signal(SIGQUIT, SIG_IGN);
 	setup_signal_handlers();
 	input = NULL;
 	shl.env = set_env(envp);

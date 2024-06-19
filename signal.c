@@ -9,15 +9,15 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
-void	handle_sigquit()
-{
-	return ;
-}
+// void	handle_sigquit()
+// {
+// 	return ;
+// }
 
 void	setup_signal_handlers(void)
 {
 	struct sigaction	sa_int;
-	struct sigaction	sa_quit;
+	// struct sigaction	sa_quit;
 
 	sa_int.sa_handler = handle_sigint;
 	sigemptyset(&sa_int.sa_mask);
@@ -27,11 +27,11 @@ void	setup_signal_handlers(void)
 		perror("sigaction");
 		exit(EXIT_FAILURE);
 	}
-	sa_quit.sa_handler = handle_sigquit;
-    sa_quit.sa_flags = 0;
-    sigemptyset(&sa_quit.sa_mask);
-    if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) {
-        perror("sigaction");
-        exit(EXIT_FAILURE);
-    }
+	// sa_quit.sa_handler = handle_sigquit;
+    // sa_quit.sa_flags = 0;
+    // sigemptyset(&sa_quit.sa_mask);
+    // if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) {
+    //     perror("sigaction");
+    //     exit(EXIT_FAILURE);
+    // }
 }
