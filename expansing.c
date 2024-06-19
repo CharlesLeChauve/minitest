@@ -59,7 +59,8 @@ char	*redir_token(char **str)
 	{
 		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
 		// shell->last_ret = 2;
-		return (buffer);
+		free(buffer);
+		return (NULL);
 	}
 	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char) && !ft_isspace(**curr_char))
 	{
@@ -146,7 +147,7 @@ char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
             return (result);
         }
 		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
-				&& (*str)[j] != '\'' && (*str)[j] != '"')
+				&& (*str)[j] != '\'' && (*str)[j] != '"' && (*str)[j] != '*')
 			j++;
 		temp = ft_substr(*str, 0, j);
 		*str += j;
@@ -249,7 +250,7 @@ void	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 		{
 			sub_token = extract_command(&ptr, shell);
 			if (!sub_token)
-				break ;
+				return ;
 			process_sub_token(sub_token, block);
 		}
 	}

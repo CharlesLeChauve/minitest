@@ -203,7 +203,7 @@ int is_a_builtin(char *command);
 int	heredoc_handle(char *limiter, t_std_fd_save save);
 
 int	wait_status(pid_t pid);
-void ft_exit(char **args);
+int ft_exit(char **args);
 
 //echo.c
 void ft_echo(char **args);

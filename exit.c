@@ -21,20 +21,24 @@ void    free_ressources()
     
 }
 
-void ft_exit(char **args)
+int ft_exit(char **args)
 {
     int exit_code;
     
     if (args[1] == NULL)
+    {
+        ft_putstr_fd("exit\n", 2);
         exit(0);
+    }
     exit_code = ft_atoi(args[1]);
     if (ft_is_numeric(args[1]))
     {
         if (args[2] != NULL)
         {
             ft_putstr_fd("exit: too many arguments\n", 2);
-            return ;
+            return (1);
         }
+        ft_putstr_fd("exit\n", 2);
         exit(exit_code);
     }
     else if (!ft_is_numeric(args[1]))
@@ -42,4 +46,5 @@ void ft_exit(char **args)
         ft_putstr_fd("exit: numeric argument required\n", 2);
         exit(2);
     }
+    return (0);
 }

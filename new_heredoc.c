@@ -27,6 +27,7 @@ struct sigaction	*setup_signal_handlers_h(struct sigaction *old_sa)
 
 void	restore_signal_handlers(struct sigaction old_sa)
 {
+	g_interrupted = 0;
 	if (sigaction(SIGINT, &old_sa, NULL) == -1)
 	{
 		perror("sigaction");
