@@ -9,19 +9,29 @@ void	handle_sigint_h(int sig)
 	write(1, "\n", 1);
 }
 
-struct sigaction	*setup_signal_handlers_h(void)
+struct sigaction	*setup_signal_handlers_h(struct sigaction *old_sa)
 {
 	struct sigaction	sa_int;
+
 
 	sa_int.sa_handler = handle_sigint_h;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
-	if (sigaction(SIGINT, &sa_int, NULL) == -1)
+	if (sigaction(SIGINT, &sa_int, old_sa) == -1)
 	{
 		perror("sigaction");
 		exit(EXIT_FAILURE);
 	}
-	return (NULL);
+	return (old_sa);
+}
+
+void	restore_signal_handlers(struct sigaction old_sa)
+{
+	if (sigaction(SIGINT, &old_sa, NULL) == -1)
+	{
+		perror("sigaction");
+		exit(EXIT_FAILURE);
+	}
 }
 
 int	read_heredoc(char *limiter, int fd)
@@ -29,11 +39,12 @@ int	read_heredoc(char *limiter, int fd)
 	char	*nl;
 	int		tty_fd;
 	char	*hd;
+	struct sigaction	old_sa;
 	size_t	len;
 
 	hd = NULL;
 	len = 0;
-	setup_signal_handlers_h();
+	setup_signal_handlers_h(&old_sa);
 	tty_fd = open("/dev/tty", O_RDONLY);
 	if (tty_fd == -1)
 	{
@@ -49,6 +60,7 @@ int	read_heredoc(char *limiter, int fd)
 			close(tty_fd);
 			free(hd);
 			g_interrupted = 0;
+			restore_signal_handlers(old_sa);
 			return (2);
 		}
 		if (nl == NULL)
@@ -57,6 +69,7 @@ int	read_heredoc(char *limiter, int fd)
 			close(tty_fd);
 			ft_putstr_fd(hd, fd);
 			free(hd);
+			restore_signal_handlers(old_sa);
 			return (1);
 		}
 		if (!ft_strncmp(nl, limiter, ft_strlen(limiter)) && nl[ft_strlen(limiter)] == '\n')
@@ -65,11 +78,13 @@ int	read_heredoc(char *limiter, int fd)
 			close(tty_fd);
 			ft_putstr_fd(hd, fd);
 			free(hd);
+			restore_signal_handlers(old_sa);
 			return (0);
 		}
 		ft_strappend(&hd, nl, &len);
 		free(nl);
 	}
+	restore_signal_handlers(old_sa);
 	return (0);
 }
 
