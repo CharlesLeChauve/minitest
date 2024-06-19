@@ -30,6 +30,7 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[])
 	pid_t   pid;
 	int		ret_val;
 
+	ret_val = 0;
 	pid = fork();
 	if (pid == -1) 
 	{
