@@ -60,6 +60,8 @@ int	ft_sprintf(char *str, const char *input, ...)
 	va_start(args, input);
 	i = 0;
 	printlen = 0;
+	if (!input)
+		return (-1);
 	while (input[i])
 	{
 		if (input[i] == '%')

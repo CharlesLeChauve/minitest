@@ -133,7 +133,10 @@ char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
 		return (NULL);
 	if (**str == '$')
 	{
+		
 		(*str)++;
+		if (!(**str) || (!ft_isalnum(**str) && (**str != '$' && **str != '?')))
+			return (ft_strdup("$"));
 		if (**str == '?')
 		{
 			(*str)++;
@@ -186,7 +189,7 @@ char *extract_command(char **ptr, t_shell *shell)
 			free(ext);
 			continue ;
 		}
-		if (same_quote(&state, **ptr))
+		else if (same_quote(&state, **ptr))
 		{
 			(*ptr)++;
 			continue ;

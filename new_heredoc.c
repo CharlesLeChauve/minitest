@@ -137,6 +137,7 @@ int	get_heredocs(t_cmd_block *cmd_block)
 				return (1);
 			}
 			close(tmp_fd);
+			
 			((t_token_lst *)(current->content))->type = redir_in;
 			free(((t_token_lst *)(current->content))->text);
 			((t_token_lst *)(current->content))->text = ft_strdup(tmp_name);
