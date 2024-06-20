@@ -104,6 +104,7 @@ int get_hd_no_1(void)
 			break ;
 		hd++;
 	}
+	free(path);
 	return (hd);
 }
 
@@ -145,5 +146,6 @@ int	get_heredocs(t_cmd_block *cmd_block)
 		}
 		current = current->next;
 	}
+	free(tmp_name);
 	return (0);
 }

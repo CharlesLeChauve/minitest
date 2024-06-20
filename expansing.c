@@ -79,7 +79,6 @@ t_cmd_block	*init_cmd_block(void)
 		return (NULL);
 	block->exec_tab = NULL;
 	block->command = NULL;
-	block->option = NULL;
 	block->arg = NULL;
 	block->redirs = NULL;
 	return (block);
@@ -226,11 +225,11 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 		new_arg = ft_lstnew(token_new(type, ft_strdup(sub_token)));
 		if (new_arg)
 			ft_lstadd_back(&(block->redirs), new_arg);
-		// else
-		// {
-		//     free(sub_token);
-		//     sub_token = NULL;
-		// } ca free trop tot je crois tonton
+		else
+		{
+		    free(sub_token);
+		    sub_token = NULL;
+		}
 	}
 	else
 	{
@@ -283,19 +282,9 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell)
 
 void	print_cmd_block(t_cmd_block *cmd_block)
 {
-	t_list	*opt;
 	t_list	*arg;
 	t_list	*redir;
 
-	if (cmd_block->option)
-	{
-		opt = cmd_block->option;
-		while (opt)
-		{
-			printf("  Option: %s\n", (char *)opt->content);
-			opt = opt->next;
-		}
-	}
 	if (cmd_block->arg)
 	{
 		arg = cmd_block->arg;
@@ -338,9 +327,10 @@ void	expand_ast(t_ast_node *node, t_shell *shl)
 
 void	clear_cmd_block(t_cmd_block *block)
 {
-	ft_lstclear(&(block->option), free);
+	// creer une fonction qui parcourt mes listes et free lst->content->text;
 	ft_lstclear(&(block->arg), free);
 	ft_lstclear(&(block->redirs), free);
+	ft_free_tab(block->exec_tab);
 	free(block->command);
 	free(block);
 }
