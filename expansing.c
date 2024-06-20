@@ -55,7 +55,11 @@ char	*redir_token(char **str)
 	}
 	while (**curr_char == ' ' || **curr_char == '\t')
 		(*curr_char)++;
-	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char) || **curr_char == '\0')
+	if ( **curr_char == '\0')
+	{
+		return (ft_strdup(""));
+	}
+	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char))
 	{
 		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
 		// shell->last_ret = 2;
@@ -197,7 +201,15 @@ char *extract_command(char **ptr, t_shell *shell)
 		else if (!**ptr || (state == reg && ft_isspace(**ptr)))
 			break ;
 		else if ((**ptr == '>' || **ptr == '<'))
-			return (redir_token(ptr));
+		{
+			if (buffer)
+			{
+				free(buffer);
+				buffer = NULL;
+			}
+			buffer = redir_token(ptr);
+			return (buffer);
+		}
 		ft_add_char_to_buffer(&buffer, **ptr, &len);
 		(*ptr)++;
 	}
@@ -239,7 +251,7 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 	}
 }
 
-void	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
+int	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 {
 	char	*ptr;
 	char	*sub_token;
@@ -253,13 +265,14 @@ void	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 		{
 			sub_token = extract_command(&ptr, shell);
 			if (!sub_token)
-				return ;
+				return (1);
 			process_sub_token(sub_token, block);
 		}
 	}
+	return (0);
 }
 
-void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell)
+int	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell)
 {
 	t_dlist		*current;
 	t_token_lst	*token;
@@ -275,9 +288,11 @@ void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell)
 			current = current->next;
 			continue ;
 		}
-		parse_command_option(token_text, block, shell);
+		if (parse_command_option(token_text, block, shell))
+			return (1);
 		current = current->next;
 	}
+	return (0);
 
 }
 
@@ -317,23 +332,25 @@ void	print_cmd_block(t_cmd_block *cmd_block)
 	}
 }
 
-void	expand_ast(t_ast_node *node, t_shell *shl)
+int	expand_ast(t_ast_node *node, t_shell *shl)
 {
 	t_cmd_block	*cmd_block;
 
 	if (node == NULL)
-		return ;
+		return (1);
 	if (node->type == command)
 	{
 		cmd_block = init_cmd_block();
-		fill_cmd_block(cmd_block, node->tokens, shl);
+		if (fill_cmd_block(cmd_block, node->tokens, shl))
+			return (1);
 		create_exec_tab(cmd_block);
 		if (get_heredocs(cmd_block))
-			return ;
+			return (1);
 		node->cmd_block = cmd_block;
 	}
 	expand_ast(node->left, shl);
 	expand_ast(node->right, shl);
+	return (0);
 }
 
 void	clear_cmd_block(t_cmd_block *block)

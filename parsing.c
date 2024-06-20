@@ -109,8 +109,8 @@ char	*build_prompt(void)
 	pwd = get_cwd();
 	if (pwd == NULL)
 		return ("Minishell_project");
-	prompt = ft_strdup(TASH_PROMPT_S);
-	prompt = ft_strjoin_free(prompt, pwd, 2);
+	prompt = ft_strdup(pwd);
+	free(pwd);
 	prompt = ft_strjoin_free(prompt, TASH_PROMPT_E, 0);
 	return (prompt);
 }
@@ -224,7 +224,14 @@ int	main(int argc, char *argv[], char *envp[])
 			shl.ast = parse_tokens(shl.token_lst);
 			//expand_ast(shl.ast);
 			//print_tree(ast, 0);
-			expand_ast(shl.ast, &shl);
+			if (expand_ast(shl.ast, &shl))
+			{
+				shl.last_ret = 2;
+				free(input);
+				input = NULL;
+				clean_shell_instance(&shl);
+				continue;
+			}
 			shl.last_ret = exec_ast(shl.ast, &shl);
 			clean_shell_instance(&shl);
 		}
