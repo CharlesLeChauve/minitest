@@ -109,8 +109,8 @@ char	*build_prompt(void)
 	pwd = get_cwd();
 	if (pwd == NULL)
 		return ("Minishell_project");
-	prompt = ft_strdup(pwd);
-	free(pwd);
+	prompt = ft_strdup(TASH_PROMPT_S);
+	prompt = ft_strjoin_free(prompt, pwd, 2);
 	prompt = ft_strjoin_free(prompt, TASH_PROMPT_E, 0);
 	return (prompt);
 }
