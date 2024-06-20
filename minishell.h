@@ -15,8 +15,13 @@
 # include <sys/stat.h>
 # include "./libft/libft.h"
 # include "env.h"
-# define TASH_PROMPT_S "\033[0;37m╭─\033[0;32m"
-# define TASH_PROMPT_E "\033[0;37m\n╰─\033[0;34mtash \033[0;35m> \033[0;37m"
+# define WHITE "\001\033[0;37m\002"
+# define GREEN "\001\033[0;32m\002"
+# define BLUE "\001\033[0;34m\002"
+# define MAGENTA "\001\033[0;35m\002"
+# define TASH_PROMPT_S WHITE"╭─"GREEN
+# define TASH_PROMPT_E WHITE"\n╰─"BLUE"tash "MAGENTA"> "WHITE
+
 
 
 extern volatile sig_atomic_t g_interrupted;
