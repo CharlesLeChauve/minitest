@@ -130,8 +130,8 @@ t_ast_node	*parse_tokens(t_dlist *tokens);
 t_ast_node	*construct_ast_from_tokens(t_dlist *token_list);
 
 // expansing
-void	expand_ast(t_ast_node *node, t_shell *shl);
-void	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell);
+int		expand_ast(t_ast_node *node, t_shell *shl);
+int		fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell);
 t_cmd_block	*init_cmd_block(void);
 void	print_cmd_block(t_cmd_block *cmd_block);
 void	ft_add_char_to_buffer(char **buffer, char c, size_t *len);
