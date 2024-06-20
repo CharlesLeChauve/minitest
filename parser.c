@@ -36,11 +36,11 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens)
 	{
 		node->tokens = NULL;
 		if (node->type == pipe_op)
-			node->value = "|";
+			node->value = ft_strdup("|");
 		if (node->type == and_op)
-			node->value = "&&";
+			node->value = ft_strdup("&&");
 		if (node->type == or_op)
-			node->value = "||";
+			node->value = ft_strdup("||");
 	}
 	node->left = NULL;
 	node->right = NULL;

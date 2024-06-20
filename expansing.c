@@ -344,6 +344,8 @@ int	expand_ast(t_ast_node *node, t_shell *shl)
 
 void	clear_cmd_block(t_cmd_block *block)
 {
+	if (!block)
+		return ;
 	// creer une fonction qui parcourt mes listes et free lst->content->text;
 	ft_lstclear(&(block->arg), free);
 	ft_lstclear(&(block->redirs), free);
