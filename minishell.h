@@ -20,9 +20,7 @@
 # define BLUE "\001\033[0;34m\002"
 # define MAGENTA "\001\033[0;35m\002"
 # define TASH_PROMPT_S WHITE"╭─"GREEN
-# define TASH_PROMPT_E WHITE"\n╰─"BLUE"tash "MAGENTA"> "WHITE
-
-
+# define TASH_PROMPT_E WHITE"\n\001╰─"BLUE"tash "MAGENTA"> "WHITE
 
 extern volatile sig_atomic_t g_interrupted;
 
@@ -79,7 +77,6 @@ typedef struct s_cmd_block
 {
 	char	**exec_tab;
 	char	*command;
-	t_list	*option;
 	t_list	*arg;
 	t_list	*redirs;
 } t_cmd_block;

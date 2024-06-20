@@ -142,6 +142,7 @@ void	free_ast(t_ast_node *ast)
 		return ;
 	free_ast(ast->left);
 	free_ast(ast->right);
+	clear_cmd_block(ast->cmd_block);
 	if (ast->value != NULL)
 		free(ast->value);
 	free(ast);
@@ -177,7 +178,7 @@ void	destroy_heredocs(void)
 
 void	clean_shell_instance(t_shell *shl)
 {
-	// free_ast(shl->ast);
+	free_ast(shl->ast);
 	destroy_heredocs();
 	shl->ast = NULL;
 	ft_dlstclear(&(shl->token_lst), del_tkn_node);
