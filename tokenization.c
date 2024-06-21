@@ -217,13 +217,12 @@ t_dlist *tokenize(char *input)
         {
             ft_putstr_fd("Syntax error: invalid token.\n", 2);
             free(tkn_info.input);
-            ft_dlstclear(&tkn_info.token_lst, free);
+            ft_dlstclear(&tkn_info.token_lst, del_tkn_node);
             return (NULL);
         }
         ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
         last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
     }
-
     free(tkn_info.input);
     return (tkn_info.token_lst);
 }

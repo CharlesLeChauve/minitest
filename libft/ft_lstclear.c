@@ -30,5 +30,16 @@ void	ft_lstclear(t_list **lst, void (*del)(void *))
 
 void	ft_dlstclear(t_dlist **lst, void (*del)(void *))
 {
-	ft_lstclear((t_list **)lst, del);
+	t_dlist	*act_node;
+	t_dlist	*next;
+
+	act_node = *lst;
+	while (act_node)
+	{
+		next = act_node->next;
+		del(act_node->content);
+		free(act_node);
+		act_node = next;
+	}
+	*lst = NULL;
 }

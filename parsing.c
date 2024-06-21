@@ -130,8 +130,11 @@ void	del_tkn_node(void *node_ptr)
 {
 	t_token_lst *node;
 
+	if (!node_ptr)
+		return ;
 	node = (t_token_lst *)node_ptr;
-	free(node->text);
+	if (node->text)
+		free(node->text);
 	node->text = NULL;
 	free(node);
 }
@@ -143,6 +146,7 @@ void	free_ast(t_ast_node *ast)
 	free_ast(ast->left);
 	free_ast(ast->right);
 	clear_cmd_block(ast->cmd_block);
+	ft_dlstclear(&(ast->tokens), del_tkn_node);
 	if (ast->value != NULL)
 		free(ast->value);
 	free(ast);
@@ -181,7 +185,7 @@ void	clean_shell_instance(t_shell *shl)
 	free_ast(shl->ast);
 	destroy_heredocs();
 	shl->ast = NULL;
-	ft_dlstclear(&(shl->token_lst), del_tkn_node);
+	//ft_dlstclear(&(shl->token_lst), del_tkn_node);
 	shl->token_lst = NULL;
 }
 
@@ -216,15 +220,12 @@ int	main(int argc, char *argv[], char *envp[])
 				continue ;
 			else if (!verif)
 			{
-				//fprintf(stderr, "Error: Syntax error in input\n");
 				free(input);
 				shl.last_ret = 2;
 				input = NULL;
 				continue ;
 			}
 			shl.ast = parse_tokens(shl.token_lst);
-			//expand_ast(shl.ast);
-			//print_tree(ast, 0);
 			if (expand_ast(shl.ast, &shl))
 			{
 				shl.last_ret = 2;

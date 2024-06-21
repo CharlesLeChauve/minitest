@@ -62,18 +62,18 @@ void free_tree(t_ast_node *root)
 t_ast_node *create_subtree(t_dlist *op_node, t_dlist *tokens)
 {
 	t_token_type	type;
-	char			*text;
 	t_ast_node		*node;
 	t_dlist			*left_tokens;
 	t_dlist			*right_tokens;
 
 	type = ((t_token_lst *)(op_node->content))->type;
-	text = ((t_token_lst *)(op_node->content))->text;
+	del_tkn_node(op_node->content);
 	left_tokens = tokens;
-	node = create_node(type, text, NULL);
+	node = create_node(type, NULL, NULL);
 	right_tokens = op_node->next;
 	if (op_node->prev)
 		op_node->prev->next = NULL;
+	free(op_node);
 	node->left = parse_tokens(left_tokens);
 	node->right = parse_tokens(right_tokens);
 	return (node);
