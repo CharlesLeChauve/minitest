@@ -97,7 +97,6 @@ typedef struct s_shell
 	int			last_ret;
 	char		**env;
 }	t_shell;
-
 // utils
 void		swap_char(char *c1, char *c2);
 void		revstr(char *str);

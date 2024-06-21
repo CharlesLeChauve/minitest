@@ -3,110 +3,92 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/07 09:44:21 by tgibert           #+#    #+#             */
-/*   Updated: 2024/02/27 14:51:38 by tgibert          ###   ########.fr       */
+/*   Created: 2023/11/05 18:38:47 by anporced          #+#    #+#             */
+/*   Updated: 2024/06/21 15:29:20 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
-int	check_nl(char *str)
+char	*ft_get_line(char *stash)
 {
-	int	i;
+	int		i;
+	char	*res;
 
 	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			return (1);
+	if (!stash)
+		return (NULL);
+	while (stash[i] && stash[i] != '\n')
 		i++;
-	}
-	return (0);
+	if (stash[i] == '\n')
+		i++;
+	res = ft_substr_gnl(stash, 0, i);
+	return (res);
 }
 
-void	reset_buffer(char *buffer)
+char	*ft_stash_update(char *stash)
 {
-	unsigned long	i;
-	unsigned long	len;
+	int		i;
+	char	*res;
 
 	i = 0;
-	len = ft_strlen(buffer);
-	while (i <= len)
-	{
-		buffer[i] = '\0';
+	if (!stash)
+		return (NULL);
+	while (stash[i] && stash[i] != '\n')
 		i++;
+	if (stash[i] == '\n')
+		i++;
+	res = ft_substr_gnl(stash, i, ft_strlen_gnl(stash) - i + 1);
+	if (!res)
+	{
+		free(stash);
+		return (NULL);
 	}
+	free(stash);
+	if (res[0] == 0)
+	{
+		free(res);
+		res = NULL;
+	}
+	return (res);
 }
 
-int	read_file(char **stash, int fd)
+char	*ft_read(int fd, char *buffer, char *stash)
 {
-	char	*buffer;
-	int		nb_read;
+	int	read_value;
 
-	buffer = ft_strnew(BUFFER_SIZE);
-	nb_read = 1;
-	while (nb_read > 0 && !check_nl(*stash))
+	read_value = 1;
+	while (read_value > 0 && !ft_strchr_gnl(stash, '\n'))
 	{
-		*stash = ft_gnljoin(*stash, buffer);
-		reset_buffer(buffer);
-		if (!check_nl(*stash))
-			nb_read = read(fd, buffer, BUFFER_SIZE);
-		if (nb_read == -1)
+		read_value = read(fd, buffer, BUFFER_SIZE);
+		if (read_value <= -1)
+			return (free(buffer), free(stash), NULL);
+		if (read_value > 0)
 		{
-			free(buffer);
-			buffer = NULL;
-			return (0);
+			buffer[read_value] = '\0';
+			stash = ft_strjoin_gnl(stash, buffer);
+			if (!stash)
+				return (free(buffer), NULL);
 		}
 	}
-	if (buffer)
-		free(buffer);
-	if ((*stash)[0] == 0)
-	{
-		return (0);
-	}
-	return (1);
-}
-
-char	*define_line(char **stash)
-{
-	char	*line;
-	int		i;
-	char	*new_stash;
-
-	i = 0;
-	if (ft_strlen(*stash) == 0)
-		return (NULL);
-	while ((*stash)[i] != '\n' && (*stash)[i])
-		i++;
-	line = ft_substr(*stash, 0, i + 1);
-	new_stash = ft_substr(*stash, i + 1, ft_strlen(*stash) - i);
-	free(*stash);
-	*stash = new_stash;
-	new_stash = NULL;
-	return (line);
+	return (free(buffer), stash);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stash[1024];
+	static char	*stash[4096];
+	char		*buffer;
+	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+		return (free(stash[fd]), stash[fd] = NULL);
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
 		return (NULL);
-	if (!stash[fd])
-	{
-		stash[fd] = ft_strdup("");
-	}
-	if (check_nl(stash[fd]))
-	{
-		return (define_line(&stash[fd]));
-	}
-	else if (!read_file(&stash[fd], fd))
-	{
-		free(stash[fd]);
-		stash[fd] = NULL;
-		return (NULL);
-	}
-	return (define_line(&stash[fd]));
+	stash[fd] = ft_read(fd, buffer, stash[fd]);
+	line = ft_get_line(stash[fd]);
+	stash[fd] = ft_stash_update(stash[fd]);
+	return (line);
 }

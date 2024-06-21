@@ -216,8 +216,8 @@ t_dlist *tokenize(char *input)
         if (!new_token)
         {
             ft_putstr_fd("Syntax error: invalid token.\n", 2);
-            // free(tkn_info.input);
-            // ft_dlstclear(&tkn_info.token_lst, free);
+            free(tkn_info.input);
+            ft_dlstclear(&tkn_info.token_lst, free);
             return (NULL);
         }
         ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
