@@ -225,6 +225,7 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 {
 	t_list	*new_arg;
 	t_token_type	type;
+	char		*str;
 
 	if (sub_token[0] == '>' || sub_token[0] == '<')
 	{
@@ -237,10 +238,12 @@ void process_sub_token(char *sub_token, t_cmd_block *block)
 		}
 		type = redir_type(sub_token);
 		if (type == heredoc || type == redir_app)
-			sub_token += 2;
+			str = ft_strdup(sub_token + 2);
 		else if (type == redir_out || type == redir_in)
-			sub_token++;
-		new_arg = ft_lstnew(token_new(type, ft_strdup(sub_token)));
+			str = ft_strdup(sub_token + 1);
+		free(sub_token);
+		new_arg = ft_lstnew(token_new(type, str));
+		free(str);
 		if (new_arg)
 			ft_lstadd_back(&(block->redirs), new_arg);
 		else
@@ -348,11 +351,20 @@ int	expand_ast(t_ast_node *node, t_shell *shl)
 	return (0);
 }
 
+void	free_token_lst_content(void *content)
+{
+	t_token_lst	*token;
+
+	token = (t_token_lst *)content;
+	free(token->text);
+}
+
 void	clear_cmd_block(t_cmd_block *block)
 {
 	if (!block)
 		return ;
 	// creer une fonction qui parcourt mes listes et free lst->content->text;
+	ft_lstiter(block->redirs, free_token_lst_content);
 	ft_lstclear(&(block->arg), free);
 	ft_lstclear(&(block->redirs), free);
 	ft_free_tab(block->exec_tab);
