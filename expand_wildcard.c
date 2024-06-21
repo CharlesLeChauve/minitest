@@ -174,58 +174,6 @@ void	ft_lstinsert_before(t_list **target, t_list *node)
 	(*target)->next = tmp;
 }
 
-void	old_expand_wildcard(char *prefix, char *suffix, t_list **arg_lst)
-{
-	DIR				*dir;
-	struct dirent	*ent;
-	char			*stash;
-	char			*eval;
-	char			*res;
-	char			*new_prefix;
-	int				first;
-
-	dir = NULL;
-	first = 1;
-	if (!suffix)
-		return ;
-	if (!prefix || !*prefix)
-		new_prefix = ft_strdup("./");
-	else
-		new_prefix = prefix;
-	stash = NULL;
-	dir = opendir(new_prefix);
-	if (!dir)
-		return ;
-	stash = get_stash(suffix);
-	if (stash)
-		eval = get_first_dir(suffix);
-	else
-		eval = suffix;
-	ent = readdir(dir);
-	while (ent != NULL)
-	{
-		if (match_pattern(ent->d_name, eval))
-		{
-			res = ft_strjoin(prefix, ent->d_name);
-			if (stash && stash[0])
-			{
-				res = ft_strjoin_free(res, "/", 0);
-				old_expand_wildcard(res, stash, arg_lst);
-			}
-			else if (first)
-			{
-				first = 0;
-				free((*arg_lst)->content);
-				(*arg_lst)->content = res;
-			}
-			else
-				ft_lstinsert_before(arg_lst, ft_lstnew(res));
-		}
-		ent = readdir(dir);
-	}
-	closedir(dir);
-}
-
 void	ft_lstinsert_lst_replace(t_list **target, t_list *lst)
 {
 	t_list	*last_node;
@@ -245,14 +193,14 @@ void	ft_lstinsert_lst_replace(t_list **target, t_list *lst)
 	}
 }
 
-void	expand_wildcard(char *prefix, char *suffix, t_list **arg_lst)
+
+void	old_expand_wildcard(char *prefix, char *suffix, t_list **arg_lst)
 {
 	DIR				*dir;
 	struct dirent	*ent;
 	char			*stash;
 	char			*eval;
 	char			*res;
-	char			*new_prefix;
 	t_list			*results;
 
 	dir = NULL;
@@ -260,11 +208,56 @@ void	expand_wildcard(char *prefix, char *suffix, t_list **arg_lst)
 	if (!suffix)
 		return ;
 	if (!prefix || !*prefix)
-		new_prefix = ft_strdup("./");
-	else
-		new_prefix = prefix;
+		dir = opendir("./");
+	else	
+		dir = opendir(prefix);
 	stash = NULL;
-	dir = opendir(new_prefix);
+	if (!dir)
+		return ;
+	stash = get_stash(suffix);
+	if (stash)
+		eval = get_first_dir(suffix);
+	else
+		eval = suffix;
+	ent = readdir(dir);
+	while (ent != NULL)
+	{
+		if (match_pattern(ent->d_name, eval))
+		{
+			res = ft_strjoin(prefix, ent->d_name);
+			if (stash && stash[0])
+			{
+				res = ft_strjoin_free(res, "/", 0);
+				old_expand_wildcard(res, stash, arg_lst);
+			}
+			else
+				ft_lstadd_back(&results, ft_lstnew(res));
+		}
+		ent = readdir(dir);
+	}
+	closedir(dir);
+	ft_sort_wordlist(&results);
+	ft_lstinsert_lst_replace(arg_lst, results);
+}
+
+void	expand_wildcard(char *prefix, char *suffix, t_list **arg_lst)
+{
+	DIR				*dir;
+	struct dirent	*ent;
+	char			*stash;
+	char			*eval;
+	char			*res;
+	t_list			*results;
+
+	dir = NULL;
+	results = NULL;
+	if (!suffix)
+		return ;
+	if (!prefix || !*prefix)
+		dir = opendir("./");
+	else	
+		dir = opendir(prefix);
+	stash = NULL;
 	if (!dir)
 		return ;
 	stash = get_stash(suffix);
@@ -282,6 +275,7 @@ void	expand_wildcard(char *prefix, char *suffix, t_list **arg_lst)
 			{
 				res = ft_strjoin_free(res, "/", 0);
 				res = ft_strjoin_free(res, stash, 2);
+				stash = NULL;
 				ft_lstadd_back(&results, ft_lstnew(res));
 			}
 			else
@@ -311,7 +305,7 @@ void	expand_wildcards_in_block(t_cmd_block *block)
 		{	
 			prefix = ft_strndup(arg->content, index);
 			suffix = ft_strdup(arg->content + index);
-			expand_wildcard(prefix, suffix, &arg);
+			old_expand_wildcard(prefix, suffix, &arg);
 		}
 		arg = next;
 	}
