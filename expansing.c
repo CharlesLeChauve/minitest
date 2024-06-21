@@ -7,73 +7,6 @@ int	ft_isrediroperator(char c)
 	return (0);
 }
 
-t_token_type	redir_type(char *curr_char)
-{
-	if (*curr_char == '>')
-	{
-		curr_char++;
-		if (*curr_char == '>')
-		{
-			curr_char++;
-			return redir_app;
-		}
-		else
-			return redir_out;
-	}
-	else if (*curr_char == '<')
-	{
-		curr_char++;
-		if (*curr_char == '<')
-		{
-			curr_char++;
-			return heredoc;
-		}
-		else
-			return redir_in;
-	}
-	return 11;
-}
-
-char	*redir_token(char **str)
-{
-	char		**curr_char;
-	char		*buffer;
-	size_t		len;
-
-	curr_char = str;
-	buffer = NULL;
-	len = 0;
-	if (**curr_char == '>' || **curr_char == '<')
-	{
-		ft_add_char_to_buffer(&buffer, **curr_char, &len);
-		(*curr_char)++;
-	}
-	if (**curr_char == '>' || **curr_char == '<')
-	{
-		ft_add_char_to_buffer(&buffer, **curr_char, &len);
-		(*curr_char)++;
-	}
-	while (**curr_char == ' ' || **curr_char == '\t')
-		(*curr_char)++;
-	if ( **curr_char == '\0')
-	{
-		return (ft_strdup(""));
-	}
-	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char))
-	{
-		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
-		// shell->last_ret = 2;
-		free(buffer);
-		return (NULL);
-	}
-	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char) && !ft_isspace(**curr_char))
-	{
-		ft_add_char_to_buffer(&buffer, **curr_char, &len);
-		(*curr_char)++;
-	}
-	return (buffer);
-}
-
 t_cmd_block	*init_cmd_block(void)
 {
 	t_cmd_block	*block;
@@ -117,6 +50,79 @@ int	same_quote(t_sm *state, char c)
 	else if (*state == quote && c == '\'')
 		return (1);
 	return (0);
+}
+
+t_token_type	redir_type(char *curr_char)
+{
+	if (*curr_char == '>')
+	{
+		curr_char++;
+		if (*curr_char == '>')
+		{
+			curr_char++;
+			return redir_app;
+		}
+		else
+			return redir_out;
+	}
+	else if (*curr_char == '<')
+	{
+		curr_char++;
+		if (*curr_char == '<')
+		{
+			curr_char++;
+			return heredoc;
+		}
+		else
+			return redir_in;
+	}
+	return 11;
+}
+
+char	*redir_token(char **str, t_sm *state)
+{
+	char		**curr_char;
+	char		*buffer;
+	size_t		len;
+
+	curr_char = str;
+	buffer = NULL;
+	len = 0;
+
+		if (*state == dquote || *state == quote)
+		return (NULL);
+	set_quotes_state_in_cmd_block(curr_char, state);
+	if (**curr_char == '>' || **curr_char == '<')
+	{
+		ft_add_char_to_buffer(&buffer, **curr_char, &len);
+		(*curr_char)++;
+	}
+	set_quotes_state_in_cmd_block(curr_char, state);
+	if (**curr_char == '>' || **curr_char == '<')
+	{
+		ft_add_char_to_buffer(&buffer, **curr_char, &len);
+		(*curr_char)++;
+	}
+	while (**curr_char == ' ' || **curr_char == '\t')
+		(*curr_char)++;
+	if ( **curr_char == '\0')
+	{
+		return (ft_strdup(""));
+	}
+	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char))
+	{
+		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
+		// shell->last_ret = 2;
+		free(buffer);
+		return (NULL);
+	}
+	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char) && !ft_isspace(**curr_char))
+	{
+		set_quotes_state_in_cmd_block(curr_char, state);
+		ft_add_char_to_buffer(&buffer, **curr_char, &len);
+		(*curr_char)++;
+	}
+	return (buffer);
 }
 
 char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
@@ -206,7 +212,7 @@ char *extract_command(char **ptr, t_shell *shell)
 				free(buffer);
 				buffer = NULL;
 			}
-			buffer = redir_token(ptr);
+			buffer = redir_token(ptr, &state); // j'arrive pas a envoyer un message d'erreur type command not found
 			return (buffer);
 		}
 		ft_add_char_to_buffer(&buffer, **ptr, &len);

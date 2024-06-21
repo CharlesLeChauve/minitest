@@ -120,7 +120,7 @@ void		lexer(char	*input, t_token_lst **tokens);
 t_token_lst	*token_new(t_token_type type, void *content);
 t_token_lst	*token_last(t_token_lst *token_lst);
 void		tokenaddback(t_token_lst **lst, t_token_lst *node);
-char		*redir_token(char **str);
+char		*redir_token(char **str, t_sm *state);
 t_dlist		*tokenize(char *input);
 
 // parsing
