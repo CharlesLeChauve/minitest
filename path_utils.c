@@ -31,7 +31,7 @@ char	*get_cmd_path(char **env, char *cmd)
 	while (paths_array[i])
 	{
 		cmd_path = ft_strjoin(paths_array[i], "/");
-		cmd_path = ft_strjoin(cmd_path, cmd);
+		cmd_path = ft_strjoin_free(cmd_path, cmd, 0);
 		if (access(cmd_path, X_OK) != -1)
 		{
 			ft_free_tab(paths_array);

@@ -62,6 +62,7 @@ int    export(char **env[], char **arg)
 			env_cpy[i] = export_format((*env)[i]);
 		env_cpy[i] = NULL;
 		print_export_env(env_cpy);
+		ft_free_tab(env_cpy);
 	}
 	else
 	{

@@ -19,6 +19,7 @@ int exec_command(char **envp[], t_cmd_block *cmd_block)
 	{
 		ft_sprintf(err_msg, "tash: %s: command not found\n", cmd_block->exec_tab[0]);
 		ft_putstr_fd(err_msg, STDERR_FILENO);
+		free(path);
 		//ft_freetab(cmd_arr);
 		exit (127);
 	}
