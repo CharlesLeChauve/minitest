@@ -1,12 +1,13 @@
 #include "minishell.h"
 #include <errno.h>
 
-int exec_command(char **envp[], t_cmd_block *cmd_block)
+int exec_command(t_shell *shl, t_cmd_block *cmd_block)
 {
 	char	*path;
 	char	err_msg[124];
 	struct stat	path_stat;
 
+	path = NULL;
 	ft_bzero(err_msg, 124);
 	if (stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
 	{
@@ -14,19 +15,28 @@ int exec_command(char **envp[], t_cmd_block *cmd_block)
 		ft_putstr_fd(err_msg, STDERR_FILENO);
 		exit (126);
 	}
-	path = set_cmd_path(*envp, cmd_block->exec_tab[0]);
-	if (execve(path, cmd_block->exec_tab, *envp) == -1)
+	path = set_cmd_path(shl->env, cmd_block->exec_tab[0]);
+	if (!path)
 	{
 		ft_sprintf(err_msg, "tash: %s: command not found\n", cmd_block->exec_tab[0]);
 		ft_putstr_fd(err_msg, STDERR_FILENO);
+		ft_free_tab(shl->env);
+		clean_shell_instance(shl);
+		exit (127);
+	}
+	if (execve(path, cmd_block->exec_tab, shl->env) == -1)
+	{
+		// ft_sprintf(err_msg, "tash: %s: command not found\n", cmd_block->exec_tab[0]);
+		// ft_putstr_fd(err_msg, STDERR_FILENO);
 		free(path);
-		//ft_freetab(cmd_arr);
+		ft_free_tab(shl->env);
+		clean_shell_instance(shl);
 		exit (127);
 	}
 	return (0);
 }
 
-int exec_not_builtin(t_cmd_block *cmd_block, char **envp[])
+int exec_not_builtin(t_cmd_block *cmd_block, t_shell *shl)
 {
 	pid_t   pid;
 	int		ret_val;
@@ -39,9 +49,7 @@ int exec_not_builtin(t_cmd_block *cmd_block, char **envp[])
 		return (-1);
 	}
 	if (pid == 0) 
-	{
-		exec_command(envp, cmd_block);
-	}
+		exec_command(shl, cmd_block);
 	else
 		ret_val = wait_status(pid);
 	return (ret_val);
@@ -75,7 +83,7 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 	}
 	else
 	{
-		status = exec_not_builtin(cmd_block, &(shl->env));
+		status = exec_not_builtin(cmd_block, shl);
 		restore_stds_and_close_dup(save.std_out, save. std_in, -1);
 		// ft_free_tab(shl->env);
 		// clean_shell_instance(shl);
@@ -86,6 +94,8 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 
 int	exec_ast(t_ast_node *ast, t_shell *shl)
 {
+	if (!ast)
+		return (1);
 	if (ast->type == pipe_op)
 	{
 		shl->last_ret = handle_pipes(ast, shl);
