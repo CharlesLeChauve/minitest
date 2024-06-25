@@ -18,8 +18,10 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens)
 		exit(EXIT_FAILURE);
 	}
 	node->type = type;
-	if ((type == command || is_redir(type)) && tokens != NULL)
+	if (type == command)
 	{
+		if (tokens == NULL)
+			return (NULL);
 		node->tokens = tokens;
 		if (text != NULL && text[0] != '\0')
 		{

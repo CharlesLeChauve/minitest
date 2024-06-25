@@ -47,7 +47,6 @@ void	init_pipe_info(t_pipe_info *pipe_info)
 	pipe_info->pipe_fds[1] = -1;
 	pipe_info->pids[0] = -1;
 	pipe_info->pids[1] = -1;
-
 	if (pipe(pipe_info->pipe_fds) == -1)
 	{
 	    perror("pipe");

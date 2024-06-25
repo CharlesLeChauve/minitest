@@ -229,6 +229,14 @@ int	main(int argc, char *argv[], char *envp[])
 				continue ;
 			}
 			shl.ast = parse_tokens(shl.token_lst);
+			if (!shl.ast)
+			{
+				shl.last_ret = 2;
+				free(input);
+				input = NULL;
+				clean_shell_instance(&shl);
+				continue;
+			}
 			if (expand_ast(shl.ast, &shl))
 			{
 				shl.last_ret = 2;

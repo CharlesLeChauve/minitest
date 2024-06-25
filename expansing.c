@@ -106,7 +106,8 @@ char	*redir_token(char **str, t_sm *state)
 		(*curr_char)++;
 	if ( **curr_char == '\0')
 	{
-		return (ft_strdup(""));
+		free(buffer);
+		return (NULL);
 	}
 	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char))
 	{
@@ -212,6 +213,10 @@ char *extract_command(char **ptr, t_shell *shell, int *is_a_redir)
 				buffer = NULL;
 			}
 			buffer = redir_token(ptr, &state);
+			if (!buffer)
+			{
+				ft_putstr_fd("tash: syntax error near unexpected token 'newline'\n", 2);
+			}
 			*is_a_redir = 1; // j'arrive pas a envoyer un message d'erreur type command not found (">out" ne renvoie pas command not found)
 			return (buffer);
 		}
@@ -275,7 +280,10 @@ int	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 		{
 			sub_token = extract_command(&ptr, shell, &is_a_redir);
 			if (!sub_token)
+			{
+				clean_shell_instance(shell);
 				return (1);
+			}
 			process_sub_token(sub_token, block, is_a_redir);
 		}
 	}

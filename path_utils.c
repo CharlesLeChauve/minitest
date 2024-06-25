@@ -27,7 +27,7 @@ char	*get_cmd_path(char **env, char *cmd)
 	if (paths == NULL)
 		return (NULL);
 	paths_array = ft_split(paths, ':');
-		free(paths);
+	free(paths);
 	while (paths_array[i])
 	{
 		cmd_path = ft_strjoin(paths_array[i], "/");
