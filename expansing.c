@@ -88,8 +88,7 @@ char	*redir_token(char **str, t_sm *state)
 	curr_char = str;
 	buffer = NULL;
 	len = 0;
-
-		if (*state == dquote || *state == quote)
+	if (*state == dquote || *state == quote)
 		return (NULL);
 	set_quotes_state_in_cmd_block(curr_char, state);
 	if (**curr_char == '>' || **curr_char == '<')
@@ -212,7 +211,7 @@ char *extract_command(char **ptr, t_shell *shell)
 				free(buffer);
 				buffer = NULL;
 			}
-			buffer = redir_token(ptr, &state); // j'arrive pas a envoyer un message d'erreur type command not found
+			buffer = redir_token(ptr, &state); // j'arrive pas a envoyer un message d'erreur type command not found (">out" ne renvoie pas command not found)
 			return (buffer);
 		}
 		ft_add_char_to_buffer(&buffer, **ptr, &len);

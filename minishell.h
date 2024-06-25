@@ -197,14 +197,14 @@ int	open_mode(char *path, t_open_mode mode);
 int	open_write(char *file, t_open_mode mode);
 
 //exec_actions.c
-int do_the_builtin(char **env[], char *cmd, char **cmd_tab);
+int do_the_builtin(t_shell *shl, char **env[], char *cmd, char **cmd_tab);
 int is_a_builtin(char *command);
 
 //heredoc.c
 int	heredoc_handle(char *limiter, t_std_fd_save save);
 
 int	wait_status(pid_t pid);
-int ft_exit(char **args);
+int ft_exit(char **args, t_shell *shl);
 
 //echo.c
 void ft_echo(char **args);

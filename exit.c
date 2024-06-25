@@ -21,13 +21,15 @@ void    free_ressources()
     
 }
 
-int ft_exit(char **args)
+int ft_exit(char **args, t_shell *shl)
 {
     int exit_code;
     
     if (args[1] == NULL)
     {
         ft_putstr_fd("exit\n", 2);
+        ft_free_tab(shl->env);
+        clean_shell_instance(shl);
         exit(0);
     }
     exit_code = ft_atoi(args[1]);
@@ -39,11 +41,15 @@ int ft_exit(char **args)
             return (1);
         }
         ft_putstr_fd("exit\n", 2);
+        ft_free_tab(shl->env);
+        clean_shell_instance(shl);
         exit(exit_code);
     }
     else if (!ft_is_numeric(args[1]))
     {
         ft_putstr_fd("exit: numeric argument required\n", 2);
+        ft_free_tab(shl->env);
+        clean_shell_instance(shl);
         exit(2);
     }
     return (0);

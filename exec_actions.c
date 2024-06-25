@@ -10,41 +10,42 @@ int is_a_builtin(char *command)
 	return (0);
 }
 
-int do_the_builtin(char **env[], char *cmd, char **cmd_tab)
+int do_the_builtin(t_shell *shl, char **env[], char *cmd, char **cmd_tab)
 {
-	if (!ft_strcmp(cmd, "export"))
-	{
-		return (export(env, &cmd_tab[1]));
-	}
-	else if (!ft_strcmp(cmd, "echo"))
-	{
-		ft_echo(cmd_tab);
-	}
-	else if (!ft_strcmp(cmd, "pwd"))
-	{
-		pwd();
-	}
-	else if (!ft_strcmp(cmd, "env"))
-	{
-		return (print_env(*env));
-	}
-	else if (!ft_strcmp(cmd, "cd"))
-	{
-	   /*  if (more_than_one_arg)
-			bash: cd: too many arguments
-			exit(); */
-		return (change_directory(cmd_tab[1], env));
-	}
-	else if (!ft_strcmp(cmd, "exit"))
-	{
-		return (ft_exit(cmd_tab));
-	}
-	else if (!ft_strcmp(cmd, "unset"))
-	{
-		return (unset(env, &cmd_tab[1]));
-	}
-	return (0);
+    if (!ft_strcmp(cmd, "export"))
+    {
+        return (export(env, &shl->ast->cmd_block->exec_tab[1]));
+    }
+    else if (!ft_strcmp(cmd, "echo"))
+    {
+        ft_echo(cmd_tab);
+    }
+    else if (!ft_strcmp(cmd, "pwd"))
+    {
+        pwd();
+    }
+    else if (!ft_strcmp(cmd, "env"))
+    {
+        return (print_env(shl->env));
+    }
+    else if (!ft_strcmp(cmd, "cd"))
+    {
+       /*  if (more_than_one_arg)
+            bash: cd: too many arguments
+            exit(); */
+        return (change_directory(cmd_tab[1], env));
+    }
+    else if (!ft_strcmp(cmd, "exit"))
+    {
+        return (ft_exit(cmd_tab, shl));
+    }
+    else if (!ft_strcmp(cmd, "unset"))
+    {
+        return (unset(env, &cmd_tab[1]));
+    }
+    return (0);
 }
+
 
 int	wait_status(pid_t pid)
 {

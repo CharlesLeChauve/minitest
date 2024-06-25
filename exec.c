@@ -69,7 +69,7 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 	}
 	if (is_a_builtin(cmd_block->exec_tab[0]))
 	{
-		status = do_the_builtin(&(shl->env), cmd_block->exec_tab[0], cmd_block->exec_tab);
+		status = do_the_builtin(shl ,&(shl->env), cmd_block->exec_tab[0], cmd_block->exec_tab);
 		restore_stds_and_close_dup(save.std_out, save. std_in, -1);
 		return(status);
 	}

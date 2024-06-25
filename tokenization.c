@@ -184,46 +184,45 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 
 t_dlist *tokenize(char *input)
 {
-    t_dlist *last;
-    t_tkn_info tkn_info;
-    t_token_lst *new_token;
+	t_dlist		*last;
+	t_tkn_info	tkn_info;
+	t_token_lst	*new_token;
 
-    if (!input || !*input)
-        return (NULL);
-    tkn_info.input = ft_strdup(input);
-    if (!tkn_info.input)
-    {
-        ft_printf("Error: Memory allocation failed\n");
-        return (NULL);
-    }
-    tkn_info.curr_char = tkn_info.input;
-    tkn_info.token_lst = NULL;
-    tkn_info.state = reg;
+	if (!input || !*input)
+		return (NULL);
+	tkn_info.input = ft_strdup(input);
+	if (!tkn_info.input)
+	{
+		ft_printf("Error: Memory allocation failed\n");
+		return (NULL);
+	}
+	tkn_info.curr_char = tkn_info.input;
+	tkn_info.token_lst = NULL;
+	tkn_info.state = reg;
 
-    new_token = next_token(&tkn_info);
-    if (!new_token)
-    {
-        ft_printf("Syntax error: invalid token\n");
-        free(tkn_info.input);
-        return (NULL);
-    }
-    ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
-    last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
-
-    while (last && ((t_token_lst *)(last->content))->type != eol)
-    {
-        new_token = next_token(&tkn_info);
-        if (!new_token)
-        {
-            ft_putstr_fd("Syntax error: invalid token.\n", 2);
-            free(tkn_info.input);
-            ft_dlstclear(&tkn_info.token_lst, del_tkn_node);
-            return (NULL);
-        }
-        ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
-        last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
-    }
-    free(tkn_info.input);
-    return (tkn_info.token_lst);
+	new_token = next_token(&tkn_info);
+	if (!new_token)
+	{
+		ft_printf("Syntax error: invalid token\n");
+		free(tkn_info.input);
+		return (NULL);
+	}
+	ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
+	last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
+	while (last && ((t_token_lst *)(last->content))->type != eol)
+	{
+		new_token = next_token(&tkn_info);
+		if (!new_token)
+		{
+			ft_putstr_fd("Syntax error: invalid token.\n", 2);
+			free(tkn_info.input);
+			ft_dlstclear(&tkn_info.token_lst, del_tkn_node);
+			return (NULL);
+		}
+		ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
+		last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
+	}
+	free(tkn_info.input);
+	return (tkn_info.token_lst);
 }
 
