@@ -215,4 +215,6 @@ void	expand_wildcards_in_block(t_cmd_block *block);
 
 void	del_tkn_node(void *node_ptr);
 
+void	clean_shell_instance(t_shell *shl);
+
 #endif

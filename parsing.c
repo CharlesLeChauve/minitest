@@ -182,10 +182,10 @@ void	destroy_heredocs(void)
 
 void	clean_shell_instance(t_shell *shl)
 {
-	free_ast(shl->ast);
+	if (shl->ast)
+		free_ast(shl->ast);
 	destroy_heredocs();
 	shl->ast = NULL;
-	//ft_dlstclear(&(shl->token_lst), del_tkn_node);
 	shl->token_lst = NULL;
 }
 
@@ -202,6 +202,7 @@ int	main(int argc, char *argv[], char *envp[])
 	input = NULL;
 	shl.env = set_env(envp);
 	shl.last_ret = 0;
+	shl.ast = NULL;
 	verif = 0;
 	while (1)
 	{
@@ -220,6 +221,8 @@ int	main(int argc, char *argv[], char *envp[])
 				continue ;
 			else if (!verif)
 			{
+				ft_dlstclear(&(shl.token_lst), del_tkn_node);
+				clean_shell_instance(&shl);
 				free(input);
 				shl.last_ret = 2;
 				input = NULL;

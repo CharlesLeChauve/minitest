@@ -2,6 +2,9 @@
 
 void do_pipe_side(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast, int side)
 {
+	int	ret;
+
+	ret = 0;
 	pipe_info->pids[side] = fork();
 	if (pipe_info->pids[side] == -1)
 	{
@@ -14,9 +17,19 @@ void do_pipe_side(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast, int sid
 		dup2(pipe_info->pipe_fds[side ^ 1], side ^ 1);
 		close(pipe_info->pipe_fds[side ^ 1]);
 		if (side == 0)
-			exit(exec_ast(ast->left, shl));
+		{
+			ret = exec_ast(ast->left, shl);
+			ft_free_tab(shl->env);
+			clean_shell_instance(shl);
+			exit(ret);
+		}
 		else
-			exit(exec_ast(ast->right, shl));
+		{
+			ret = exec_ast(ast->right, shl);
+			ft_free_tab(shl->env);
+			clean_shell_instance(shl);
+			exit(ret);
+		}
 	}
 }
 
