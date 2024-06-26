@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dirs_handler.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/12 14:40:28 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/26 18:47:07 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ void	act_env_pwd(char ***env)
 	char	*pwd_ptr;
 
 	pwds = (char **)malloc(3 * sizeof(char *));
+	if (!pwds)
+		return ;
 	pwds[0] = ft_strjoin_free("PWD=", get_cwd(), 1);
 	pwd_ptr = get_env_var(*env, "PWD");
 	if (pwd_ptr)
@@ -57,6 +59,8 @@ int	change_directory(char *path, char ***env)
 {
 	DIR	*directory;
 
+	if (!path)
+		path = "/home";
 	directory = opendir(path);
 	if (!directory)
 	{
