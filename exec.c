@@ -9,13 +9,15 @@ int exec_command(t_shell *shl, t_cmd_block *cmd_block)
 
 	path = NULL;
 	ft_bzero(err_msg, 124);
+	path = set_cmd_path(shl->env, cmd_block->exec_tab[0]);
 	if (stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
 	{
 		ft_sprintf(err_msg, "tash: %s: Is a directory\n", cmd_block->exec_tab[0]);
 		ft_putstr_fd(err_msg, STDERR_FILENO);
+		ft_free_tab(shl->env);
+		clean_shell_instance(shl);
 		exit (126);
 	}
-	path = set_cmd_path(shl->env, cmd_block->exec_tab[0]);
 	if (!path)
 	{
 		ft_sprintf(err_msg, "tash: %s: command not found\n", cmd_block->exec_tab[0]);
@@ -26,9 +28,7 @@ int exec_command(t_shell *shl, t_cmd_block *cmd_block)
 	}
 	if (execve(path, cmd_block->exec_tab, shl->env) == -1)
 	{
-		// ft_sprintf(err_msg, "tash: %s: command not found\n", cmd_block->exec_tab[0]);
-		// ft_putstr_fd(err_msg, STDERR_FILENO);
-		free(path);
+		perror("execve :");
 		ft_free_tab(shl->env);
 		clean_shell_instance(shl);
 		exit (127);
