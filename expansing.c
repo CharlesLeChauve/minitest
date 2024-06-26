@@ -375,7 +375,7 @@ void	clear_cmd_block(t_cmd_block *block)
 	if (!block)
 		return ;
 	// creer une fonction qui parcourt mes listes et free lst->content->text;
-	if (block->redirs->content)
+	if (block->redirs && block->redirs->content)
 	    ft_lstiter(block->redirs, free_token_lst_content);
 	if (block->arg)
 	    ft_lstclear(&(block->arg), free);
