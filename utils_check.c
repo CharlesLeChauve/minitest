@@ -48,18 +48,12 @@ int	verify_tokens(t_dlist *tokens)
 		{
 			if (!prev)
 				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", token->text), 0);
+			if (current->next && ((t_token_lst *)(current->next->content))->type != command)
+				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", ((t_token_lst *)(current->next->content))->text), 0);
 		}
 		else if (token->type == subshell && (!token->text || no_text(token->text)))
 		{
 			return (fprintf(stderr, "tash: syntax error near unexpected token `)'\n"), 0);
-		}
-		else if (is_redir(token->type))
-		{
-			if (!current->next)
-				return (fprintf(stderr, "Error: Redirection '%s' not followed by a command\n", token->text), 0);
-			// if (is_redir(((t_token_lst *)current->next->content)->type))
-			// 	return (fprintf(stderr, "Error: Invalid redirection sequence '%s%s'\n",
-					// token->text, ((t_token_lst *)current->next->content)->text), 0);
 		}
 		else if (current->next \
 			&& is_operator(((t_token_lst *)current->next->content)->type) \

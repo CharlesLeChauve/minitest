@@ -2,4 +2,31 @@
 
 - Heredoc histo ?
 
+- quotes vides
+
 - Leaks subshell ()
+
+- Leak if Is a directory
+
+- Regler messages d'erreurs redirs vide
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+╰─tash > &&&
+Syntax error: invalid token.
+Error: No tokens provided
