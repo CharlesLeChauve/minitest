@@ -111,7 +111,11 @@ t_ast_node *parse_tokens(t_dlist *tokens)
 	else if (last_op != NULL)
 		return create_subtree(last_op, tokens);
 	if (((t_token_lst *)(tokens->content))->type == subshell)
-		return (build_ast(((t_token_lst *)(tokens->content))->text));
+	{
+		t_ast_node *ast = build_ast(&tokens);
+		ft_dlstdelone(tokens, free);
+		return (ast);
+	}
 	else
 		return (create_node(command, ((t_token_lst *)(tokens->content))->text, tokens));
 }

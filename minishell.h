@@ -170,7 +170,7 @@ int		exec_ast(t_ast_node *ast, t_shell *shl);
 void 	create_exec_tab(t_cmd_block *cmd_block);
 
 
-t_ast_node *build_ast(char *input);
+t_ast_node *build_ast(t_dlist **token);
 void 	remove_from_tab(char ***arg, int index);
 void	replace_var(char ***env, char *new_var, char *old_var);
 void	replace_existing_vars(char ***arg, char ***env);

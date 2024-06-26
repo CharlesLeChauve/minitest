@@ -77,6 +77,7 @@ void	ft_putendl_fd(char const *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 void	ft_striteri(char *s, void (*f)(unsigned int, char *));
 void	ft_lstdelone(t_list *lst, void (*del)(void *));
+void	ft_dlstdelone(t_dlist *lst, void (*del)(void *));
 void	ft_lstadd_front(t_list **lst, t_list *new);
 void	ft_dlstadd_front(t_dlist **lst, t_dlist *new);
 void	ft_lstadd_back(t_list **lst, t_list *new);

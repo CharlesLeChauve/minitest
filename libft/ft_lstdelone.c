@@ -24,5 +24,10 @@ void	ft_lstdelone(t_list *lst, void (*del)(void *))
 
 void	ft_dlstdelone(t_dlist *lst, void (*del)(void *))
 {
-	ft_lstdelone((t_list *)lst, del);
+	if (lst)
+	{
+		del(lst->content);
+		free(lst);
+		lst = NULL;
+	}
 }

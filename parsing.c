@@ -83,12 +83,17 @@ char	**set_env(char **envp)
 // 	}
 // }
 
-t_ast_node *build_ast(char *input)
+t_ast_node *build_ast(t_dlist **token)
 {
 	t_dlist		*token_lst;
 	t_ast_node	*ast;
+	t_dlist		*tmp;
 
-	token_lst = tokenize(input);
+	token_lst = tokenize(((t_token_lst *)((*token)->content))->text);
+	tmp = (*token)->next;
+	del_tkn_node((*token)->content);
+	free(*token);
+	*token = tmp;
 	//Changer cette fonction pour ajouter la possibilite d'avoir subshell > operateur > command
 	//Globalement subshell partout ou il pouvait y avoir commande
 	// if (!verify_tokens(token_lst))
