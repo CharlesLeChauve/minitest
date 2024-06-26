@@ -49,7 +49,7 @@ int	verify_tokens(t_dlist *tokens)
 			if (!prev)
 				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", token->text), 0);
 			if (current->next && ((t_token_lst *)(current->next->content))->type != command && ((t_token_lst *)(current->next->content))->type != subshell)
-				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", ((t_token_lst *)(current->next->content))->text), 0);
+				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", ((t_token_lst *)(current->content))->text), 0);
 		}
 		else if (token->type == subshell)
 		{
