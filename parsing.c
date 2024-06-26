@@ -194,6 +194,47 @@ void	clean_shell_instance(t_shell *shl)
 	shl->token_lst = NULL;
 }
 
+int	ft_subshell(char *input, char *envp[])
+{
+	t_shell	shl;
+	int verif;
+
+	shl.env = set_env(envp);
+	shl.last_ret = 0;
+	shl.ast = NULL;
+	verif = 0;
+	if (input && *input)
+	{
+		add_history(input);
+		shl.token_lst = tokenize(input);
+		verif = verify_tokens(shl.token_lst);
+		if (verif == -1)
+			return (1) ;
+		else if (!verif)
+		{
+			ft_dlstclear(&(shl.token_lst), del_tkn_node);
+			clean_shell_instance(&shl);
+			free(input);
+			shl.last_ret = 2;
+			input = NULL;
+			return (2) ;
+		}
+		shl.ast = parse_tokens(shl.token_lst);
+		if (!shl.ast || expand_ast(shl.ast, &shl))
+		{
+			shl.last_ret = 2;
+			free(input);
+			input = NULL;
+			clean_shell_instance(&shl);
+			return (2) ;
+		}
+		shl.last_ret = exec_ast(shl.ast, &shl);
+		clean_shell_instance(&shl);
+	}
+	ft_free_tab(shl.env);
+	return (shl.last_ret);
+}
+
 int	main(int argc, char *argv[], char *envp[])
 {
 	char	*input;
@@ -249,4 +290,5 @@ int	main(int argc, char *argv[], char *envp[])
 		input = NULL;
 	}
 	ft_free_tab(shl.env);
+	return (0);
 }

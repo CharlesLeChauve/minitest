@@ -99,8 +99,10 @@ int	exec_ast(t_ast_node *ast, t_shell *shl)
 	if (ast->type == pipe_op)
 	{
 		shl->last_ret = handle_pipes(ast, shl);
-		return (shl->last_ret );
+		return (shl->last_ret);
 	}
+	else if (ast->type == subshell)
+		return (ft_subshell(((t_token_lst *)(ast->tokens->content))->text, shl->env));
 	else if (ast->type == and_op)
 	{
 		shl->last_ret  = exec_ast(ast->left, shl);

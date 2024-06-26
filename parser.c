@@ -18,7 +18,7 @@ t_ast_node *create_node(t_token_type type, char *text, t_dlist *tokens)
 		exit(EXIT_FAILURE);
 	}
 	node->type = type;
-	if (type == command)
+	if (type == command || type == subshell)
 	{
 		if (tokens == NULL)
 			return (NULL);
@@ -111,11 +111,7 @@ t_ast_node *parse_tokens(t_dlist *tokens)
 	else if (last_op != NULL)
 		return create_subtree(last_op, tokens);
 	if (((t_token_lst *)(tokens->content))->type == subshell)
-	{
-		t_ast_node *ast = build_ast(&tokens);
-		ft_dlstdelone(tokens, free);
-		return (ast);
-	}
+		return (create_node(subshell, ((t_token_lst *)(tokens->content))->text, tokens));
 	else
 		return (create_node(command, ((t_token_lst *)(tokens->content))->text, tokens));
 }

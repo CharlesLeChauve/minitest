@@ -219,4 +219,7 @@ void	clean_shell_instance(t_shell *shl);
 
 int is_logical(t_token_type type);
 
+int	ft_subshell(char *input, char *envp[]);
+char	**ft_cpy_strtab(char **tab);
+
 #endif

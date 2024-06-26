@@ -2,7 +2,7 @@
 
 int	ft_isshelloperator(char c)
 {
-	if (c == '|' || c == '&')
+	if (c == '|' || c == '&' || c == '(' || c == ')')
 		return (1);
 	return (0);
 }

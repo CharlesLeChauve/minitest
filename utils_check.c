@@ -55,8 +55,8 @@ int	verify_tokens(t_dlist *tokens)
 		{
 			if (!token->text || no_text(token->text))
 				return (fprintf(stderr, "tash: syntax error near unexpected token `)'\n"), 0);
-			// if (current->prev && !is_logical(((t_token_lst *)(current->prev->content))->type))
-			// 	return (fprintf(stderr, "tash: syntax error near unexpected token `)'\n"), 0);
+			if (current->prev && !is_logical(((t_token_lst *)(current->prev->content))->type))
+				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", ((t_token_lst *)(current->content))->text), 0);
 		}
 		else if (current->next \
 			&& is_operator(((t_token_lst *)current->next->content)->type) \
