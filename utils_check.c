@@ -51,13 +51,17 @@ int	verify_tokens(t_dlist *tokens)
 			if (current->next && ((t_token_lst *)(current->next->content))->type != command && ((t_token_lst *)(current->next->content))->type != subshell)
 				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", ((t_token_lst *)(current->next->content))->text), 0);
 		}
-		else if (token->type == subshell && (!token->text || no_text(token->text)))
+		else if (token->type == subshell)
 		{
-			return (fprintf(stderr, "tash: syntax error near unexpected token `)'\n"), 0);
+			if (!token->text || no_text(token->text))
+				return (fprintf(stderr, "tash: syntax error near unexpected token `)'\n"), 0);
+			// if (current->prev && !is_logical(((t_token_lst *)(current->prev->content))->type))
+			// 	return (fprintf(stderr, "tash: syntax error near unexpected token `)'\n"), 0);
 		}
 		else if (current->next \
 			&& is_operator(((t_token_lst *)current->next->content)->type) \
-			&& ((t_token_lst *)current->next->content)->type == pipe_op) {
+			&& ((t_token_lst *)current->next->content)->type == pipe_op) 
+		{
 			if (!current->next->next \
 				|| !is_command(((t_token_lst *)current->next->next->content)->type))
 				return (fprintf(stderr, "Error: Redirection '%s' not followed by a command\n", token->text), -1);

@@ -28,7 +28,7 @@ int exec_command(t_shell *shl, t_cmd_block *cmd_block)
 	}
 	if (execve(path, cmd_block->exec_tab, shl->env) == -1)
 	{
-		perror("execve :");
+		perror("execve");
 		ft_free_tab(shl->env);
 		clean_shell_instance(shl);
 		exit (127);

@@ -217,4 +217,6 @@ void	del_tkn_node(void *node_ptr);
 
 void	clean_shell_instance(t_shell *shl);
 
+int is_logical(t_token_type type);
+
 #endif

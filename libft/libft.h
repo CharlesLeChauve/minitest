@@ -49,6 +49,7 @@ void	ft_strcat(char *dest, const char *src);
 t_list	*ft_lstnew(void *content);
 t_dlist	*ft_dlstnew(void *content);
 t_list	*ft_lstlast(t_list *lst);
+t_dlist	*ft_dlstlast(t_dlist *lst);
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 void	ft_lst_insert(t_list *target_node, t_list *new);
 char	*ft_itoa(int n);
