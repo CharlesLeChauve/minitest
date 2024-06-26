@@ -1,22 +1,21 @@
 - Ctrl + C dans heredoc ====> juste les leaks
 
-- Heredoc histo ?
-
-- quotes vides
-
 - Leaks subshell ()
 
 - Leak if Is a directory
 
-- Regler messages d'erreurs redirs vide
+- Fignoler messages d'erreurs redirs vide
+
+>>|<< On doit pouvoir regler a la tokenization, si on rencontre un logical op juste derriere un redir_op...
 
 
 
 
 
 
-
-
+		//REvoir cette condition pour exclure des symboles des identifiant de variables d'environnemt
+		//Seulement quelques caracteres speciaus a admettre
+        expansing
 
 
 

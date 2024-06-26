@@ -139,7 +139,7 @@ char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
 	{
 		
 		(*str)++;
-		if (!(**str) || (!ft_isalnum(**str) && (**str != '$' && **str != '?')))
+		if (!(**str) || (!ft_isalnum(**str) && (**str != '$' && **str != '?' && **str != '_')))
 			return (ft_strdup("$"));
 		if (**str == '?')
 		{
@@ -153,6 +153,8 @@ char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
             result = ft_itoa(getpid());
             return (result);
         }
+		//REvoir cette condition pour exclure des symboles des identifiant de variables d'environnemt
+		//Seulement quelques caracteres speciaus a admettre
 		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
 				&& (*str)[j] != '\'' && (*str)[j] != '"' && (*str)[j] != '*')
 			j++;
