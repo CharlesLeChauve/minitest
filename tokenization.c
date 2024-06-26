@@ -83,10 +83,10 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	char		*buffer;
 
 	len = 0;
-	if (tkn_info->state == reg)
+	// if (tkn_info->state == reg)
 		buffer = NULL;
-	else
-		buffer = ft_strdup("");
+	// else
+	// 	buffer = ft_strdup("");
 	while (*tkn_info->curr_char)
 	{
 		if (tkn_info->curr_char != tkn_info->input && break_token(tkn_info))

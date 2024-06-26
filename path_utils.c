@@ -23,6 +23,8 @@ char	*get_cmd_path(char **env, char *cmd)
 	int		i;
 
 	i = 0;
+	if (!*cmd)
+		return (NULL);
 	paths = get_env_path(env);
 	if (paths == NULL)
 		return (NULL);
