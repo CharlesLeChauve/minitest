@@ -130,12 +130,14 @@ int	get_heredocs(t_cmd_block *cmd_block)
 			if (tmp_fd == -1)
 			{
 				perror("open");
+				free(tmp_name);
 				return (-1);
 			}
 			if (read_heredoc(((t_token_lst *)(current->content))->text, tmp_fd) == 2)
 			{
-				free(((t_token_lst *)(current->content))->text);
+				//free(((t_token_lst *)(current->content))->text);
 				close(tmp_fd);
+				free(tmp_name);
 				return (1);
 			}
 			close(tmp_fd);

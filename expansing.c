@@ -278,8 +278,8 @@ int	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 			sub_token = extract_command(&ptr, shell, &is_a_redir);
 			if (!sub_token)
 			{
-				clear_cmd_block(block);
-				//clean_shell_instance(shell);
+				//clear_cmd_block(block);
+				clean_shell_instance(shell);
 				return (1);
 			}
 			process_sub_token(sub_token, block, is_a_redir);
@@ -351,7 +351,10 @@ int	expand_ast(t_ast_node *node, t_shell *shl)
 			return (1);
 		create_exec_tab(cmd_block);
 		if (get_heredocs(cmd_block))
+		{
+			clear_cmd_block(cmd_block);
 			return (1);
+		}
 		node->cmd_block = cmd_block;
 	}
 	expand_ast(node->left, shl);
@@ -372,9 +375,12 @@ void	clear_cmd_block(t_cmd_block *block)
 	if (!block)
 		return ;
 	// creer une fonction qui parcourt mes listes et free lst->content->text;
-	ft_lstiter(block->redirs, free_token_lst_content);
-	ft_lstclear(&(block->arg), free);
-	ft_lstclear(&(block->redirs), free);
+	if (block->redirs->content)
+	    ft_lstiter(block->redirs, free_token_lst_content);
+	if (block->arg)
+	    ft_lstclear(&(block->arg), free);
+	if (block->redirs)
+	    ft_lstclear(&(block->redirs), free);
 	if (block->exec_tab)
 		ft_free_tab(block->exec_tab);
 	free(block->command);
