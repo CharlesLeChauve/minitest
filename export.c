@@ -27,7 +27,8 @@ char	*export_format(char *str)
 	i = 0;
 	j = 0;
 	formated = (char *)malloc(ft_strlen(str) + 3);
-	while (str[i] && str[i - 1] != '=')
+	ft_bzero(formated, ft_strlen(str) + 3);
+	while (str[i] && ( i == 0 || (str[i - 1] != '=')))
 		formated[j++] = str[i++];
 	if (str[i] == '\0' && !(str[i - 1] == '='))
 		return (formated);

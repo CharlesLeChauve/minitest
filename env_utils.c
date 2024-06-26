@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:32:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/13 14:20:09 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/26 11:59:47 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ char	*get_env_var(char **env, char *var_id)
 	i = -1;
 	while (env[++i])
 	{
-		if (!ft_strncmp(env[i], var_id, id_len) && env[i][id_len] == '=')
+		if (!ft_strncmp(env[i], var_id, id_len) && (env[i][id_len] == '=' || env[i][id_len] == '\0'))
 		{
 			env_var = env[i];
 			break ;
