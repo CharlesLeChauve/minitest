@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:16 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/27 16:46:59 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/27 16:59:34 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ int	check_acces(char *file, t_open_mode mode)
 	if (mode == read_o && access(file, R_OK) != 0)
 	{
 		ft_sprintf(err, "permission denied : %s\n", file);
-		ft_putstr_fd(err, 2);++
-
+		ft_putstr_fd(err, 2);
 		return (0);
 	}
 	return (1);
