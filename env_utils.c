@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:32:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/26 11:59:47 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/27 07:35:42 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char *extract_var_id(char *var)
 	}
 	if (index > -1)
 		return (ft_strndup(var, index + 1));
-	return (var);
+	return (ft_strdup(var));
 }
 
 void	replace_var(char ***env, char *new_var, char *old_var)
@@ -39,7 +39,7 @@ void	replace_var(char ***env, char *new_var, char *old_var)
 	while (ft_strcmp((*env)[i], old_var))
 		i++;
 	free((*env)[i]);
-	(*env)[i] = ft_strdup(new_var);
+	(*env)[i] = new_var;
 }
 
 void	replace_existing_vars(char ***arg, char ***env)
@@ -54,6 +54,8 @@ void	replace_existing_vars(char ***arg, char ***env)
 	{
 		var_id = extract_var_id((*arg)[i]);
 		var = get_env_var(*env, var_id);
+		free(var_id);
+		var_id = NULL;
 		if (var && !no_equal((*arg)[i]))
 		{
 			replace_var(env, (*arg)[i], var);
