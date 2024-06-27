@@ -52,11 +52,18 @@ int	check_export_arg(char *arg)
 
 	i = 0;
 	alpha = 0;
+	ft_bzero(err, 128);
+	if (arg[0] == '=')
+	{
+		ft_sprintf(err, "tash: export: '%s': not a valid identifier\n", arg);
+		ft_putstr_fd(err, STDERR_FILENO);
+		return (1);
+	}
 	while (arg[i] && arg[i] != '=')
 	{
-		if ((i == 0 && arg[i] == '=') || (!ft_isalnum(arg[i]) && arg[i] != '_') || (alpha == 0 && ft_isdigit(arg[i])))
+		if ((!ft_isalnum(arg[i]) && arg[i] != '_') || (alpha == 0 && ft_isdigit(arg[i])))
 		{
-			ft_sprintf(err, "tash: export: '%s': not a valid identifier", arg[i]);
+			ft_sprintf(err, "tash: export: '%s': not a valid identifier\n", arg);
 			ft_putstr_fd(err, STDERR_FILENO);
 			return (1);
 		}
@@ -136,8 +143,6 @@ int    export(char **env[], char **arg)
 			if (var_id)
 				free(var_id);
 			arg++;
-			// char *tmp = *(arg + 1);
-			// free(*arg);
 		}
 	}
 	return (0);
