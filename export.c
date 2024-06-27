@@ -121,18 +121,10 @@ int    export(char **env[], char **arg)
 		while (*arg)
 		{
 			var_id = NULL;
-			ft_printf("a\n");
 			if (check_export_arg(*arg))
-			{
-				ft_printf("Ma che\n");
 				return (1);
-			}
 			else
-			{
-				ft_printf("b\n");
 				var_id = extract_var_id(*arg);
-				ft_printf("c\n");
-			}
 			if (get_env_var(*env, var_id))
 			{
 				var = get_env_var(*env, var_id);

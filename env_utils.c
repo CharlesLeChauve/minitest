@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:32:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/27 14:06:43 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/27 14:53:53 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ char *extract_var_id(char *var)
 	int i = 0;
 	int	index = -1;
 
-	ft_printf("wtf\n");
 	while (var[i])
 	{
 		if (var[i] == '=')
