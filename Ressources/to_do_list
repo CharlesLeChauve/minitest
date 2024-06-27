@@ -4,23 +4,7 @@
 
 >>|<< On doit pouvoir regler a la tokenization, si on rencontre un logical op juste derriere un redir_op...
 
-
-- signaux quand cat sans argument (ctrl c) !!! Attention demande explicitement a la correction
-
-- cd sans argument segfault
-
-
-- expansing, extrapolate
-		//REvoir cette condition pour exclure des symboles des identifiant de variables d'environnemt
-		//Seulement quelques caracteres speciaus a admettre
-        expansing
-
-
-
-
-
-Un coup on envoie a replace existing avec une chaine tiree des arguments (qui est free plus tard), tantot on envoie une chaine de l'env directement
-
+- redir out : Si directory dans le path, on ne cree pas le fichier si le directory n'existe pas et on renvoit une erreur
 
 
 

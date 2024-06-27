@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/18 14:46:24 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/27 16:37:28 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,10 +98,10 @@ int    handle_redirs(t_cmd_block *cmd_block)
 			 	return (2);
 			if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)
 				if (make_redir_out((t_token_lst *)redirs->content))
-					return (-1) ;
+					return (1) ;
 			if (((t_token_lst *)redirs->content)->type == redir_in || ((t_token_lst *)redirs->content)->type == heredoc)
 				if (make_redir_in((t_token_lst *)redirs->content))
-					return (-1);
+					return (1);
 			redirs = redirs->next;
 		}
 		redirs = NULL;

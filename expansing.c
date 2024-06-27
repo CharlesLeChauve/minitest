@@ -111,9 +111,11 @@ char	*redir_token(char **str, t_sm *state)
 		free(buffer);
 		return (NULL);
 	}
-	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char) && !ft_isspace(**curr_char))
+	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char))
 	{
 		set_quotes_state_in_cmd_block(curr_char, state);
+		if (*state == reg && ft_isspace(**curr_char))
+			break ;
 		ft_add_char_to_buffer(&buffer, **curr_char, &len);
 		(*curr_char)++;
 	}

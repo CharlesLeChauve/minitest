@@ -151,7 +151,7 @@ void		clear_cmd_block(t_cmd_block *block);
 //dirs_handling
 void	pwd(void);
 void	act_env_pwd(char ***env);
-int 	change_directory(char *path, char ***env);
+int	change_directory(char **args, char ***env);
 char	*get_cwd(void);
 
 //env

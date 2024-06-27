@@ -55,7 +55,7 @@ int ft_exit(char **args, t_shell *shl)
 		ft_putstr_fd("exit: too many arguments\n", 2);
 		return (1);
 	}
-	ft_putstr_fd("exit\n", 2);
+	ft_putstr_fd("exit\n", 1);
 	ft_free_tab(shl->env);
 	clean_shell_instance(shl);
 	exit(exit_code);

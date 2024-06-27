@@ -65,6 +65,7 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 	if (!cmd_block)
 		return (130);
 	status = handle_redirs(cmd_block);
+	//ft_printf("redir = %s\n", ((t_token_lst *)(cmd_block->redirs->content))->text);
 	if (status)
 	{
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
