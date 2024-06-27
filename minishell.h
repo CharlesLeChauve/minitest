@@ -170,10 +170,9 @@ int		exec_ast(t_ast_node *ast, t_shell *shl);
 void 	create_exec_tab(t_cmd_block *cmd_block);
 
 
-t_ast_node *build_ast(t_dlist **token);
-void 	remove_from_tab(char ***arg, int index);
-void	replace_var(char ***env, char *new_var, char *old_var);
-void	replace_existing_vars(char ***arg, char ***env);
+t_ast_node	*build_ast(t_dlist **token);
+void		replace_var(char ***env, char *new_var, char *old_var);
+void		replace_existing_vars(char ***arg, char ***env);
 
 //pipes
 int	handle_pipes(t_ast_node *ast, t_shell *shl);
@@ -181,7 +180,7 @@ int	handle_pipes(t_ast_node *ast, t_shell *shl);
 //tab_utils.c
 void	ft_sort_wordtab(char **tab);
 void    restore_stds_and_close_dup(int in_save, int out_save, int err_save);
-void	remove_from_tab(char ***tab, int index);
+void	remove_from_tab(char ***tab, int index, int free_ctl);
 void	add_strs_to_strtab(char **strs, char ***strtab);
 
 //redirs.c
@@ -221,5 +220,6 @@ int is_logical(t_token_type type);
 
 int	ft_subshell(char *input, char *envp[]);
 char	**ft_cpy_strtab(char **tab);
+char	*extract_var_id(char *arg);
 
 #endif

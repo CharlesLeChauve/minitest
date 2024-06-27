@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dirs_handler.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/26 18:47:07 by tulece           ###   ########.fr       */
+/*   Updated: 2024/06/27 07:50:09 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	act_env_pwd(char ***env)
 		pwds[1] = NULL;
 	pwds[2] = NULL;
 	replace_existing_vars(&pwds, env);
+	free(pwds);
 }
 
 int	change_directory(char *path, char ***env)

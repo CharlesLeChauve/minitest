@@ -1,23 +1,22 @@
 #include "minishell.h"
 
-void remove_from_tab(char ***tab, int index)
+void remove_from_tab(char ***tab, int index, int free_ctl)
 {
 	char **temp;
+	int i;
 
 	if (tab == NULL || *tab == NULL || (*tab)[index] == NULL)
 		return ;
-
 	temp = *tab;
-
-	int i = index;
+	if (free_ctl)
+		free(temp[index]);
+	i = index;
 	while (temp[i + 1])
 	{
 		temp[i] = temp[i + 1];
 		i++;
 	}
 	temp[i] = NULL;
-
-	*tab = temp; 
 }
 
 void	*ft_realloc(void *ptr, size_t old_size, size_t new_size)

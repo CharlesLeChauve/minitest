@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:32:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/27 07:35:42 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/27 09:29:02 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,10 @@ void	replace_existing_vars(char ***arg, char ***env)
 		if (var && !no_equal((*arg)[i]))
 		{
 			replace_var(env, (*arg)[i], var);
-			remove_from_tab(arg, i);
+			remove_from_tab(arg, i, 0);
 		}
 		else if (var)
-			remove_from_tab(arg, i);
+			remove_from_tab(arg, i, 0);
 		else
 			i++;
 		var = NULL;

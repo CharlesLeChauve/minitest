@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:25:38 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/12 14:39:09 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/27 09:28:51 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@ int	unset(char ***env, char **args)
 		env_idx = get_env_index(*env, args[i]);
 		if (env_idx != -1)
 		{
-			remove_from_tab(env, env_idx);
-			remove_from_tab(&args, i);
+			remove_from_tab(env, env_idx, 1);
+			remove_from_tab(&args, i, 1);
 		}
 		else
 			i++;
