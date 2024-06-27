@@ -1,15 +1,9 @@
-- Ctrl + C dans heredoc ====> juste les leaks
-
-- Leaks subshell ()
-
 - Fignoler messages d'erreurs redirs vide
 
-
+- redir "" guillemet vide casse, doit chercher a rediriger vers "" (rien);
 
 >>|<< On doit pouvoir regler a la tokenization, si on rencontre un logical op juste derriere un redir_op...
 
-
-- unset marche pas souvent du premier coup...
 
 - signaux quand cat sans argument (ctrl c) !!! Attention demande explicitement a la correction
 
