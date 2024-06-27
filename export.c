@@ -44,6 +44,17 @@ char	*export_format(char *str)
 	return (formated);
 }
 
+int	check_export_arg(char *arg)
+{
+	int	ret;
+	int	i;
+
+	i = 0;
+	while (arg[i] && arg[i] != '=')
+	{
+		if (arg[i])
+	}
+}
 //export OK
 //Usage : Premier argument est un pointeur vers les tableau de chaines de caracteres env
 // Deuxieme argument un tableau NULL termine de chaines de caracteres NULL terminees listant les variables a ajouter;
@@ -55,6 +66,8 @@ int    export(char **env[], char **arg)
 	i = 0;
 	if (*arg == NULL)
 	{
+		if (check_export_arg(*arg))
+			return;
 		while ((*env)[i])
 			i++;
 		env_cpy = (char **)malloc((i + 1) * sizeof(char *));
