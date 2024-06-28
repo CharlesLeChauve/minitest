@@ -43,6 +43,33 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 	}
 }
 
+void	set_quotes_state_in_redir(char **curr_char, t_sm *state, int *quotectrl)
+{
+	if ((**curr_char == '"' || **curr_char == '\'') && *state == reg)
+	{
+		*quotectrl = 1;
+		if (**curr_char == '"')
+			*state = dquote;
+		else
+			*state = quote;
+		(*curr_char)++;
+	}
+	else if (**curr_char == '"' && *state == dquote)
+	{
+		*quotectrl = 1;
+		*state = reg;
+		(*curr_char)++;
+	}
+	else if (**curr_char == '\'' && *state == quote)
+	{
+		*quotectrl = 1;
+		*state = reg;
+		(*curr_char)++;
+	}
+	if (**curr_char == '"' || **curr_char == '\'')
+		set_quotes_state_in_redir(curr_char, state, quotectrl);
+}
+
 int	same_quote(t_sm *state, char c)
 {
 	if (*state == dquote && c == '"')
@@ -90,26 +117,25 @@ char	*redir_token(char **str, t_sm *state)
 	buffer = NULL;
 	len = 0;
 	quote = 0;
-	set_quotes_state_in_cmd_block(curr_char, state);
+	set_quotes_state_in_redir(curr_char, state, &quote);
 	if (**curr_char == '>' || **curr_char == '<')
 	{
 		ft_add_char_to_buffer(&buffer, **curr_char, &len);
 		(*curr_char)++;
 	}
-	set_quotes_state_in_cmd_block(curr_char, state);
-	if (*state != reg)
-		quote = 1;
+	set_quotes_state_in_redir(curr_char, state, &quote);
 	if (**curr_char == '>' || **curr_char == '<')
 	{
 		ft_add_char_to_buffer(&buffer, **curr_char, &len);
 		(*curr_char)++;
 	}
-	set_quotes_state_in_cmd_block(curr_char, state);
-	if (*state != reg)
-		quote = 1;
-	set_quotes_state_in_cmd_block(curr_char, state);
+	set_quotes_state_in_redir(curr_char, state, &quote);
 	while (**curr_char == ' ' || **curr_char == '\t')
+	{
+		if (*state != reg)
+			ft_add_char_to_buffer(&buffer, **curr_char, &len);
 		(*curr_char)++;
+	}
 	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char) || **curr_char == '\0')
 	{
 		if (quote)
@@ -121,7 +147,7 @@ char	*redir_token(char **str, t_sm *state)
 	}
 	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char))
 	{
-		set_quotes_state_in_cmd_block(curr_char, state);
+		set_quotes_state_in_redir(curr_char, state, &quote);
 		if (*state == reg && ft_isspace(**curr_char))
 			break ;
 		ft_add_char_to_buffer(&buffer, **curr_char, &len);

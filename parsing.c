@@ -200,7 +200,6 @@ int	ft_subshell(char *input, char *envp[])
 	int verif;
 
 	shl.env = set_env(envp);
-	ft_free_tab(envp);
 	shl.last_ret = 0;
 	shl.ast = NULL;
 	verif = 0;

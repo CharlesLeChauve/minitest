@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:16 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/28 14:32:08 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/28 15:46:26 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,19 +86,22 @@ int	open_write(char *file, t_open_mode mode)
 	tmp_dir = NULL;
 	ft_bzero(err, 128);
 	if (i != -1)
-		tmp_dir = ft_substr(file, 0, i);
+		tmp_dir = ft_substr(file, 0, i + 1);
 	if (tmp_dir)
 	{
 		if (access(tmp_dir, F_OK) == -1)
 		{
+			ft_printf("tmp = %s\n", tmp_dir);
 			ft_sprintf(err, "%s: No such file or directory\n", file);
 			ft_putstr_fd(err, 2);
+			free(tmp_dir);
 			return (-2);
 		}
 		else if (access(tmp_dir, F_OK) == 0 && access(tmp_dir, W_OK) != 0)
 		{
 			ft_sprintf(err, "%s: Permission denied\n", file);
 			ft_putstr_fd(err, 2);
+			free(tmp_dir);
 			return(-2);
 		}
 		free(tmp_dir);
