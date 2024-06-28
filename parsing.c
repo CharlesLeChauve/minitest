@@ -200,12 +200,12 @@ int	ft_subshell(char *input, char *envp[])
 	int verif;
 
 	shl.env = set_env(envp);
+	ft_free_tab(envp);
 	shl.last_ret = 0;
 	shl.ast = NULL;
 	verif = 0;
 	if (input && *input)
 	{
-		add_history(input);
 		shl.token_lst = tokenize(input);
 		verif = verify_tokens(shl.token_lst);
 		if (verif == -1)
@@ -217,6 +217,7 @@ int	ft_subshell(char *input, char *envp[])
 			free(input);
 			shl.last_ret = 2;
 			input = NULL;
+			ft_free_tab(shl.env);
 			return (2) ;
 		}
 		shl.ast = parse_tokens(shl.token_lst);
@@ -226,6 +227,7 @@ int	ft_subshell(char *input, char *envp[])
 			free(input);
 			input = NULL;
 			clean_shell_instance(&shl);
+			ft_free_tab(shl.env);
 			return (2) ;
 		}
 		shl.last_ret = exec_ast(shl.ast, &shl);

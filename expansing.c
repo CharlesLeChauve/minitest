@@ -84,12 +84,12 @@ char	*redir_token(char **str, t_sm *state)
 	char		**curr_char;
 	char		*buffer;
 	size_t		len;
+	int			quote;
 
 	curr_char = str;
 	buffer = NULL;
 	len = 0;
-	if (*state == dquote || *state == quote)
-		return (NULL);
+	quote = 0;
 	set_quotes_state_in_cmd_block(curr_char, state);
 	if (**curr_char == '>' || **curr_char == '<')
 	{
@@ -97,15 +97,23 @@ char	*redir_token(char **str, t_sm *state)
 		(*curr_char)++;
 	}
 	set_quotes_state_in_cmd_block(curr_char, state);
+	if (*state != reg)
+		quote = 1;
 	if (**curr_char == '>' || **curr_char == '<')
 	{
 		ft_add_char_to_buffer(&buffer, **curr_char, &len);
 		(*curr_char)++;
 	}
+	set_quotes_state_in_cmd_block(curr_char, state);
+	if (*state != reg)
+		quote = 1;
+	set_quotes_state_in_cmd_block(curr_char, state);
 	while (**curr_char == ' ' || **curr_char == '\t')
 		(*curr_char)++;
-	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char) || **curr_char == '\0' || **curr_char == '\n')
+	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char) || **curr_char == '\0')
 	{
+		if (quote)
+			return (buffer);
 		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
 		// shell->last_ret = 2;
 		free(buffer);
@@ -233,9 +241,8 @@ void process_sub_token(char *sub_token, t_cmd_block *block, int is_a_redir)
 
 	if (is_a_redir && (sub_token[0] == '>' || sub_token[0] == '<'))
 	{
-		if ((sub_token[1] == '<' && sub_token[0] == '>') \
-		|| (sub_token[1] == '>' && sub_token[0] == '<') \
-		|| (sub_token[2] == '>') || (sub_token[2] == '<'))
+		if ((sub_token[1] && (sub_token[1] == '<' && sub_token[0] == '>'))\
+			|| (sub_token[1] && (sub_token[1] == '>' && sub_token[0] == '<')))
 		{
 			fprintf(stderr, "tash: Wrong redir operator.\n");
 			return ;

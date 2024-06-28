@@ -10,6 +10,8 @@ int exec_command(t_shell *shl, t_cmd_block *cmd_block)
 	path = NULL;
 	ft_bzero(err_msg, 124);
 	path = set_cmd_path(shl->env, cmd_block->exec_tab[0]);
+	if (!cmd_block->exec_tab[0][0])
+		return (0);
 	if (stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
 	{
 		ft_sprintf(err_msg, "tash: %s: Is a directory\n", cmd_block->exec_tab[0]);
@@ -97,13 +99,13 @@ int	exec_ast(t_ast_node *ast, t_shell *shl)
 {
 	if (!ast)
 		return (1);
-	if (ast->type == pipe_op)
+	if (ast->type == subshell)
+		return (ft_subshell(((t_token_lst *)(ast->tokens->content))->text, shl->env));
+	else if (ast->type == pipe_op)
 	{
 		shl->last_ret = handle_pipes(ast, shl);
 		return (shl->last_ret);
 	}
-	else if (ast->type == subshell)
-		return (ft_subshell(((t_token_lst *)(ast->tokens->content))->text, shl->env));
 	else if (ast->type == and_op)
 	{
 		shl->last_ret  = exec_ast(ast->left, shl);

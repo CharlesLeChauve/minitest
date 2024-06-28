@@ -59,11 +59,10 @@ int	verify_tokens(t_dlist *tokens)
 				return (fprintf(stderr, "tash: syntax error near unexpected token `%s'\n", ((t_token_lst *)(current->content))->text), 0);
 		}
 		else if (current->next \
-			&& is_operator(((t_token_lst *)current->next->content)->type) \
 			&& ((t_token_lst *)current->next->content)->type == pipe_op) 
 		{
 			if (!current->next->next \
-				|| !is_command(((t_token_lst *)current->next->next->content)->type))
+				|| (!is_command(((t_token_lst *)current->next->next->content)->type) && ((t_token_lst *)current->next->next->content)->type != subshell))
 				return (fprintf(stderr, "Error: Redirection '%s' not followed by a command\n", token->text), -1);
 		}
 		prev = current;

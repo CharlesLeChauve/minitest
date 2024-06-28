@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   file_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:16 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/27 16:59:34 by tulece           ###   ########.fr       */
+/*   Updated: 2024/06/28 09:08:07 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	check_acces(char *file, t_open_mode mode)
 		ft_putstr_fd(err, 2);
 		return (0);
 	}
-	else if (mode == read_o && access(file, F_OK) != 0)
+	else if (file[0] == 0 || (mode == read_o && access(file, F_OK) != 0))
 	{
 		ft_sprintf(err, "no such file or directory : %s\n", file);
 		ft_putstr_fd(err, 2);
