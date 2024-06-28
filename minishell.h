@@ -200,15 +200,15 @@ int do_the_builtin(t_shell *shl, char **env[], char *cmd, char **cmd_tab);
 int is_a_builtin(char *command);
 
 //heredoc.c
-int	heredoc_handle(char *limiter, t_std_fd_save save);
+int		heredoc_handle(char *limiter, t_std_fd_save save);
 
-int	wait_status(pid_t pid);
-int ft_exit(char **args, t_shell *shl);
+int		wait_status(pid_t pid);
+int		ft_exit(char **args, t_shell *shl);
 
 //echo.c
-void ft_echo(char **args);
+void	ft_echo(char **args);
 
-int	get_heredocs(t_cmd_block *cmd_block);
+int		get_heredocs(t_cmd_block *cmd_block);
 
 void	expand_wildcards_in_block(t_cmd_block *block);
 
@@ -216,10 +216,11 @@ void	del_tkn_node(void *node_ptr);
 
 void	clean_shell_instance(t_shell *shl);
 
-int is_logical(t_token_type type);
+int 	is_logical(t_token_type type);
 
-int	ft_subshell(char *input, char *envp[]);
+int		ft_subshell(char *input, char *envp[]);
 char	**ft_cpy_strtab(char **tab);
 char	*extract_var_id(char *arg);
+int		get_last_full_dir_idx(char *ptr);
 
 #endif

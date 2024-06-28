@@ -10,8 +10,6 @@ int exec_command(t_shell *shl, t_cmd_block *cmd_block)
 	path = NULL;
 	ft_bzero(err_msg, 124);
 	path = set_cmd_path(shl->env, cmd_block->exec_tab[0]);
-	if (!cmd_block->exec_tab[0][0])
-		return (0);
 	if (stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
 	{
 		ft_sprintf(err_msg, "tash: %s: Is a directory\n", cmd_block->exec_tab[0]);
@@ -73,7 +71,7 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);
 	}
-	if (!cmd_block->exec_tab[0])
+	if (!cmd_block->exec_tab[0] || !cmd_block->exec_tab[0][0])
 	{
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);

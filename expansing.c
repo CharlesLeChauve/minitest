@@ -147,7 +147,6 @@ char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
 		return (NULL);
 	if (**str == '$')
 	{
-		
 		(*str)++;
 		if (!(**str) || (!ft_isalnum(**str) && (**str != '$' && **str != '?' && **str != '_')))
 			return (ft_strdup("$"));
@@ -241,8 +240,8 @@ void process_sub_token(char *sub_token, t_cmd_block *block, int is_a_redir)
 
 	if (is_a_redir && (sub_token[0] == '>' || sub_token[0] == '<'))
 	{
-		if ((sub_token[1] && (sub_token[1] == '<' && sub_token[0] == '>'))\
-			|| (sub_token[1] && (sub_token[1] == '>' && sub_token[0] == '<')))
+		if (sub_token[1] && ((sub_token[1] == '<' && sub_token[0] == '>')\
+			|| (sub_token[1] == '>' && sub_token[0] == '<')))
 		{
 			fprintf(stderr, "tash: Wrong redir operator.\n");
 			return ;

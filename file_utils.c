@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:16 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/28 09:08:07 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/28 14:32:08 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,19 @@ int	check_acces(char *file, t_open_mode mode)
 	ft_bzero(err, 128);
 	if ((mode == truncate_o || mode == append_o) && access(file, F_OK) == 0 && access(file, W_OK) != 0)
 	{
-		ft_sprintf(err, "permission denied : %s\n", file);
+		ft_sprintf(err, "%s: Permission denied\n", file);
 		ft_putstr_fd(err, 2);
 		return (0);
 	}
 	else if (file[0] == 0 || (mode == read_o && access(file, F_OK) != 0))
 	{
-		ft_sprintf(err, "no such file or directory : %s\n", file);
+		ft_sprintf(err, "%s: No such file or directory\n", file);
 		ft_putstr_fd(err, 2);
 		return (0);
 	}
 	if (mode == read_o && access(file, R_OK) != 0)
 	{
-		ft_sprintf(err, "permission denied : %s\n", file);
+		ft_sprintf(err, "%s: Permission denied\n", file);
 		ft_putstr_fd(err, 2);
 		return (0);
 	}
@@ -59,15 +59,55 @@ int	open_mode(char *path, t_open_mode mode)
 	}
 	return (-1);
 }
+int	get_last_slash(char *ptr)
+{
+	int		idx;
+	int		i;
+
+	idx = -1;
+	i = 0;
+	while (ptr[i])
+	{
+		if (ptr[i] == '/')
+			idx = i;
+		i++;
+	}
+	return (idx);
+}
 
 int	open_write(char *file, t_open_mode mode)
 {
 	int	fd;
+	int	i;
+	char	err[128];
+	char	*tmp_dir;
 
+	i = get_last_slash(file);
+	tmp_dir = NULL;
+	ft_bzero(err, 128);
+	if (i != -1)
+		tmp_dir = ft_substr(file, 0, i);
+	if (tmp_dir)
+	{
+		if (access(tmp_dir, F_OK) == -1)
+		{
+			ft_sprintf(err, "%s: No such file or directory\n", file);
+			ft_putstr_fd(err, 2);
+			return (-2);
+		}
+		else if (access(tmp_dir, F_OK) == 0 && access(tmp_dir, W_OK) != 0)
+		{
+			ft_sprintf(err, "%s: Permission denied\n", file);
+			ft_putstr_fd(err, 2);
+			return(-2);
+		}
+		free(tmp_dir);
+	}
 	if (access(file, F_OK) == 0 && access(file, W_OK) != 0)
 	{
-		ft_printf("permission denied : %s\n", file);
-		exit(EXIT_FAILURE);
+		ft_sprintf(err, "%s: Permission denied\n", file);
+		ft_putstr_fd(err, 2);
+		return (-2);
 	}
 	if (mode == truncate_o)
 		fd = open_mode(file, truncate_o);

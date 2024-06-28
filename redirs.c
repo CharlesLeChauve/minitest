@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/28 10:35:53 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/06/28 14:21:43 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,26 +62,23 @@ int    make_redir_out(t_token_lst *redir)
 
 	fd = -1;
 	if (redir->type == redir_out)
-	{
 		fd = open_write(redir->text, truncate_o);
-		dup2(fd, STDOUT_FILENO);
-	}
 	else if (redir->type == redir_app)
-	{
 		fd = open_write(redir->text, append_o);
-		if (fd == -1)
-		{
-			perror("open_write");
-			return (1);
-		}
-		if (dup2(fd, STDOUT_FILENO) == -1)
-		{
-			perror("dup2");
-			close(fd);
-			return (1);
-		}
-		close(fd);
+	if (fd == -2)
+		return (1);
+	if (fd == -1)
+	{
+		perror("open_write");
+		return (1);
 	}
+	if (dup2(fd, STDOUT_FILENO) == -1)
+	{
+		perror("dup2");
+		close(fd);
+		return (1);
+	}
+	close(fd);
 	return (0);
 }
 
