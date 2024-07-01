@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/28 14:21:43 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/01 09:49:26 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int    make_redir_in(t_token_lst *redir)
 	fd = -1;
 	if (redir->type == redir_in)
 	{
-		if (check_acces(redir->text, read_o))
+		if (!check_acces(redir->text, read_o))
 		{
 			fd = open_mode(redir->text, read_o);
 			dup2(fd, STDIN_FILENO);

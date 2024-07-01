@@ -55,7 +55,14 @@ int is_a_path(char *cmd)
 
 char    *set_cmd_path(char *envp[], char *cmd)
 {
-	if ((*cmd == '.' || *cmd == '/') && is_a_path(cmd))
+	char *path;
+
+	path = NULL;
+	if (((*cmd == '.' && *(cmd + 1)== '/') || *cmd == '/') && is_a_path(cmd))
 		return (cmd);
-	return (get_cmd_path(envp, cmd));
+	path = get_cmd_path(envp, cmd);
+	if (path)
+		return (path);
+	else
+		return (NULL);
 }

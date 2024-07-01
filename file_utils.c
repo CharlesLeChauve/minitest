@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:16 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/28 15:46:26 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/01 10:16:42 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,21 +21,21 @@ int	check_acces(char *file, t_open_mode mode)
 	{
 		ft_sprintf(err, "%s: Permission denied\n", file);
 		ft_putstr_fd(err, 2);
-		return (0);
+		return (2);
 	}
 	else if (file[0] == 0 || (mode == read_o && access(file, F_OK) != 0))
 	{
 		ft_sprintf(err, "%s: No such file or directory\n", file);
 		ft_putstr_fd(err, 2);
-		return (0);
+		return (1);
 	}
 	if (mode == read_o && access(file, R_OK) != 0)
 	{
 		ft_sprintf(err, "%s: Permission denied\n", file);
 		ft_putstr_fd(err, 2);
-		return (0);
+		return (2);
 	}
-	return (1);
+	return (0);
 }
 
 int	open_mode(char *path, t_open_mode mode)

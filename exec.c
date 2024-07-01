@@ -1,16 +1,32 @@
 #include "minishell.h"
 #include <errno.h>
 
+int	path_start(char *str)
+{
+	if (*str == '.')
+	{
+		if (*(str + 1) == '.' && *(str + 2) == '/')
+			return (1);
+		else if (*(str + 1) == '/')
+			return (1);
+		else
+			return (0);
+	}
+	if (*str == '/')
+		return (1);
+	return (0);
+}
+
 int exec_command(t_shell *shl, t_cmd_block *cmd_block)
 {
 	char	*path;
 	char	err_msg[124];
 	struct stat	path_stat;
+	int		access;
 
 	path = NULL;
 	ft_bzero(err_msg, 124);
-	path = set_cmd_path(shl->env, cmd_block->exec_tab[0]);
-	if (stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
+	if (path_start(cmd_block->exec_tab[0]) && stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
 	{
 		ft_sprintf(err_msg, "tash: %s: Is a directory\n", cmd_block->exec_tab[0]);
 		ft_putstr_fd(err_msg, STDERR_FILENO);
@@ -18,6 +34,23 @@ int exec_command(t_shell *shl, t_cmd_block *cmd_block)
 		clean_shell_instance(shl);
 		exit (126);
 	}
+	else if (path_start(cmd_block->exec_tab[0]))
+	{
+		access = check_acces(cmd_block->exec_tab[0], read_o);
+		if (access == 2)
+		{
+			ft_free_tab(shl->env);
+			clean_shell_instance(shl);
+			exit (126);
+		}
+		else if (access == 1)
+		{
+			ft_free_tab(shl->env);
+			clean_shell_instance(shl);
+			exit (127);
+		}
+	}
+	path = set_cmd_path(shl->env, cmd_block->exec_tab[0]);
 	if (!path)
 	{
 		ft_sprintf(err_msg, "tash: %s: command not found\n", cmd_block->exec_tab[0]);
