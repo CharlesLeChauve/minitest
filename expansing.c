@@ -188,8 +188,6 @@ char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
             result = ft_itoa(getpid());
             return (result);
         }
-		//REvoir cette condition pour exclure des symboles des identifiant de variables d'environnemt
-		//Seulement quelques caracteres speciaus a admettre
 		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
 				&& (*str)[j] != '\'' && (*str)[j] != '"' && (*str)[j] != '*')
 			j++;
@@ -209,29 +207,83 @@ char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
 	return (result);
 }
 
+
+char	*extrapolate(char **str, t_shell *shell)
+{
+	char	*result;
+	char	*temp;
+	char	*env_var_value;
+	char	*value_start;
+	size_t	j;
+
+	result = NULL;
+	temp = NULL;
+	env_var_value = NULL;
+	value_start = NULL;
+	j = 0;
+	(*str)++;
+	if (!(**str) || (!ft_isalnum(**str) && (**str != '$' && **str != '?' && **str != '_')))
+		return (ft_strdup("$"));
+	if (**str == '?')
+	{
+		(*str)++;
+		result = ft_itoa(shell->last_ret);
+		return (result);
+	}
+	  else if (**str == '$')
+    {
+        (*str)++;
+        result = ft_itoa(getpid());
+        return (result);
+    }
+	while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
+			&& (*str)[j] != '\'' && (*str)[j] != '"' && (*str)[j] != '*')
+		j++;
+	temp = ft_substr(*str, 0, j);
+	*str += j;
+	env_var_value = get_env_var(shell->env, temp);
+	free(temp);
+	if (env_var_value)
+	{
+		value_start = ft_strchr(env_var_value, '=');
+		if (value_start)
+			result = ft_strdup(value_start + 1);
+	}
+	else
+		result = NULL;
+	return (result);
+}
+
 char *extract_command(char **ptr, t_shell *shell, int *is_a_redir)
 {
 	size_t	len;
 	char	*buffer;
-	char	*ext;
+	// char	*ext;
 	t_sm	state;
 
 	len = 0;
-	buffer = ft_strdup("");
+	buffer = NULL;
 	state = reg;
 	while (**ptr)
 	{
 		set_quotes_state_in_cmd_block(ptr, &state);
-		ext = NULL;
-		ext = extrapolate_2(ptr, shell, &state);
-		if (ext)
+		// ext = NULL;
+		// ext = extrapolate_2(ptr, shell, &state);
+		// if (ext)
+		// {
+		// 	ft_strappend(&buffer, ext, &len);
+		// 	free(ext);
+		// 	continue ;
+		// }
+		if (**ptr == '$' && state != quote)
 		{
-			ft_strappend(&buffer, ext, &len);
-			free(ext);
+			ft_strappend(&buffer, extrapolate(ptr, shell), &len);
 			continue ;
 		}
 		else if (same_quote(&state, **ptr))
 		{
+			if (!buffer)
+				buffer = ft_strdup("");
 			//(*ptr)++;
 			continue ;
 		}
@@ -258,7 +310,29 @@ char *extract_command(char **ptr, t_shell *shell, int *is_a_redir)
 	return (buffer);
 }
 
-void process_sub_token(char *sub_token, t_cmd_block *block, int is_a_redir)
+
+int	expand_redir(char **str)
+{
+	char	*suffix;
+	char	*prefix;
+	int     index;
+
+	index = get_last_full_dir_idx(*str);
+	if (index >= 0)
+	{	
+		prefix = ft_strndup(*str, index);
+		suffix = ft_strdup(*str + index);
+		if (simple_expand(prefix, suffix, str))
+			return (1);
+		free(prefix);
+		prefix = NULL;
+		free (suffix);
+		suffix = NULL;
+	}
+	return (0);
+}
+
+int process_sub_token(char *sub_token, t_cmd_block *block, int is_a_redir)
 {
 	t_list	*new_arg;
 	t_token_type	type;
@@ -270,7 +344,7 @@ void process_sub_token(char *sub_token, t_cmd_block *block, int is_a_redir)
 			|| (sub_token[1] == '>' && sub_token[0] == '<')))
 		{
 			fprintf(stderr, "tash: Wrong redir operator.\n");
-			return ;
+			return (1);
 		}
 		type = redir_type(sub_token);
 		if (type == heredoc || type == redir_app)
@@ -278,6 +352,8 @@ void process_sub_token(char *sub_token, t_cmd_block *block, int is_a_redir)
 		else if (type == redir_out || type == redir_in)
 			str = ft_strdup(sub_token + 1);
 		free(sub_token);
+		if (type != heredoc && expand_redir(&str))
+			return (1);
 		new_arg = ft_lstnew(token_new(type, str));
 		free(str);
 		if (new_arg)
@@ -293,6 +369,7 @@ void process_sub_token(char *sub_token, t_cmd_block *block, int is_a_redir)
 		new_arg = ft_lstnew(sub_token);
 		ft_lstadd_back(&(block->arg), new_arg);
 	}
+	return (0);
 }
 
 int	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
@@ -312,11 +389,13 @@ int	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 			sub_token = extract_command(&ptr, shell, &is_a_redir);
 			if (!sub_token)
 			{
+				continue;
 				//clear_cmd_block(block);
-				clean_shell_instance(shell);
-				return (1);
+				// clean_shell_instance(shell);
+				// return (1);
 			}
-			process_sub_token(sub_token, block, is_a_redir);
+			if (process_sub_token(sub_token, block, is_a_redir))
+				return (1);
 		}
 	}
 	return (0);

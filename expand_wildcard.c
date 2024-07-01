@@ -270,3 +270,58 @@ void	expand_wildcards_in_block(t_cmd_block *block)
 		arg = next;
 	}
 }
+
+int	simple_expand(char *prefix, char *suffix, char **str)
+{
+	DIR				*dir;
+	struct dirent	*ent;
+	char			*stash;
+	char			*eval;
+	char			*res;
+	t_list			*results;
+
+	dir = NULL;
+	results = NULL;
+	if (!suffix)
+		return (0);
+	if (!prefix || !*prefix)
+		dir = opendir("./");
+	else	
+		dir = opendir(prefix);
+	stash = NULL;
+	if (!dir)
+		return (1);
+	stash = get_stash(suffix);
+	if (stash)
+		eval = get_first_dir(suffix);
+	else
+		eval = suffix;
+	ent = readdir(dir);
+	while (ent != NULL)
+	{
+		if (match_pattern(ent->d_name, eval))
+		{
+			res = ft_strjoin(prefix, ent->d_name);
+			if (stash && stash[0])
+			{
+				res = ft_strjoin_free(res, "/", 0);
+				simple_expand(res, stash, str);
+				free(res);
+			}
+			else
+				ft_lstadd_back(&results, ft_lstnew(res));
+		}
+		ent = readdir(dir);
+	}
+	free(eval);
+	closedir(dir);
+	ft_sort_wordlist(&results);
+	if (ft_lstsize(results) > 1)
+	{
+		ft_putstr_fd(" ambiguous redirect\n", 2);
+		return (1);
+	}
+	if (results)
+		*str = results->content;
+	return (0);
+}

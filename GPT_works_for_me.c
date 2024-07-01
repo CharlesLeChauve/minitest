@@ -21,7 +21,7 @@ void create_exec_tab(t_cmd_block *cmd_block)
 		// 	current = current->next;
 		// 	continue ;
 		// }
-		//printf("current content = %s\n", (char *)current->content);
+		// printf("current content = %s\n", (char *)current->content);
 		cmd_block->exec_tab[i++] = ft_strdup((char *)current->content);
 		current = current->next;
 	}

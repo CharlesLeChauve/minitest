@@ -211,6 +211,8 @@ void	ft_echo(char **args);
 int		get_heredocs(t_cmd_block *cmd_block);
 
 void	expand_wildcards_in_block(t_cmd_block *block);
+void	expand_wildcard(char *prefix, char *suffix, t_list **arg_lst);
+int	simple_expand(char *prefix, char *suffix, char **str);
 
 void	del_tkn_node(void *node_ptr);
 
