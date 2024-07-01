@@ -13,7 +13,6 @@ struct sigaction	*setup_signal_handlers_h(struct sigaction *old_sa)
 {
 	struct sigaction	sa_int;
 
-
 	sa_int.sa_handler = handle_sigint_h;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
@@ -37,11 +36,11 @@ void	restore_signal_handlers(struct sigaction old_sa)
 
 int	read_heredoc(char *limiter, int fd)
 {
-	char	*nl;
-	int		tty_fd;
-	char	*hd;
+	char				*nl;
+	int					tty_fd;
+	char				*hd;
 	struct sigaction	old_sa;
-	size_t	len;
+	size_t				len;
 
 	hd = NULL;
 	len = 0;
@@ -89,7 +88,7 @@ int	read_heredoc(char *limiter, int fd)
 	return (0);
 }
 
-int get_hd_no_1(void)
+int	get_hd_no_1(void)
 {
 	int		hd;
 	char	*path;
@@ -135,7 +134,6 @@ int	get_heredocs(t_cmd_block *cmd_block)
 			}
 			if (read_heredoc(((t_token_lst *)(current->content))->text, tmp_fd) == 2)
 			{
-				//free(((t_token_lst *)(current->content))->text);
 				close(tmp_fd);
 				free(tmp_name);
 				return (1);

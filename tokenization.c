@@ -30,10 +30,10 @@ void	set_quotes_state(t_tkn_info *tkn_info)
 {
 	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
 	{
-			if (*tkn_info->curr_char == '"')
-				tkn_info->state = dquote;
-			else
-				tkn_info->state = quote;
+		if (*tkn_info->curr_char == '"')
+			tkn_info->state = dquote;
+		else
+			tkn_info->state = quote;
 	}
 	else if (*tkn_info->curr_char == '"' && tkn_info->state == dquote)
 	{
@@ -83,10 +83,7 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token)
 	char		*buffer;
 
 	len = 0;
-	// if (tkn_info->state == reg)
-		buffer = NULL;
-	// else
-	// 	buffer = ft_strdup("");
+	buffer = NULL;
 	while (*tkn_info->curr_char)
 	{
 		if (tkn_info->curr_char != tkn_info->input && break_token(tkn_info))
@@ -160,12 +157,8 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		if (*tkn_info->curr_char == '|')
 		{
 			tkn_info->curr_char++;
-			// if (*tkn_info->curr_char == '|')
-			// 	return (NULL);
 			return (token_new(or_op, "||"));
 		}
-		// else if (*tkn_info->curr_char == '&')
-		// 	return (NULL);
 		return (token_new(pipe_op, "|"));
 	}
 	else if (*tkn_info->curr_char == '&' && tkn_info->state == reg)
@@ -174,18 +167,14 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 		if (*tkn_info->curr_char == '&')
 		{
 			tkn_info->curr_char++;
-			// if (*tkn_info->curr_char == '&')
-			// 	return (NULL);
 			return (token_new(and_op, "&&"));
 		}
-		// else if (*tkn_info->curr_char == '|')
-		// 	return (NULL);
 		return (NULL);
 	}
 	return (cmd_token(tkn_info));
 }
 
-t_dlist *tokenize(char *input)
+t_dlist	*tokenize(char *input)
 {
 	t_dlist		*last;
 	t_tkn_info	tkn_info;
@@ -227,4 +216,3 @@ t_dlist *tokenize(char *input)
 	free(tkn_info.input);
 	return (tkn_info.token_lst);
 }
-

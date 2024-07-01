@@ -13,10 +13,6 @@ void	handle_sigpipe(int sig)
 {
 	(void) sig;
 }
-// void	handle_sigquit()
-// {
-// 	return ;
-// }
 
 void	setup_signal_handlers(void)
 {
@@ -39,11 +35,4 @@ void	setup_signal_handlers(void)
 		perror("sigaction");
 		exit(EXIT_FAILURE);
 	}
-	// sa_quit.sa_handler = handle_sigquit;
-    // sa_quit.sa_flags = 0;
-    // sigemptyset(&sa_quit.sa_mask);
-    // if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) {
-    //     perror("sigaction");
-    //     exit(EXIT_FAILURE);
-    // }
 }

@@ -156,58 +156,6 @@ char	*redir_token(char **str, t_sm *state)
 	return (buffer);
 }
 
-char	*extrapolate_2(char **str, t_shell *shell, t_sm *state)
-{
-	char	*result;
-	char	*temp;
-	char	*env_var_value;
-	char	*value_start;
-	size_t	j;
-
-	result = NULL;
-	temp = NULL;
-	env_var_value = NULL;
-	value_start = NULL;
-	j = 0;
-	if (*state == quote)
-		return (NULL);
-	if (**str == '$')
-	{
-		(*str)++;
-		if (!(**str) || (!ft_isalnum(**str) && (**str != '$' && **str != '?' && **str != '_')))
-			return (ft_strdup("$"));
-		if (**str == '?')
-		{
-			(*str)++;
-			result = ft_itoa(shell->last_ret);
-			return (result);
-		}
-		  else if (**str == '$')
-        {
-            (*str)++;
-            result = ft_itoa(getpid());
-            return (result);
-        }
-		while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
-				&& (*str)[j] != '\'' && (*str)[j] != '"' && (*str)[j] != '*')
-			j++;
-		temp = ft_substr(*str, 0, j);
-		*str += j;
-		env_var_value = get_env_var(shell->env, temp);
-		free(temp);
-		if (env_var_value)
-		{
-			value_start = ft_strchr(env_var_value, '=');
-			if (value_start)
-				result = ft_strdup(value_start + 1);
-		}
-		else
-			result = (ft_strdup(""));
-	}
-	return (result);
-}
-
-
 char	*extrapolate(char **str, t_shell *shell)
 {
 	char	*result;
@@ -258,7 +206,6 @@ char *extract_command(char **ptr, t_shell *shell, int *is_a_redir)
 {
 	size_t	len;
 	char	*buffer;
-	// char	*ext;
 	t_sm	state;
 
 	len = 0;
@@ -267,14 +214,6 @@ char *extract_command(char **ptr, t_shell *shell, int *is_a_redir)
 	while (**ptr)
 	{
 		set_quotes_state_in_cmd_block(ptr, &state);
-		// ext = NULL;
-		// ext = extrapolate_2(ptr, shell, &state);
-		// if (ext)
-		// {
-		// 	ft_strappend(&buffer, ext, &len);
-		// 	free(ext);
-		// 	continue ;
-		// }
 		if (**ptr == '$' && state != quote)
 		{
 			ft_strappend(&buffer, extrapolate(ptr, shell), &len);
@@ -284,7 +223,6 @@ char *extract_command(char **ptr, t_shell *shell, int *is_a_redir)
 		{
 			if (!buffer)
 				buffer = ft_strdup("");
-			//(*ptr)++;
 			continue ;
 		}
 		else if (!**ptr || (state == reg && ft_isspace(**ptr)))
@@ -297,11 +235,7 @@ char *extract_command(char **ptr, t_shell *shell, int *is_a_redir)
 				buffer = NULL;
 			}
 			buffer = redir_token(ptr, &state);
-			// if (!buffer)
-			// {
-			// 	ft_putstr_fd("tash: syntax error near unexpected token 'newline'\n", 2);
-			// }
-			*is_a_redir = 1; // j'arrive pas a envoyer un message d'erreur type command not found (">out" ne renvoie pas command not found)
+			*is_a_redir = 1;
 			return (buffer);
 		}
 		ft_add_char_to_buffer(&buffer, **ptr, &len);
@@ -388,12 +322,7 @@ int	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 		{
 			sub_token = extract_command(&ptr, shell, &is_a_redir);
 			if (!sub_token)
-			{
-				continue;
-				//clear_cmd_block(block);
-				// clean_shell_instance(shell);
-				// return (1);
-			}
+				continue ;
 			if (process_sub_token(sub_token, block, is_a_redir))
 				return (1);
 		}
@@ -487,7 +416,6 @@ void	clear_cmd_block(t_cmd_block *block)
 {
 	if (!block)
 		return ;
-	// creer une fonction qui parcourt mes listes et free lst->content->text;
 	if (block->redirs && block->redirs->content)
 	    ft_lstiter(block->redirs, free_token_lst_content);
 	if (block->arg)
