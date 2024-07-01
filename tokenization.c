@@ -205,7 +205,7 @@ t_dlist *tokenize(char *input)
 	new_token = next_token(&tkn_info);
 	if (!new_token)
 	{
-		ft_printf("Syntax error: invalid token\n");
+		ft_putstr_fd("Syntax error: invalid token\n", 2);
 		free(tkn_info.input);
 		return (NULL);
 	}
