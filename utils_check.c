@@ -40,7 +40,7 @@ int	verify_tokens(t_dlist *tokens)
 	current = tokens;
 	prev = NULL;
 	if (!tokens)
-		return (fprintf(stderr, "Error: No tokens provided\n"), 0);
+		return (0);
 	while (current != NULL)
 	{
 		token = (t_token_lst *)current->content;

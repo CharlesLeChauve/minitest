@@ -104,7 +104,7 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);
 	}
-	if (!cmd_block->exec_tab[0] || !cmd_block->exec_tab[0][0])
+	if (!cmd_block->exec_tab[0])
 	{
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);

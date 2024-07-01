@@ -126,7 +126,7 @@ char *prompted_readline(void)
 	char *input;
 
 	//prompt = build_prompt();
-	input = readline("minishell");
+	input = readline("minishell ");
 	//free(prompt);
 	return (input);
 }
