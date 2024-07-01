@@ -28,7 +28,8 @@ void	ft_add_char_to_buffer(char **buffer, char c, size_t *len)
 
 void	set_quotes_state(t_tkn_info *tkn_info)
 {
-	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
+	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') \
+	&& tkn_info->state == reg)
 	{
 		if (*tkn_info->curr_char == '"')
 			tkn_info->state = dquote;
@@ -40,14 +41,13 @@ void	set_quotes_state(t_tkn_info *tkn_info)
 		tkn_info->state = reg;
 	}
 	else if (*tkn_info->curr_char == '\'' && tkn_info->state == quote)
-	{
 		tkn_info->state = reg;
-	}
 }
 
 void	first_read_quotes(t_tkn_info *tkn_info)
 {
-	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') && tkn_info->state == reg)
+	if ((*tkn_info->curr_char == '"' || *tkn_info->curr_char == '\'') \
+	&& tkn_info->state == reg)
 	{
 		if (*tkn_info->curr_char == '"')
 			tkn_info->state = dquote;
@@ -109,6 +109,27 @@ t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 	return (token);
 }
 
+void	read_subshell(t_tkn_info *tkn_info, char **buffer, size_t *len, \
+int *par_lvl)
+{
+	while (*tkn_info->curr_char)
+	{
+		if (*tkn_info->curr_char == '(')
+			(*par_lvl)++;
+		if (*tkn_info->curr_char == ')' && *par_lvl)
+			(*par_lvl)--;
+		else if (*tkn_info->curr_char == ')')
+		{
+			tkn_info->curr_char++;
+			break ;
+		}
+		ft_add_char_to_buffer(buffer, *tkn_info->curr_char, len);
+		tkn_info->curr_char++;
+	}
+	if (*buffer)
+		(*buffer)[ft_strlen(*buffer)] = '\0';
+}
+
 t_token_lst	*subshell_token(t_tkn_info *tkn_info)
 {
 	t_token_lst	*token;
@@ -121,24 +142,37 @@ t_token_lst	*subshell_token(t_tkn_info *tkn_info)
 	token->type = subshell;
 	len = 0;
 	buffer = NULL;
-	while (*tkn_info->curr_char)
-	{
-		if (*tkn_info->curr_char == '(')
-			par_lvl++;
-		if (*tkn_info->curr_char == ')' && par_lvl)
-			par_lvl--;
-		else if (*tkn_info->curr_char == ')')
-		{
-			tkn_info->curr_char++;
-			break ;
-		}
-		ft_add_char_to_buffer(&buffer, *tkn_info->curr_char, &len);
-		tkn_info->curr_char++;
-	}
-	if (buffer)
-		buffer[ft_strlen(buffer)] = '\0';
+	read_subshell(tkn_info, &buffer, &len, &par_lvl);
 	token->text = buffer;
 	return (token);
+}
+
+t_token_lst	*handle_paren(t_tkn_info *tkn_info)
+{
+	tkn_info->curr_char++;
+	return (subshell_token(tkn_info));
+}
+
+t_token_lst	*handle_pipe(t_tkn_info *tkn_info)
+{
+	tkn_info->curr_char++;
+	if (*tkn_info->curr_char == '|')
+	{
+		tkn_info->curr_char++;
+		return (token_new(or_op, "||"));
+	}
+	return (token_new(pipe_op, "|"));
+}
+
+t_token_lst	*handle_ampersand(t_tkn_info *tkn_info)
+{
+	tkn_info->curr_char++;
+	if (*tkn_info->curr_char == '&')
+	{
+		tkn_info->curr_char++;
+		return (token_new(and_op, "&&"));
+	}
+	return (NULL);
 }
 
 t_token_lst	*next_token(t_tkn_info *tkn_info)
@@ -147,70 +181,63 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 	if (!*tkn_info->curr_char)
 		return (token_new(eol, NULL));
 	if (*tkn_info->curr_char == '(')
-	{
-		tkn_info->curr_char++;
-		return (subshell_token(tkn_info));
-	}
+		return (handle_paren(tkn_info));
 	if (*tkn_info->curr_char == '|' && tkn_info->state == reg)
-	{
-		tkn_info->curr_char++;
-		if (*tkn_info->curr_char == '|')
-		{
-			tkn_info->curr_char++;
-			return (token_new(or_op, "||"));
-		}
-		return (token_new(pipe_op, "|"));
-	}
-	else if (*tkn_info->curr_char == '&' && tkn_info->state == reg)
-	{
-		tkn_info->curr_char++;
-		if (*tkn_info->curr_char == '&')
-		{
-			tkn_info->curr_char++;
-			return (token_new(and_op, "&&"));
-		}
-		return (NULL);
-	}
+		return (handle_pipe(tkn_info));
+	if (*tkn_info->curr_char == '&' && tkn_info->state == reg)
+		return (handle_ampersand(tkn_info));
 	return (cmd_token(tkn_info));
+}
+
+void	init_tkn_info(t_tkn_info *tkn_info, char *input)
+{
+	tkn_info->input = ft_strdup(input);
+	tkn_info->curr_char = tkn_info->input;
+	tkn_info->token_lst = NULL;
+	tkn_info->state = reg;
+}
+
+void	handle_error_and_cleanup(t_tkn_info *tkn_info, const char *error_msg)
+{
+	ft_putstr_fd(error_msg, 2);
+	free(tkn_info->input);
+	ft_dlstclear(&tkn_info->token_lst, del_tkn_node);
+}
+
+int	add_new_token(t_tkn_info *tkn_info)
+{
+	t_token_lst	*new_token;
+
+	new_token = next_token(tkn_info);
+	if (!new_token)
+	{
+		handle_error_and_cleanup(tkn_info, "Syntax error: invalid token.\n");
+		return (0);
+	}
+	ft_dlstadd_back(&tkn_info->token_lst, ft_dlstnew(new_token));
+	return (1);
 }
 
 t_dlist	*tokenize(char *input)
 {
-	t_dlist		*last;
 	t_tkn_info	tkn_info;
-	t_token_lst	*new_token;
+	t_dlist		*last;
 
 	if (!input || !*input)
 		return (NULL);
-	tkn_info.input = ft_strdup(input);
+	init_tkn_info(&tkn_info, input);
 	if (!tkn_info.input)
 	{
 		ft_printf("Error: Memory allocation failed\n");
 		return (NULL);
 	}
-	tkn_info.curr_char = tkn_info.input;
-	tkn_info.token_lst = NULL;
-	tkn_info.state = reg;
-	new_token = next_token(&tkn_info);
-	if (!new_token)
-	{
-		ft_putstr_fd("Syntax error: invalid token\n", 2);
-		free(tkn_info.input);
+	if (!add_new_token(&tkn_info))
 		return (NULL);
-	}
-	ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
 	last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
 	while (last && ((t_token_lst *)(last->content))->type != eol)
 	{
-		new_token = next_token(&tkn_info);
-		if (!new_token)
-		{
-			ft_putstr_fd("Syntax error: invalid token.\n", 2);
-			free(tkn_info.input);
-			ft_dlstclear(&tkn_info.token_lst, del_tkn_node);
+		if (!add_new_token(&tkn_info))
 			return (NULL);
-		}
-		ft_dlstadd_back(&tkn_info.token_lst, ft_dlstnew(new_token));
 		last = (t_dlist *)ft_lstlast((t_list *)tkn_info.token_lst);
 	}
 	free(tkn_info.input);
