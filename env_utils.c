@@ -6,17 +6,19 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:32:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/27 14:53:53 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/01 16:35:28 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *extract_var_id(char *var)
+char	*extract_var_id(char *var)
 {
-	int i = 0;
-	int	index = -1;
+	int	i;
+	int	index;
 
+	i = 0;
+	index = -1;
 	while (var[i])
 	{
 		if (var[i] == '=')
@@ -80,7 +82,8 @@ char	*get_env_var(char **env, char *var_id)
 	i = -1;
 	while (env[++i])
 	{
-		if (!ft_strncmp(env[i], var_id, id_len) && (env[i][id_len] == '=' || env[i][id_len] == '\0'))
+		if (!ft_strncmp(env[i], var_id, id_len) && (env[i][id_len] == '='\
+			|| env[i][id_len] == '\0'))
 		{
 			env_var = env[i];
 			break ;

@@ -208,6 +208,11 @@ int		ft_exit(char **args, t_shell *shl);
 //echo.c
 void	ft_echo(char **args);
 
+//exec_utils.c
+void	exit_exec(t_shell *shl, int ex_no);
+void	exec_error(char *str, int mode);
+void	exec_path_access(t_shell *shl, char *cmd);
+
 int		get_heredocs(t_cmd_block *cmd_block);
 
 void	expand_wildcards_in_block(t_cmd_block *block);

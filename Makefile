@@ -10,7 +10,7 @@ NAME    =   minishell
 
 SRCS    =   parsing.c token.c signal.c tokenization.c parser.c utils_check.c env.c dirs_handler.c expansing.c exec.c\
 			GPT_works_for_me.c pipes.c tab_utils.c path_utils.c redirs.c file_utils.c exec_actions.c export.c\
-			env_utils.c exit.c echo.c new_heredoc.c expand_wildcard.c tab_utils2.c #heredoc.c
+			env_utils.c exit.c echo.c new_heredoc.c expand_wildcard.c tab_utils2.c exec_utils.c #heredoc.c
 
 BNS_SRC =   pipex_bonus.c utils.c utils_bonus.c
 

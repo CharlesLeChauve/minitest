@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/27 16:01:24 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/01 16:28:50 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,18 +56,22 @@ void	act_env_pwd(char ***env)
 	free(pwds);
 }
 
+int	export_err(void)
+{
+	char	err[128];
+
+	ft_bzero(err, 128);
+	ft_sprintf(err, "tash: cd: too many arguments\n");
+	ft_putstr_fd(err, STDERR_FILENO);
+	return (1);
+}
+
 int	change_directory(char **args, char ***env)
 {
 	DIR		*directory;
-	char	err[128];
-	
+
 	if (args[1] != NULL)
-	{
-		ft_bzero(err, 128);
-		ft_sprintf(err, "tash: export: '%s': too many arguments\n", args[1]);
-		ft_putstr_fd(err, STDERR_FILENO);
-		return (1);
-	}
+		return (export_err());
 	if (!*args)
 		*args = "/home";
 	directory = opendir(*args);

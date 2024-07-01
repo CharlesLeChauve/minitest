@@ -17,80 +17,58 @@ int	path_start(char *str)
 	return (0);
 }
 
-int exec_command(t_shell *shl, t_cmd_block *cmd_block)
+
+int	exec_command(t_shell *shl, t_cmd_block *cmd_block)
 {
-	char	*path;
-	char	err_msg[124];
+	char		*path;
 	struct stat	path_stat;
-	int		access;
 
 	path = NULL;
-	ft_bzero(err_msg, 124);
-	if (path_start(cmd_block->exec_tab[0]) && stat(cmd_block->exec_tab[0], &path_stat) > -1 && S_ISDIR(path_stat.st_mode))
+	if (path_start(cmd_block->exec_tab[0]) \
+		&& stat(cmd_block->exec_tab[0], &path_stat) > -1 \
+		&& S_ISDIR(path_stat.st_mode))
 	{
-		ft_sprintf(err_msg, "tash: %s: Is a directory\n", cmd_block->exec_tab[0]);
-		ft_putstr_fd(err_msg, STDERR_FILENO);
-		ft_free_tab(shl->env);
-		clean_shell_instance(shl);
-		exit (126);
+		exec_error(cmd_block->exec_tab[0], 2);
+		exit_exec(shl, 126);
 	}
 	else if (path_start(cmd_block->exec_tab[0]))
-	{
-		access = check_acces(cmd_block->exec_tab[0], read_o);
-		if (access == 2)
-		{
-			ft_free_tab(shl->env);
-			clean_shell_instance(shl);
-			exit (126);
-		}
-		else if (access == 1)
-		{
-			ft_free_tab(shl->env);
-			clean_shell_instance(shl);
-			exit (127);
-		}
-	}
+		exec_path_access(shl, cmd_block->exec_tab[0]);
 	path = set_cmd_path(shl->env, cmd_block->exec_tab[0]);
 	if (!path)
 	{
-		ft_sprintf(err_msg, "tash: %s: command not found\n", cmd_block->exec_tab[0]);
-		ft_putstr_fd(err_msg, STDERR_FILENO);
-		ft_free_tab(shl->env);
-		clean_shell_instance(shl);
-		exit (127);
+		exec_error(cmd_block->exec_tab[0], 1);
+		exit_exec(shl, 127);
 	}
 	if (execve(path, cmd_block->exec_tab, shl->env) == -1)
 	{
 		perror("execve");
-		ft_free_tab(shl->env);
-		clean_shell_instance(shl);
-		exit (127);
+		exit_exec(shl, 127);
 	}
 	return (0);
 }
 
-int exec_not_builtin(t_cmd_block *cmd_block, t_shell *shl)
+int	exec_not_builtin(t_cmd_block *cmd_block, t_shell *shl)
 {
-	pid_t   pid;
+	pid_t	pid;
 	int		ret_val;
 
 	ret_val = 0;
 	pid = fork();
-	if (pid == -1) 
+	if (pid == -1)
 	{
 		perror("fork");
 		return (-1);
 	}
-	if (pid == 0) 
+	if (pid == 0)
 		exec_command(shl, cmd_block);
 	else
 		ret_val = wait_status(pid);
 	return (ret_val);
 }
 
-int exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
+int	exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 {
-	int     		status;
+	int				status;
 	t_std_fd_save	save;
 
 	save.std_out = dup(STDOUT_FILENO);
@@ -98,29 +76,21 @@ int exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 	if (!cmd_block)
 		return (130);
 	status = handle_redirs(cmd_block);
-	//ft_printf("redir = %s\n", ((t_token_lst *)(cmd_block->redirs->content))->text);
-	if (status)
-	{
-		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
-		return (status);
-	}
-	if (!cmd_block->exec_tab[0])
+	if (status || !cmd_block->exec_tab[0])
 	{
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);
 	}
 	if (is_a_builtin(cmd_block->exec_tab[0]))
 	{
-		status = do_the_builtin(shl ,&(shl->env), cmd_block->exec_tab[0], cmd_block->exec_tab);
-		restore_stds_and_close_dup(save.std_out, save. std_in, -1);
+		status = do_the_builtin(shl, &(shl->env), cmd_block->exec_tab[0], cmd_block->exec_tab);
+		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return(status);
 	}
 	else
 	{
 		status = exec_not_builtin(cmd_block, shl);
-		restore_stds_and_close_dup(save.std_out, save. std_in, -1);
-		// ft_free_tab(shl->env);
-		// clean_shell_instance(shl);
+		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);
 	}
 	return (-1);
