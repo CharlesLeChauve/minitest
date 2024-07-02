@@ -127,14 +127,26 @@ int			ft_isshelloperator(char c);
 
 
 // lexing
-void		parse_input(char *input, t_token_lst **token_lst);
+int	break_token(t_tkn_info *tkn_info);
+void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token);
+t_token_lst	*cmd_token(t_tkn_info *tkn_info);
+t_token_lst	*handle_pipe(t_tkn_info *tkn_info);
+t_token_lst	*handle_ampersand(t_tkn_info *tkn_info);
+int			ft_isshelloperator(char c);
+void	set_quotes_state(t_tkn_info *tkn_info);
+void	first_read_quotes(t_tkn_info *tkn_info);
+void	space_quotes(t_tkn_info *tkn_info);
 int			same_quote(t_sm *state, char c);
-void		lexer(char	*input, t_token_lst **tokens);
+void	read_subshell(t_tkn_info *tkn_info, char **buffer, size_t *len, \
+int *par_lvl);
+t_token_lst	*subshell_token(t_tkn_info *tkn_info);
+t_token_lst	*handle_paren(t_tkn_info *tkn_info);
 t_token_lst	*token_new(t_token_type type, void *content);
 t_token_lst	*token_last(t_token_lst *token_lst);
 void		tokenaddback(t_token_lst **lst, t_token_lst *node);
 char		*redir_token(char **str, t_sm *state);
 t_dlist		*tokenize(char *input);
+void		ft_add_char_to_buffer(char **buffer, char c, size_t *len);
 
 // parsing
 void		handle_memory_error(void);
@@ -145,7 +157,6 @@ t_ast_node	*parse_tokens(t_dlist *tokens);
 t_ast_node	*construct_ast_from_tokens(t_dlist *token_list);
 
 // expansing
-void	ft_add_char_to_buffer(char **buffer, char c, size_t *len);
 t_cmd_block	*init_cmd_block(void);
 int		same_quote(t_sm *state, char c);
 void	handle_state(char **ptr, t_params *params,
