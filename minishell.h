@@ -230,6 +230,8 @@ void	clean_shell_instance(t_shell *shl);
 
 int 	is_logical(t_token_type type);
 
+void	ft_sort_wordlist(t_list **head);
+
 int		ft_subshell(char *input, char *envp[]);
 char	**ft_cpy_strtab(char **tab);
 char	*extract_var_id(char *arg);
