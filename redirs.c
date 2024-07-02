@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirs.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:54 by tgibert           #+#    #+#             */
-/*   Updated: 2024/07/01 09:49:26 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/02 11:35:54 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,13 @@ int    handle_redirs(t_cmd_block *cmd_block)
 		redirs = cmd_block->redirs;
 		while (redirs)
 		{
-			if (redirs->content == NULL || ((t_token_lst *)redirs->content)->text[0] == '\0')
+			if (redirs->content == NULL)
 			 	return (2);
+			if (((t_token_lst *)redirs->content)->text[0] == '\0')
+			{
+				ft_putstr_fd("tash: : No such file or directory\n", 2);
+				return (1);
+			}
 			if (((t_token_lst *)redirs->content)->type == redir_app || ((t_token_lst *)redirs->content)->type == redir_out)
 				if (make_redir_out((t_token_lst *)redirs->content))
 					return (1) ;
