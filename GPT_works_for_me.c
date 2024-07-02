@@ -1,9 +1,9 @@
 #include "minishell.h"
 
-void create_exec_tab(t_cmd_block *cmd_block) 
+void	create_exec_tab(t_cmd_block *cmd_block)
 {
-	int 	i;
-	t_list *current;
+	int		i;
+	t_list	*current;
 
 	expand_wildcards_in_block(cmd_block);
 	i = ft_lstsize(cmd_block->arg);
@@ -14,14 +14,8 @@ void create_exec_tab(t_cmd_block *cmd_block)
 	}
 	i = 0;
 	current = cmd_block->arg;
-	while (current) 
+	while (current)
 	{
-		// if (*((char *)(current->content)) == 0)
-		// {
-		// 	current = current->next;
-		// 	continue ;
-		// }
-		// printf("current content = %s\n", (char *)current->content);
 		cmd_block->exec_tab[i++] = ft_strdup((char *)current->content);
 		current = current->next;
 	}

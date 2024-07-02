@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/07/01 16:28:50 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/02 16:30:47 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	act_env_pwd(char ***env)
 	free(pwds);
 }
 
-int	export_err(void)
+int	cd_err(void)
 {
 	char	err[128];
 
@@ -71,7 +71,7 @@ int	change_directory(char **args, char ***env)
 	DIR		*directory;
 
 	if (args[1] != NULL)
-		return (export_err());
+		return (cd_err());
 	if (!*args)
 		*args = "/home";
 	directory = opendir(*args);

@@ -271,6 +271,11 @@ char	*get_first_dir(char *str);
 int		get_last_full_dir_idx(char *ptr);
 char	*get_evaluation(char *suffix, char **stash);
 
+//export_utils.c
+int		check_export_arg(char *arg);
+void	print_export_env(char **env);
+char	*export_format(char *str);
+
 int		match_pattern(char *str, char *pattern);
 
 int		get_heredocs(t_cmd_block *cmd_block);

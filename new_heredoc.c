@@ -2,6 +2,14 @@
 
 volatile sig_atomic_t	g_interrupted = 0;
 
+typedef struct s_heredoc
+{
+	char				*hd;
+	int					tty_fd;
+	int					fd;
+	struct sigaction	old_sa;
+}						t_heredoc;
+
 void	handle_sigint_h(int sig)
 {
 	(void)sig;
@@ -34,57 +42,67 @@ void	restore_signal_handlers(struct sigaction old_sa)
 	}
 }
 
+int	handle_interruption(char *nl, t_heredoc *heredoc)
+{
+	free(nl);
+	close(heredoc->tty_fd);
+	free(heredoc->hd);
+	g_interrupted = 0;
+	restore_signal_handlers(heredoc->old_sa);
+	return (2);
+}
+
+int	handle_end_of_file(t_heredoc *heredoc)
+{
+	ft_putstr_fd("Error : End Of File before finding here_doc LIMITER\n", 2);
+	close(heredoc->tty_fd);
+	ft_putstr_fd(heredoc->hd, heredoc->fd);
+	free(heredoc->hd);
+	restore_signal_handlers(heredoc->old_sa);
+	return (1);
+}
+
+int	handle_match_limiter(char *nl, t_heredoc *heredoc, char *limiter)
+{
+	(void)limiter;
+	free(nl);
+	close(heredoc->tty_fd);
+	ft_putstr_fd(heredoc->hd, heredoc->fd);
+	free(heredoc->hd);
+	restore_signal_handlers(heredoc->old_sa);
+	return (0);
+}
+
 int	read_heredoc(char *limiter, int fd)
 {
-	char				*nl;
-	int					tty_fd;
-	char				*hd;
-	struct sigaction	old_sa;
-	size_t				len;
+	t_heredoc	heredoc;
+	char		*nl;
+	size_t		len;
 
-	hd = NULL;
+	heredoc.hd = NULL;
+	heredoc.fd = fd;
 	len = 0;
-	setup_signal_handlers_h(&old_sa);
-	tty_fd = open("/dev/tty", O_RDONLY);
-	if (tty_fd == -1)
+	setup_signal_handlers_h(&heredoc.old_sa);
+	heredoc.tty_fd = open("/dev/tty", O_RDONLY);
+	if (heredoc.tty_fd == -1)
 	{
 		perror("open");
 		return (1);
 	}
 	while (1)
 	{
-		nl = get_next_line(tty_fd);
+		nl = get_next_line(heredoc.tty_fd);
 		if (g_interrupted)
-		{
-			free(nl);
-			close(tty_fd);
-			free(hd);
-			g_interrupted = 0;
-			restore_signal_handlers(old_sa);
-			return (2);
-		}
+			return (handle_interruption(nl, &heredoc));
 		if (nl == NULL)
-		{
-			ft_putstr_fd("Error : End Of File before finding here_doc LIMITER\n", 2);
-			close(tty_fd);
-			ft_putstr_fd(hd, fd);
-			free(hd);
-			restore_signal_handlers(old_sa);
-			return (1);
-		}
-		if (!ft_strncmp(nl, limiter, ft_strlen(limiter)) && nl[ft_strlen(limiter)] == '\n')
-		{
-			free(nl);
-			close(tty_fd);
-			ft_putstr_fd(hd, fd);
-			free(hd);
-			restore_signal_handlers(old_sa);
-			return (0);
-		}
-		ft_strappend(&hd, nl, &len);
+			return (handle_end_of_file(&heredoc));
+		if (!ft_strncmp(nl, limiter, ft_strlen(limiter)) \
+			&& nl[ft_strlen(limiter)] == '\n')
+			return (handle_match_limiter(nl, &heredoc, limiter));
+		ft_strappend(&heredoc.hd, nl, &len);
 		free(nl);
 	}
-	restore_signal_handlers(old_sa);
+	restore_signal_handlers(heredoc.old_sa);
 	return (0);
 }
 
@@ -132,7 +150,8 @@ int	get_heredocs(t_cmd_block *cmd_block)
 				free(tmp_name);
 				return (-1);
 			}
-			if (read_heredoc(((t_token_lst *)(current->content))->text, tmp_fd) == 2)
+			if (read_heredoc(((t_token_lst *)(current->content))->text, \
+				tmp_fd) == 2)
 			{
 				close(tmp_fd);
 				free(tmp_name);

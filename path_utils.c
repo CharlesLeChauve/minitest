@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   path_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/02 16:18:31 by tgibert           #+#    #+#             */
+/*   Updated: 2024/07/02 16:18:32 by tgibert          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	path_start(char *str)
@@ -39,8 +51,6 @@ char	*get_cmd_path(char **env, char *cmd)
 	int		i;
 
 	i = 0;
-	if (!*cmd)
-		return (NULL);
 	paths = get_env_path(env);
 	if (paths == NULL)
 		return (NULL);
@@ -62,20 +72,22 @@ char	*get_cmd_path(char **env, char *cmd)
 	return (NULL);
 }
 
-int is_a_path(char *cmd)
+int	is_a_path(char *cmd)
 {
 	if (!access(cmd, F_OK))
 		return (1);
 	return (0);
 }
 
-char    *set_cmd_path(char *envp[], char *cmd)
+char	*set_cmd_path(char *envp[], char *cmd)
 {
-	char *path;
+	char	*path;
 
 	path = NULL;
-	if (((*cmd == '.' && *(cmd + 1)== '/') || *cmd == '/') && is_a_path(cmd))
+	if (((*cmd == '.' && *(cmd + 1) == '/') || *cmd == '/') && is_a_path(cmd))
 		return (cmd);
+	if (!*cmd)
+		return (NULL);
 	path = get_cmd_path(envp, cmd);
 	if (path)
 		return (path);

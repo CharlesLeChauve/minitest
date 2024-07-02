@@ -1,10 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipes.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/02 16:12:02 by tgibert           #+#    #+#             */
+/*   Updated: 2024/07/02 16:14:12 by tgibert          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void do_pipe_side(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast, int side)
+int	exec_in_pipe(t_ast_node *node, t_shell *shl)
 {
 	int	ret;
 
-	ret = 0;
+	ret = exec_ast(node, shl);
+	ft_free_tab(shl->env);
+	clean_shell_instance(shl);
+	return (ret);
+}
+
+void	do_pipe_side(t_pipe_info *pipe_info, t_shell *shl, \
+	t_ast_node *ast, int side)
+{
 	pipe_info->pids[side] = fork();
 	if (pipe_info->pids[side] == -1)
 	{
@@ -17,23 +37,13 @@ void do_pipe_side(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast, int sid
 		dup2(pipe_info->pipe_fds[side ^ 1], side ^ 1);
 		close(pipe_info->pipe_fds[side ^ 1]);
 		if (side == 0)
-		{
-			ret = exec_ast(ast->left, shl);
-			ft_free_tab(shl->env);
-			clean_shell_instance(shl);
-			exit(ret);
-		}
+			exit(exec_in_pipe(ast->left, shl));
 		else
-		{
-			ret = exec_ast(ast->right, shl);
-			ft_free_tab(shl->env);
-			clean_shell_instance(shl);
-			exit(ret);
-		}
+			exit(exec_in_pipe(ast->right, shl));
 	}
 }
 
-void do_pipes(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast)
+void	do_pipes(t_pipe_info *pipe_info, t_shell *shl, t_ast_node *ast)
 {
 	do_pipe_side(pipe_info, shl, ast, 0);
 	do_pipe_side(pipe_info, shl, ast, 1);
@@ -49,8 +59,8 @@ void	init_pipe_info(t_pipe_info *pipe_info)
 	pipe_info->pids[1] = -1;
 	if (pipe(pipe_info->pipe_fds) == -1)
 	{
-	    perror("pipe");
-	    exit(EXIT_FAILURE);
+		perror("pipe");
+		exit(EXIT_FAILURE);
 	}
 }
 
