@@ -45,6 +45,9 @@ void	set_quotes_state_in_cmd_block(char **curr_char, t_sm *state)
 
 void	set_quotes_state_in_redir(char **curr_char, t_sm *state, int *quotectrl)
 {
+	char	*start;
+
+	start = *curr_char;
 	if ((**curr_char == '"' || **curr_char == '\'') && *state == reg)
 	{
 		*quotectrl = 1;
@@ -56,17 +59,15 @@ void	set_quotes_state_in_redir(char **curr_char, t_sm *state, int *quotectrl)
 	}
 	else if (**curr_char == '"' && *state == dquote)
 	{
-		*quotectrl = 1;
 		*state = reg;
 		(*curr_char)++;
 	}
 	else if (**curr_char == '\'' && *state == quote)
 	{
-		*quotectrl = 1;
 		*state = reg;
 		(*curr_char)++;
 	}
-	if (**curr_char == '"' || **curr_char == '\'')
+	if (start != *curr_char && (**curr_char == '"' || **curr_char == '\''))
 		set_quotes_state_in_redir(curr_char, state, quotectrl);
 }
 
@@ -106,86 +107,92 @@ t_token_type	redir_type(char *curr_char)
 	return 11;
 }
 
-char	*redir_token(char **str, t_sm *state)
+void handle_quotes_and_operators(char **curr_char, t_sm *state, char **buffer, size_t *len, int *quote)
 {
-	char		**curr_char;
-	char		*buffer;
-	size_t		len;
-	int			quote;
+	set_quotes_state_in_redir(curr_char, state, quote);
+	if (**curr_char == '>' || **curr_char == '<')
+	{
+		ft_add_char_to_buffer(buffer, **curr_char, len);
+		(*curr_char)++;
+	}
+}
 
-	curr_char = str;
-	buffer = NULL;
-	len = 0;
-	quote = 0;
-	set_quotes_state_in_redir(curr_char, state, &quote);
-	if (**curr_char == '>' || **curr_char == '<')
-	{
-		ft_add_char_to_buffer(&buffer, **curr_char, &len);
-		(*curr_char)++;
-	}
-	set_quotes_state_in_redir(curr_char, state, &quote);
-	if (**curr_char == '>' || **curr_char == '<')
-	{
-		ft_add_char_to_buffer(&buffer, **curr_char, &len);
-		(*curr_char)++;
-	}
-	set_quotes_state_in_redir(curr_char, state, &quote);
+void skip_whitespace(char **curr_char, t_sm *state, char **buffer, size_t *len)
+{
 	while (**curr_char == ' ' || **curr_char == '\t')
 	{
 		if (*state != reg)
-			ft_add_char_to_buffer(&buffer, **curr_char, &len);
+			ft_add_char_to_buffer(buffer, **curr_char, len);
 		(*curr_char)++;
 	}
-	if (ft_isrediroperator(**curr_char) || ft_isshelloperator(**curr_char) || **curr_char == '\0')
-	{
-		if (quote)
-			return (buffer);
-		ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
-		// shell->last_ret = 2;
-		free(buffer);
-		return (NULL);
-	}
-	while (**curr_char && !ft_isshelloperator(**curr_char) && !ft_isrediroperator(**curr_char))
-	{
-		set_quotes_state_in_redir(curr_char, state, &quote);
-		if (*state == reg && ft_isspace(**curr_char))
-			break ;
-		ft_add_char_to_buffer(&buffer, **curr_char, &len);
-		(*curr_char)++;
-	}
-	return (buffer);
 }
 
-char	*extrapolate(char **str, t_shell *shell)
+int handle_syntax_error(char **buffer, int quote)
 {
-	char	*result;
-	char	*temp;
-	char	*env_var_value;
-	char	*value_start;
-	size_t	j;
+	if (quote)
+		return (1);
+	ft_putstr_fd("tash : syntax error near unexpected token `newline'\n", 2);
+	free(*buffer);
+	return 0;
+}
 
-	result = NULL;
-	temp = NULL;
-	env_var_value = NULL;
-	value_start = NULL;
-	j = 0;
-	(*str)++;
-	if (!(**str) || (!ft_isalnum(**str) && (**str != '$' && **str != '?' && **str != '_')))
-		return (ft_strdup("$"));
+int is_end_of_token(char c)
+{
+	return ft_isrediroperator(c) || ft_isshelloperator(c) || c == '\0';
+}
+
+char *redir_token(char **str, t_sm *state)
+{
+	char *buffer;
+	size_t len;
+	int quote;
+
+	buffer = NULL;
+	len = 0;
+	quote = 0;
+	handle_quotes_and_operators(str, state, &buffer, &len, &quote);
+	handle_quotes_and_operators(str, state, &buffer, &len, &quote);
+	skip_whitespace(str, state, &buffer, &len);
+	if (is_end_of_token(**str) && !handle_syntax_error(&buffer, quote))
+		return (NULL);
+	else if (is_end_of_token(**str) && !handle_syntax_error(&buffer, quote))
+		return (buffer);
+	while (**str && !ft_isshelloperator(**str) && !ft_isrediroperator(**str))
+	{
+		set_quotes_state_in_redir(str, state, &quote);
+		if (*state == reg && ft_isspace(**str))
+			break;
+		ft_add_char_to_buffer(&buffer, **str, &len);
+		(*str)++;
+	}
+	return buffer;
+}
+
+
+char *handle_special_chars(char **str, t_shell *shell)
+{
 	if (**str == '?')
 	{
 		(*str)++;
-		result = ft_itoa(shell->last_ret);
-		return (result);
+		return ft_itoa(shell->last_ret);
 	}
-	  else if (**str == '$')
-    {
-        (*str)++;
-        result = ft_itoa(getpid());
-        return (result);
-    }
-	while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$'\
-			&& (*str)[j] != '\'' && (*str)[j] != '"' && (*str)[j] != '*')
+	else if (**str == '$')
+	{
+		(*str)++;
+		return ft_itoa(getpid());
+	}
+	return NULL;
+}
+
+char *get_env_value(char **str, t_shell *shell)
+{
+	char *temp;
+	char *env_var_value;
+	char *value_start;
+	size_t j;
+
+	j = 0;
+	while ((*str)[j] && !ft_isspace((*str)[j]) && (*str)[j] != '$' && (*str)[j] != '\'' && (*str)[j] != '"' && (*str)[j] != '*')
 		j++;
 	temp = ft_substr(*str, 0, j);
 	*str += j;
@@ -195,11 +202,22 @@ char	*extrapolate(char **str, t_shell *shell)
 	{
 		value_start = ft_strchr(env_var_value, '=');
 		if (value_start)
-			result = ft_strdup(value_start + 1);
+			return ft_strdup(value_start + 1);
 	}
-	else
-		result = NULL;
-	return (result);
+	return NULL;
+}
+
+char *extrapolate(char **str, t_shell *shell)
+{
+	char *result;
+
+	(*str)++;
+	if (!(**str) || (!ft_isalnum(**str) && (**str != '$' && **str != '?' && **str != '_')))
+		return ft_strdup("$");
+	result = handle_special_chars(str, shell);
+	if (result)
+		return result;
+	return get_env_value(str, shell);
 }
 
 char *extract_command(char **ptr, t_shell *shell, int *is_a_redir)
@@ -322,7 +340,12 @@ int	parse_command_option(char *token, t_cmd_block *block, t_shell *shell)
 		{
 			sub_token = extract_command(&ptr, shell, &is_a_redir);
 			if (!sub_token)
-				continue ;
+			{
+				if (!is_a_redir)
+					continue ;
+				else
+					return (1);
+			}
 			if (process_sub_token(sub_token, block, is_a_redir))
 				return (1);
 		}
@@ -354,31 +377,31 @@ int	fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell)
 
 }
 
-void	print_cmd_block(t_cmd_block *cmd_block)
-{
-	t_list	*arg;
-	t_list	*redir;
+// void	print_cmd_block(t_cmd_block *cmd_block)
+// {
+// 	t_list	*arg;
+// 	t_list	*redir;
 
-	if (cmd_block->arg)
-	{
-		arg = cmd_block->arg;
-		while (arg)
-		{
-			printf("  Argument: %s\n", (char *)arg->content);
-			arg = arg->next;
-		}
-	}
-	if (cmd_block->redirs)
-	{
-		redir = cmd_block->redirs;
-		while (redir)
-		{
-			printf("Redirections:\n");
-			printf("  %s\n", ((t_token_lst *)redir->content)->text);
-			redir = redir->next;
-		}
-	}
-}
+// 	if (cmd_block->arg)
+// 	{
+// 		arg = cmd_block->arg;
+// 		while (arg)
+// 		{
+// 			printf("  Argument: %s\n", (char *)arg->content);
+// 			arg = arg->next;
+// 		}
+// 	}
+// 	if (cmd_block->redirs)
+// 	{
+// 		redir = cmd_block->redirs;
+// 		while (redir)
+// 		{
+// 			printf("Redirections:\n");
+// 			printf("  %s\n", ((t_token_lst *)redir->content)->text);
+// 			redir = redir->next;
+// 		}
+// 	}
+// }
 
 int	expand_ast(t_ast_node *node, t_shell *shl)
 {
