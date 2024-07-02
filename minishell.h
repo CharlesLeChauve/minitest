@@ -137,17 +137,38 @@ char		*redir_token(char **str, t_sm *state);
 t_dlist		*tokenize(char *input);
 
 // parsing
+void		handle_memory_error(void);
+void		initialize_command_node(t_ast_node *node, char *text, t_dlist *tokens);
+void		initialize_operator_node(t_ast_node *node);
 void		parser(t_token_lst *tokens);
-int			ft_isvalidchar(char c);
 t_ast_node	*parse_tokens(t_dlist *tokens);
 t_ast_node	*construct_ast_from_tokens(t_dlist *token_list);
 
 // expansing
-int		expand_ast(t_ast_node *node, t_shell *shl);
-int		fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell);
-t_cmd_block	*init_cmd_block(void);
-void	print_cmd_block(t_cmd_block *cmd_block);
 void	ft_add_char_to_buffer(char **buffer, char c, size_t *len);
+t_cmd_block	*init_cmd_block(void);
+int		same_quote(t_sm *state, char c);
+void	handle_state(char **ptr, t_params *params,
+char **buffer, t_shell *shell);
+char	*handle_redirection_or_not(char **ptr, t_params *params,
+int *is_a_redir, char *buffer);
+char	*extract_command(char **ptr, t_shell *shell, int *is_a_redir);
+int	handle_redirection(char *sub_token, t_cmd_block *block, t_token_type type);
+int	process_sub_token(char *sub_token, t_cmd_block *block, int is_a_redir);
+int			ft_isrediroperator(char c);
+void	set_quotes_state_in_redir(char **curr_char, t_sm *state, int *quotectrl);
+t_token_type	redir_type(char *curr_char);
+void	handle_quotes_and_operators(char **curr_char, t_sm *state,
+char **buffer, t_params *params);
+char	*handle_redirection_or_not(char **ptr, t_params *params,
+int *is_a_redir, char *buffer);
+void	skip_whitespace(char **curr_char, t_sm *state, char **buffer,
+size_t *len);
+int		handle_syntax_error(char **buffer, int quote);
+char	*extrapolate(char **str, t_shell *shell);
+int		fill_cmd_block(t_cmd_block *block, t_dlist *tokens, t_shell *shell);
+void	print_cmd_block(t_cmd_block *cmd_block);
+int		expand_ast(t_ast_node *node, t_shell *shl);
 
 // signal
 void		setup_signal_handlers(void);

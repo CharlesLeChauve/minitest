@@ -1,32 +1,5 @@
 #include "minishell.h"
 
-int	ft_isvalidchar(char c)
-{
-	if (c == '.' || c == '/' || ft_isalpha(c) || c == '*' || c == '?')
-		return (1);
-	return (0);
-}
-
-void	swap_char(char *c1, char *c2)
-{
-	char	tmp;
-
-	tmp = *c1;
-	*c1 = *c2;
-	*c2 = tmp;
-}
-
-void	revstr(char *str)
-{
-	unsigned int	size;
-	unsigned int	i;
-
-	size = ft_strlen(str);
-	i = -1;
-	while (++i < --size)
-		swap_char(&str[i], &str[size]);
-}
-
 void	incr_shlvl(char **var)
 {
 	int		i;
