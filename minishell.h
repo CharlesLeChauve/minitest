@@ -224,6 +224,14 @@ int		is_redir(t_token_type type);
 int		is_command(t_token_type type);
 int		is_operator(t_token_type type);
 
+//wildcards_get_utils.c
+char	*get_stash(char *text);
+int		get_next_slash(char *text);
+char	*get_first_dir(char *str);
+int		get_last_full_dir_idx(char *ptr);
+
+int		match_pattern(char *str, char *pattern);
+
 int		get_heredocs(t_cmd_block *cmd_block);
 
 void	expand_wildcards_in_block(t_cmd_block *block);
