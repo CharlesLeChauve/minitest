@@ -41,9 +41,14 @@ char	*ft_strncpy(char *s1, char *s2, int len)
 
 char	*ft_strcpy(char *dest, const char *src)
 {
-	char *start = dest;
+	char	*start;
 
-	while ((*dest++ = *src++) != '\0')
-		;
+	start = dest;
+	while (*src != '\0')
+	{
+		*dest = *src;
+		dest++;
+		src++;
+	}
 	return (start);
 }
