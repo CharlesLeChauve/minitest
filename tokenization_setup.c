@@ -6,7 +6,7 @@
 /*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 17:03:20 by anporced          #+#    #+#             */
-/*   Updated: 2024/07/02 17:09:15 by tulece           ###   ########.fr       */
+/*   Updated: 2024/07/02 22:45:01 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,26 +59,4 @@ t_token_lst	*cmd_token(t_tkn_info *tkn_info)
 	token->type = command;
 	set_token_text(tkn_info, token);
 	return (token);
-}
-
-t_token_lst	*handle_pipe(t_tkn_info *tkn_info)
-{
-	tkn_info->curr_char++;
-	if (*tkn_info->curr_char == '|')
-	{
-		tkn_info->curr_char++;
-		return (token_new(or_op, "||"));
-	}
-	return (token_new(pipe_op, "|"));
-}
-
-t_token_lst	*handle_ampersand(t_tkn_info *tkn_info)
-{
-	tkn_info->curr_char++;
-	if (*tkn_info->curr_char == '&')
-	{
-		tkn_info->curr_char++;
-		return (token_new(and_op, "&&"));
-	}
-	return (NULL);
 }

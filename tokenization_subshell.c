@@ -3,14 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   tokenization_subshell.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 17:03:25 by anporced          #+#    #+#             */
-/*   Updated: 2024/07/02 17:03:26 by anporced         ###   ########.fr       */
+/*   Updated: 2024/07/02 22:45:05 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+t_token_lst	*handle_pipe(t_tkn_info *tkn_info)
+{
+	tkn_info->curr_char++;
+	if (*tkn_info->curr_char == '|')
+	{
+		tkn_info->curr_char++;
+		return (token_new(or_op, "||"));
+	}
+	return (token_new(pipe_op, "|"));
+}
+
+t_token_lst	*handle_ampersand(t_tkn_info *tkn_info)
+{
+	tkn_info->curr_char++;
+	if (*tkn_info->curr_char == '&')
+	{
+		tkn_info->curr_char++;
+		return (token_new(and_op, "&&"));
+	}
+	return (NULL);
+}
 
 void	read_subshell(t_tkn_info *tkn_info, char **buffer, size_t *len, \
 int *par_lvl)

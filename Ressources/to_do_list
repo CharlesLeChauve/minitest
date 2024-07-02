@@ -13,3 +13,18 @@
 Leaks permission denied (commande)
 
 invalid free cd sans argument
+
+extrapolation a des TOUT PETITS definitely lost
+
+(cat <<END | wc -l && echo bravo) || echo pas bravo
+
+ctrl c dans le here doc avec des parentheses (sans parentheses ya pas de leak) cree des still reachable mais en sortie ya pas de leaks.
+
+minishell (cat <<END)
+a
+b
+c
+^C
+==19975== Invalid free() / delete / delete[] / realloc()
+
+deso mdr
