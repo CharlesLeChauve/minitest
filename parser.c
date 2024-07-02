@@ -1,43 +1,54 @@
 #include "minishell.h"
 
+void	handle_memory_error(void)
+{
+	fprintf(stderr, "Memory allocation failed\n");
+	exit(EXIT_FAILURE);
+}
+
+void	initialize_command_node(t_ast_node *node, char *text, t_dlist *tokens)
+{
+	if (tokens == NULL)
+	{
+		free(node);
+		return ;
+	}
+	node->tokens = tokens;
+	if (text != NULL && text[0] != '\0')
+	{
+		node->value = ft_strdup(text);
+		if (node->value == NULL)
+			handle_memory_error();
+	}
+	else
+		node->value = NULL;
+}
+
+void	initialize_operator_node(t_ast_node *node)
+{
+	node->tokens = NULL;
+	if (node->type == pipe_op)
+		node->value = ft_strdup("|");
+	else if (node->type == and_op)
+		node->value = ft_strdup("&&");
+	else if (node->type == or_op)
+		node->value = ft_strdup("||");
+	if (node->value == NULL)
+		handle_memory_error();
+}
+
 t_ast_node	*create_node(t_token_type type, char *text, t_dlist *tokens)
 {
 	t_ast_node	*node;
 
 	node = (t_ast_node *)malloc(sizeof(t_ast_node));
 	if (node == NULL)
-	{
-		fprintf(stderr, "Memory allocation failed\n");
-		exit(EXIT_FAILURE);
-	}
+		handle_memory_error();
 	node->type = type;
 	if (type == command || type == subshell)
-	{
-		if (tokens == NULL)
-			return (NULL);
-		node->tokens = tokens;
-		if (text != NULL && text[0] != '\0')
-		{
-			node->value = ft_strdup(text);
-			if (node->value == NULL)
-			{
-				fprintf(stderr, "Memory allocation failed\n");
-				exit(EXIT_FAILURE);
-			}
-		}
-		else
-			node->value = NULL;
-	}
+		initialize_command_node(node, text, tokens);
 	else
-	{
-		node->tokens = NULL;
-		if (node->type == pipe_op)
-			node->value = ft_strdup("|");
-		if (node->type == and_op)
-			node->value = ft_strdup("&&");
-		if (node->type == or_op)
-			node->value = ft_strdup("||");
-	}
+		initialize_operator_node(node);
 	node->left = NULL;
 	node->right = NULL;
 	node->cmd_block = NULL;
@@ -74,38 +85,55 @@ t_ast_node	*create_subtree(t_dlist *op_node, t_dlist *tokens)
 	return (node);
 }
 
-t_ast_node	*parse_tokens(t_dlist *tokens)
+void	find_last_operators(t_dlist *tokens,
+t_dlist **last_logical_op, t_dlist **last_op)
 {
-	t_dlist	*current;
-	t_dlist	*last_logical_op;
-	t_dlist	*last_op;
+	t_dlist		*current;
+	t_token_lst	*token;
 
 	current = tokens;
-	last_logical_op = NULL;
-	last_op = NULL;
-	if (tokens == NULL)
-		return (NULL);
 	while (current != NULL)
 	{
-		if (((t_token_lst *)(current->content))->type == and_op ||
-			((t_token_lst *)(current->content))->type == or_op ||
-			((t_token_lst *)(current->content))->type == pipe_op)
+		token = (t_token_lst *)(current->content);
+		if (token->type == and_op || token->type == or_op \
+			|| token->type == pipe_op)
 		{
-			last_op = current;
-			if (((t_token_lst *)(current->content))->type == and_op ||
-				((t_token_lst *)(current->content))->type == or_op)
-				last_logical_op = current;
+			*last_op = current;
+			if (token->type == and_op || token->type == or_op)
+				*last_logical_op = current;
 		}
 		current = current->next;
 	}
+}
+
+t_ast_node	*create_subtree_based_on_operators(t_dlist *last_logical_op,
+t_dlist *last_op, t_dlist *tokens)
+{
+	t_token_lst	*first_token;
+
 	if (last_logical_op != NULL)
 		return (create_subtree(last_logical_op, tokens));
 	else if (last_op != NULL)
 		return (create_subtree(last_op, tokens));
-	if (((t_token_lst *)(tokens->content))->type == subshell)
-		return (create_node(subshell, ((t_token_lst *)(tokens->content))->text, tokens));
+	first_token = (t_token_lst *)(tokens->content);
+	if (first_token->type == subshell)
+		return (create_node(subshell, first_token->text, tokens));
 	else
-		return (create_node(command, ((t_token_lst *)(tokens->content))->text, tokens));
+		return (create_node(command, first_token->text, tokens));
+}
+
+t_ast_node	*parse_tokens(t_dlist *tokens)
+{
+	t_dlist	*last_logical_op;
+	t_dlist	*last_op;
+
+	last_logical_op = NULL;
+	last_op = NULL;
+	if (tokens == NULL)
+		return (NULL);
+	find_last_operators(tokens, &last_logical_op, &last_op);
+	return (create_subtree_based_on_operators(last_logical_op,
+			last_op, tokens));
 }
 
 // void	print_logical_node(t_ast_node *node)
