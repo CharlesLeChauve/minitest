@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tab_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/02 15:24:04 by tgibert           #+#    #+#             */
+/*   Updated: 2024/07/02 15:24:35 by tgibert          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void remove_from_tab(char ***tab, int index, int free_ctl)
+void	remove_from_tab(char ***tab, int index, int free_ctl)
 {
-	char **temp;
-	int i;
+	char	**temp;
+	int		i;
 
 	if (tab == NULL || *tab == NULL || (*tab)[index] == NULL)
 		return ;
@@ -91,7 +103,8 @@ void	add_strs_to_strtab(char **strs, char ***strtab)
 	while (strs[arg_size])
 		arg_size++;
 	total_size = env_size + arg_size;
-	*strtab = ft_realloc(*strtab, (env_size) * sizeof (char *), (total_size + 1) * sizeof (char *));
+	*strtab = ft_realloc(*strtab, (env_size) * sizeof (char *), \
+		(total_size + 1) * sizeof (char *));
 	while (i < arg_size)
 	{
 		(*strtab)[env_size + i] = ft_strdup(strs[i]);
