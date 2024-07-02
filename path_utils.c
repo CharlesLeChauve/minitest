@@ -1,5 +1,21 @@
 #include "minishell.h"
 
+int	path_start(char *str)
+{
+	if (*str == '.')
+	{
+		if (*(str + 1) == '.' && *(str + 2) == '/')
+			return (1);
+		else if (*(str + 1) == '/')
+			return (1);
+		else
+			return (0);
+	}
+	if (*str == '/')
+		return (1);
+	return (0);
+}
+
 char	*get_env_path(char **env)
 {
 	int		i;

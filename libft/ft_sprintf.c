@@ -18,6 +18,11 @@ int	sputstr(char *str, char *dst_str, int index)
 	int	i;
 
 	i = 0;
+	if (!str)
+	{
+		ft_strcat(dst_str, "(null)");
+		return (6);
+	}
 	while (str[i])
 	{
 		dst_str[index + i] = str[i];

@@ -1,22 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/02 07:07:46 by tgibert           #+#    #+#             */
+/*   Updated: 2024/07/02 07:56:48 by tgibert          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <errno.h>
-
-int	path_start(char *str)
-{
-	if (*str == '.')
-	{
-		if (*(str + 1) == '.' && *(str + 2) == '/')
-			return (1);
-		else if (*(str + 1) == '/')
-			return (1);
-		else
-			return (0);
-	}
-	if (*str == '/')
-		return (1);
-	return (0);
-}
-
 
 int	exec_command(t_shell *shl, t_cmd_block *cmd_block)
 {
@@ -66,6 +61,15 @@ int	exec_not_builtin(t_cmd_block *cmd_block, t_shell *shl)
 	return (ret_val);
 }
 
+int	cmd_and_restore(t_cmd_block *cmd_block, t_shell *shl, int fd_out, int fd_in)
+{
+	int	status;
+
+	status = exec_not_builtin(cmd_block, shl);
+	restore_stds_and_close_dup(fd_out, fd_in, -1);
+	return (status);
+}
+
 int	exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 {
 	int				status;
@@ -83,16 +87,13 @@ int	exec_command_and_redirs(t_cmd_block *cmd_block, t_shell *shl)
 	}
 	if (is_a_builtin(cmd_block->exec_tab[0]))
 	{
-		status = do_the_builtin(shl, &(shl->env), cmd_block->exec_tab[0], cmd_block->exec_tab);
-		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
-		return(status);
-	}
-	else
-	{
-		status = exec_not_builtin(cmd_block, shl);
+		status = do_the_builtin(shl, &(shl->env), \
+			cmd_block->exec_tab[0], cmd_block->exec_tab);
 		restore_stds_and_close_dup(save.std_out, save.std_in, -1);
 		return (status);
 	}
+	else
+		return (cmd_and_restore(cmd_block, shl, save.std_out, save.std_in));
 	return (-1);
 }
 
@@ -101,28 +102,23 @@ int	exec_ast(t_ast_node *ast, t_shell *shl)
 	if (!ast)
 		return (1);
 	if (ast->type == subshell)
-		return (ft_subshell(((t_token_lst *)(ast->tokens->content))->text, shl->env));
+		return (ft_subshell(((t_token_lst *)(ast->tokens->content))->text, \
+			shl->env));
 	else if (ast->type == pipe_op)
-	{
-		shl->last_ret = handle_pipes(ast, shl);
-		return (shl->last_ret);
-	}
+		return (handle_pipes(ast, shl));
 	else if (ast->type == and_op)
 	{
-		shl->last_ret  = exec_ast(ast->left, shl);
+		shl->last_ret = exec_ast(ast->left, shl);
 		if (!shl->last_ret)
-		{
-			shl->last_ret  = exec_ast(ast->right, shl);
-			return (shl->last_ret );
-		}
+			shl->last_ret = exec_ast(ast->right, shl);
 		return (shl->last_ret);
 	}
 	else if (ast->type == or_op)
 	{
 		shl->last_ret = exec_ast(ast->left, shl);
-		if (shl->last_ret )
-			shl->last_ret  = exec_ast(ast->right, shl);
-		return (shl->last_ret );
+		if (shl->last_ret)
+			shl->last_ret = exec_ast(ast->right, shl);
+		return (shl->last_ret);
 	}
 	else
 		return (exec_command_and_redirs(ast->cmd_block, shl));

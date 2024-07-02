@@ -213,6 +213,11 @@ void	exit_exec(t_shell *shl, int ex_no);
 void	exec_error(char *str, int mode);
 void	exec_path_access(t_shell *shl, char *cmd);
 
+//type_utils
+int		is_redir(t_token_type type);
+int		is_command(t_token_type type);
+int		is_operator(t_token_type type);
+
 int		get_heredocs(t_cmd_block *cmd_block);
 
 void	expand_wildcards_in_block(t_cmd_block *block);
@@ -229,5 +234,6 @@ int		ft_subshell(char *input, char *envp[]);
 char	**ft_cpy_strtab(char **tab);
 char	*extract_var_id(char *arg);
 int		get_last_full_dir_idx(char *ptr);
+int		path_start(char *str);
 
 #endif
