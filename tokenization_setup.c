@@ -3,14 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   tokenization_setup.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 17:03:20 by anporced          #+#    #+#             */
-/*   Updated: 2024/07/02 17:03:21 by anporced         ###   ########.fr       */
+/*   Updated: 2024/07/02 17:09:15 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	init_tkn_info(t_tkn_info *tkn_info, char *input)
+{
+	tkn_info->input = ft_strdup(input);
+	tkn_info->curr_char = tkn_info->input;
+	tkn_info->token_lst = NULL;
+	tkn_info->state = reg;
+}
 
 int	break_token(t_tkn_info *tkn_info)
 {

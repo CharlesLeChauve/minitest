@@ -132,6 +132,7 @@ void	set_token_text(t_tkn_info *tkn_info, t_token_lst *token);
 t_token_lst	*cmd_token(t_tkn_info *tkn_info);
 t_token_lst	*handle_pipe(t_tkn_info *tkn_info);
 t_token_lst	*handle_ampersand(t_tkn_info *tkn_info);
+void	init_tkn_info(t_tkn_info *tkn_info, char *input);
 int			ft_isshelloperator(char c);
 void	set_quotes_state(t_tkn_info *tkn_info);
 void	first_read_quotes(t_tkn_info *tkn_info);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenization.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 17:03:29 by anporced          #+#    #+#             */
-/*   Updated: 2024/07/02 17:03:31 by anporced         ###   ########.fr       */
+/*   Updated: 2024/07/02 17:08:39 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,20 @@ t_token_lst	*next_token(t_tkn_info *tkn_info)
 	return (cmd_token(tkn_info));
 }
 
-void	init_tkn_info(t_tkn_info *tkn_info, char *input)
+t_token_lst	*token_new(t_token_type type, void *content)
 {
-	tkn_info->input = ft_strdup(input);
-	tkn_info->curr_char = tkn_info->input;
-	tkn_info->token_lst = NULL;
-	tkn_info->state = reg;
+	t_token_lst	*token;
+
+	token = (t_token_lst *)malloc(sizeof(t_token_lst));
+	token->type = type;
+	if (content == NULL)
+	{
+		token->text = NULL;
+		return (token);
+	}
+	else
+		token->text = ft_strdup((const char *)content);
+	return (token);
 }
 
 void	handle_error_and_cleanup(t_tkn_info *tkn_info, const char *error_msg)
