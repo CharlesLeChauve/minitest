@@ -56,3 +56,12 @@ char	*get_first_dir(char *str)
 		i++;
 	return (ft_strndup(str, i));
 }
+
+char	*get_evaluation(char *suffix, char **stash)
+{
+	*stash = get_stash(suffix);
+	if (*stash)
+		return (get_first_dir(suffix));
+	else
+		return (suffix);
+}

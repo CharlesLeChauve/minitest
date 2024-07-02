@@ -52,6 +52,12 @@ typedef enum {
 	OR
 } NodeType;
 
+typedef struct s_wc_strs
+{
+	char	*eval;
+	char	*stash;
+}			t_wc_strs;
+
 typedef struct s_std_fd_save
 {
 	int	std_out;
@@ -103,6 +109,7 @@ typedef struct s_shell
 	int			last_ret;
 	char		**env;
 }	t_shell;
+
 // utils
 void		swap_char(char *c1, char *c2);
 void		revstr(char *str);
@@ -229,6 +236,7 @@ char	*get_stash(char *text);
 int		get_next_slash(char *text);
 char	*get_first_dir(char *str);
 int		get_last_full_dir_idx(char *ptr);
+char	*get_evaluation(char *suffix, char **stash);
 
 int		match_pattern(char *str, char *pattern);
 
