@@ -24,6 +24,12 @@
 
 extern volatile sig_atomic_t g_interrupted;
 
+typedef struct s_params
+{
+    size_t  len;
+    int     quote;
+}   t_params;
+
 typedef enum e_token_type
 {
 	command, redir_in, redir_out, redir_app, heredoc, pipe_op, fd, file_path, and_op, or_op, subshell, eol
