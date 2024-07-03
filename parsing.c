@@ -196,7 +196,7 @@ int	ft_subshell(char *input, char *envp[])
 		if (!shl.ast || expand_ast(shl.ast, &shl))
 		{
 			shl.last_ret = 2;
-			free(input);
+			// free(input);
 			input = NULL;
 			clean_shell_instance(&shl);
 			ft_free_tab(shl.env);
@@ -237,9 +237,7 @@ int	main(int argc, char *argv[], char *envp[])
 			add_history(input);
 			shl.token_lst = tokenize(input);
 			verif = verify_tokens(shl.token_lst);
-			if (verif == -1)
-				continue ;
-			else if (!verif)
+			if (!verif)
 			{
 				ft_dlstclear(&(shl.token_lst), del_tkn_node);
 				clean_shell_instance(&shl);

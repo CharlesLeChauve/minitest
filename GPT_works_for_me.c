@@ -9,7 +9,8 @@ void	create_exec_tab(t_cmd_block *cmd_block)
 	i = ft_lstsize(cmd_block->arg);
 	cmd_block->exec_tab = (char **)malloc((i + 2) * sizeof(char *));
 	cmd_block->exec_tab[i + 1] = NULL;
-	if (!cmd_block->exec_tab) {
+	if (!cmd_block->exec_tab)
+	{
 		perror("malloc");
 		exit(EXIT_FAILURE);
 	}

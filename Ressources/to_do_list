@@ -3,28 +3,16 @@
 
 >>|<< On doit pouvoir regler a la tokenization, si on rencontre un logical op juste derriere un redir_op...
 
-- redir out : Si directory dans le path, on ne cree pas le fichier si le directory n'existe pas et on renvoit une erreur
-
-
-
-!!! Leak echo $?
 
 
 Leaks permission denied (commande)
 
-invalid free cd sans argument
-
-extrapolation a des TOUT PETITS definitely lost
 
 (cat <<END | wc -l && echo bravo) || echo pas bravo
 
-ctrl c dans le here doc avec des parentheses (sans parentheses ya pas de leak) cree des still reachable mais en sortie ya pas de leaks.
+//Balek ctrl c dans le here doc avec des parentheses (sans parentheses ya pas de leak) cree des still reachable mais en sortie ya pas de leaks.
+--->D'ailleurs c'est toujours le pipe qui les provoque ^^
 
-minishell (cat <<END)
-a
-b
-c
-^C
-==19975== Invalid free() / delete / delete[] / realloc()
+deso mdr ^^
 
-deso mdr
+8h45-12h  14h-18h
