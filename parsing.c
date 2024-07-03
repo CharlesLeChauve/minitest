@@ -71,11 +71,11 @@ char	*build_prompt(void)
 char	*prompted_readline(void)
 {
 	char	*input;
-	//char *prompt;
+	char *prompt;
 
-	//prompt = build_prompt();
-	input = readline("minishell ");
-	//free(prompt);
+	prompt = build_prompt();
+	input = readline(prompt);
+	free(prompt);
 	return (input);
 }
 
