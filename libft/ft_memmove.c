@@ -32,28 +32,3 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 		ft_memcpy(dest, src, n);
 	return (dest);
 }
-/*int main() {
-    char buffer[100] = "Hello, World!";
-
-    // Cas de chevauchement où la source est avant la destination
-    char *src1 = buffer;
-    char *dest1 = buffer + 7;  // Destination chevauchant source
-
-    ft_memmove(dest1, src1, strlen(src1) + 1);
-
-    printf("Après chevauchement src1 -> dest1 : %s\n", dest1);
-
-	char buffer2[100] = "Hello, World!";
-
-    // Cas de chevauchement où la destination est avant la source
-    char *src2 = buffer2 + 3;  // Source chevauchant destination
-    char *dest2 = buffer2;
-
-	printf("%s\n", src2);
-
-    ft_memmove(dest2, src2, strlen(src2) + 1);
-
-    printf("Après chevauchement src2 -> dest2 : %s\n", dest2);
-
-    return 0;
-}*/
