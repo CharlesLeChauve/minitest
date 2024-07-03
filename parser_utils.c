@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 17:02:58 by anporced          #+#    #+#             */
-/*   Updated: 2024/07/03 15:27:33 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/03 16:52:40 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	create_exec_tab(t_cmd_block *cmd_block)
 
 void	handle_memory_error(void)
 {
-	fprintf(stderr, "Memory allocation failed\n");
+	ft_putstr_fd("Memory allocation failed\n", STDERR_FILENO);
 	exit(EXIT_FAILURE);
 }
 

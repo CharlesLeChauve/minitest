@@ -51,7 +51,6 @@ t_dlist	*ft_dlstnew(void *content);
 t_list	*ft_lstlast(t_list *lst);
 t_dlist	*ft_dlstlast(t_dlist *lst);
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
-void	ft_lst_insert(t_list *target_node, t_list *new);
 char	*ft_itoa(int n);
 void	ft_strappend(char **dest, const char *src, size_t *len);
 char	*ft_strdup(const char *s);
@@ -104,12 +103,6 @@ int		ft_isspace(int c);
 int		ft_lstsize(t_list *lst);
 int		ft_sprintf(char *str, const char *input, ...);
 char	*ft_strndup(const char *s, size_t n);
-t_reg	*get_main_reg(void);
-void	ft_free_all(void);
-void	*ft_malloc(size_t size);
-void	*ft_calloc(size_t count, size_t size);
-void	ft_free(void *ptr);
-void	*ft_realloc2(void *ptr, size_t size);
 char	*ft_strncpy(char *s1, char *s2, int len);
 
 #endif //LIBFT_H
