@@ -46,6 +46,14 @@ typedef enum {
 	OR
 } NodeType;
 
+typedef struct s_heredoc
+{
+	char				*hd;
+	int					tty_fd;
+	int					fd;
+	struct sigaction	old_sa;
+}						t_heredoc;
+
 typedef struct s_wc_strs
 {
 	char	*eval;
@@ -276,6 +284,16 @@ char	*get_evaluation(char *suffix, char **stash);
 int		check_export_arg(char *arg);
 void	print_export_env(char **env);
 char	*export_format(char *str);
+
+//heredoc_signal.c
+void	restore_signal_handlers(struct sigaction old_sa);
+struct sigaction	*setup_signal_handlers_h(struct sigaction *old_sa);
+
+//heredoc_utils.c
+int		handle_interruption(char *nl, t_heredoc *heredoc);
+int		handle_end_of_file(t_heredoc *heredoc);
+int		handle_match_limiter(char *nl, t_heredoc *heredoc, char *limiter);
+int		open_tty(int *fd);
 
 int		match_pattern(char *str, char *pattern);
 

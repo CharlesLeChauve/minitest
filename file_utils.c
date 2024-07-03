@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:16 by tgibert           #+#    #+#             */
-/*   Updated: 2024/07/03 07:48:50 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/03 10:48:16 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 int	check_acces(char *file, t_open_mode mode)
 {
-	char err[128];
+	char	err[128];
 
 	ft_bzero(err, 128);
-	if ((mode == truncate_o || mode == append_o) && access(file, F_OK) == 0 && access(file, W_OK) != 0)
+	if ((mode == truncate_o || mode == append_o) \
+		&& access(file, F_OK) == 0 && access(file, W_OK) != 0)
 	{
 		ft_sprintf(err, "tash: %s: Permission denied\n", file);
 		ft_putstr_fd(err, 2);
@@ -59,6 +60,7 @@ int	open_mode(char *path, t_open_mode mode)
 	}
 	return (-1);
 }
+
 int	get_last_slash(char *ptr)
 {
 	int		idx;
@@ -77,8 +79,8 @@ int	get_last_slash(char *ptr)
 
 int	open_write(char *file, t_open_mode mode)
 {
-	int	fd;
-	int	i;
+	int		fd;
+	int		i;
 	char	err[128];
 	char	*tmp_dir;
 
@@ -101,7 +103,7 @@ int	open_write(char *file, t_open_mode mode)
 			ft_sprintf(err, "tash: %s: Permission denied\n", file);
 			ft_putstr_fd(err, 2);
 			free(tmp_dir);
-			return(-2);
+			return (-2);
 		}
 		free(tmp_dir);
 	}

@@ -1,88 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   new_heredoc.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/03 10:37:52 by tgibert           #+#    #+#             */
+/*   Updated: 2024/07/03 10:37:54 by tgibert          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-volatile sig_atomic_t	g_interrupted = 0;
-
-typedef struct s_heredoc
-{
-	char				*hd;
-	int					tty_fd;
-	int					fd;
-	struct sigaction	old_sa;
-}						t_heredoc;
-
-void	handle_sigint_h(int sig)
-{
-	(void)sig;
-	g_interrupted = 1;
-	write(1, "\n", 1);
-}
-
-struct sigaction	*setup_signal_handlers_h(struct sigaction *old_sa)
-{
-	struct sigaction	sa_int;
-
-	sa_int.sa_handler = handle_sigint_h;
-	sigemptyset(&sa_int.sa_mask);
-	sa_int.sa_flags = 0;
-	if (sigaction(SIGINT, &sa_int, old_sa) == -1)
-	{
-		perror("sigaction");
-		exit(EXIT_FAILURE);
-	}
-	return (old_sa);
-}
-
-void	restore_signal_handlers(struct sigaction old_sa)
-{
-	g_interrupted = 0;
-	if (sigaction(SIGINT, &old_sa, NULL) == -1)
-	{
-		perror("sigaction");
-		exit(EXIT_FAILURE);
-	}
-}
-
-int	handle_interruption(char *nl, t_heredoc *heredoc)
-{
-	free(nl);
-	close(heredoc->tty_fd);
-	free(heredoc->hd);
-	g_interrupted = 0;
-	restore_signal_handlers(heredoc->old_sa);
-	return (2);
-}
-
-int	handle_end_of_file(t_heredoc *heredoc)
-{
-	ft_putstr_fd("Error : End Of File before finding here_doc LIMITER\n", 2);
-	close(heredoc->tty_fd);
-	ft_putstr_fd(heredoc->hd, heredoc->fd);
-	free(heredoc->hd);
-	restore_signal_handlers(heredoc->old_sa);
-	return (1);
-}
-
-int	handle_match_limiter(char *nl, t_heredoc *heredoc, char *limiter)
-{
-	(void)limiter;
-	free(nl);
-	close(heredoc->tty_fd);
-	ft_putstr_fd(heredoc->hd, heredoc->fd);
-	free(heredoc->hd);
-	restore_signal_handlers(heredoc->old_sa);
-	return (0);
-}
-
-int	open_tty(int *fd)
-{
-	*fd = open("/dev/tty", O_RDONLY);
-	if (*fd == -1)
-	{
-		perror("open");
-		return (1);
-	}
-	return (0);
-}
 
 int	read_heredoc(char *limiter, int fd)
 {
@@ -132,10 +60,10 @@ int	get_hd_no_1(void)
 	return (hd);
 }
 
-int handle_heredoc(t_token_lst *token, int hd_no_1, int *hd_no_2)
+int	handle_heredoc(t_token_lst *token, int hd_no_1, int *hd_no_2)
 {
-	char    tmp_name[128];
-	int     tmp_fd;
+	char	tmp_name[128];
+	int		tmp_fd;
 
 	ft_bzero(tmp_name, 128);
 	ft_sprintf(tmp_name, ".heredoc%d.%d", hd_no_1, *hd_no_2);
@@ -161,9 +89,9 @@ int handle_heredoc(t_token_lst *token, int hd_no_1, int *hd_no_2)
 int	get_heredocs(t_cmd_block *cmd_block)
 {
 	t_list	*current;
-	int			hd_no_1;
-	int			hd_no_2;
-	int			ret;
+	int		hd_no_1;
+	int		hd_no_2;
+	int		ret;
 
 	current = cmd_block->redirs;
 	hd_no_1 = get_hd_no_1();
@@ -181,46 +109,3 @@ int	get_heredocs(t_cmd_block *cmd_block)
 	}
 	return (0);
 }
-
-// int	get_heredocs(t_cmd_block *cmd_block)
-// {
-// 	t_list	*current;
-// 	char	tmp_name[128];
-// 	int		tmp_fd;
-// 	int		hd_no_1;
-// 	int		hd_no_2;
-
-// 	current = cmd_block->redirs;
-// 	hd_no_1 = get_hd_no_1();
-// 	hd_no_2 = 0;
-// 	while (current)
-// 	{
-// 		if (((t_token_lst *)(current->content))->type == heredoc)
-// 		{
-// 			ft_bzero(tmp_name, 128);
-// 			ft_sprintf(tmp_name, ".heredoc%d.%d", hd_no_1, hd_no_2);
-// 			tmp_fd = open(tmp_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-// 			if (tmp_fd == -1)
-// 			{
-// 				perror("open");
-// 				free(tmp_name);
-// 				return (-1);
-// 			}
-// 			if (read_heredoc(((t_token_lst *)(current->content))->text, 
-// 				tmp_fd) == 2)
-// 			{
-// 				close(tmp_fd);
-// 				free(tmp_name);
-// 				return (1);
-// 			}
-// 			close(tmp_fd);
-// 			((t_token_lst *)(current->content))->type = redir_in;
-// 			free(((t_token_lst *)(current->content))->text);
-// 			((t_token_lst *)(current->content))->text = ft_strdup(tmp_name);
-// 			hd_no_2++;
-// 		}
-// 		current = current->next;
-// 	}
-// 	free(tmp_name);
-// 	return (0);
-// }
