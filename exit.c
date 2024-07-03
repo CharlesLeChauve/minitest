@@ -1,20 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/03 14:08:28 by anporced          #+#    #+#             */
+/*   Updated: 2024/07/03 14:08:29 by anporced         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-int	ft_is_numeric(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (str == NULL || *str == '\0')
-		return (0);
-	while (str[i])
-	{
-		if (!ft_isdigit(str[i]))
-			return (0);
-		i++;
-	}
-	return (1);
-}
 
 void	exit_with_message(t_shell *shl, int exit_code,
 const char *message, int fd)

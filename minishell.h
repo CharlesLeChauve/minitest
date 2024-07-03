@@ -258,6 +258,7 @@ int is_a_builtin(char *command);
 int		heredoc_handle(char *limiter, t_std_fd_save save);
 
 int		wait_status(pid_t pid);
+int		ft_is_numeric(char *str);
 int		ft_exit(char **args, t_shell *shl);
 
 //echo.c

@@ -13,7 +13,7 @@ SRCS    =   parsing.c signal.c tokenization.c parser.c utils_check.c env.c dirs_
 			env_utils.c exit.c echo.c new_heredoc.c expand_wildcard.c tab_utils2.c exec_utils.c type_utils.c\
 			ft_sort_wordlist.c match_pattern.c wildcards_get_utils.c parser_utils.c expansing_redirs.c expansing_redirs_utils.c\
 			expansing_extrapolation.c expansing_cmd.c expansing_subtoken.c tokenization_subshell.c tokenization_utils.c tokenization_setup.c\
-			utils.c export_utils.c heredoc_signal.c heredoc_utils.c
+			utils.c export_utils.c heredoc_signal.c heredoc_utils.c exit_utils.c
 
 BNS_SRC =   pipex_bonus.c utils.c utils_bonus.c
 
