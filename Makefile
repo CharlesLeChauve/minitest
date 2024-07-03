@@ -9,7 +9,7 @@ LK_FLAG =   -fsanitize=address -fsanitize=leak
 NAME    =   minishell
 
 SRCS    =   parsing.c signal.c tokenization.c parser.c utils_check.c env.c dirs_handler.c expansing.c exec.c\
-			GPT_works_for_me.c pipes.c tab_utils.c path_utils.c redirs.c file_utils.c exec_actions.c export.c\
+			pipes.c tab_utils.c path_utils.c redirs.c file_utils.c exec_actions.c export.c\
 			env_utils.c exit.c echo.c new_heredoc.c expand_wildcard.c tab_utils2.c exec_utils.c type_utils.c\
 			ft_sort_wordlist.c match_pattern.c wildcards_get_utils.c parser_utils.c expansing_redirs.c expansing_redirs_utils.c\
 			expansing_extrapolation.c expansing_cmd.c expansing_subtoken.c tokenization_subshell.c tokenization_utils.c tokenization_setup.c\
