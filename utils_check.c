@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_check.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 17:03:38 by anporced          #+#    #+#             */
-/*   Updated: 2024/07/02 17:03:39 by anporced         ###   ########.fr       */
+/*   Updated: 2024/07/03 09:22:23 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,15 +83,8 @@ int	verify_token(t_dlist *current, t_token_lst *token)
 			return (0);
 	}
 	else if (token->type == subshell)
-	{
 		if (check_sub_syntax(current, token))
 			return (0);
-	}
-	else if (current->next \
-		&& ((t_token_lst *)current->next->content)->type == pipe_op)
-		if (!current->next->next || \
-			!is_command(((t_token_lst *)current->next->next->content)->type))
-			return (-1);
 	return (1);
 }
 
