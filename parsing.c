@@ -143,9 +143,7 @@ int	ft_subshell(char *input, char *envp[])
 	{
 		shl.token_lst = tokenize(input);
 		verif = verify_tokens(shl.token_lst);
-		if (verif == -1)
-			return (1) ;
-		else if (!verif)
+		if (!verif)
 		{
 			ft_dlstclear(&(shl.token_lst), del_tkn_node);
 			clean_shell_instance(&shl);
@@ -172,57 +170,70 @@ int	ft_subshell(char *input, char *envp[])
 	return (shl.last_ret);
 }
 
-int	main(int argc, char *argv[], char *envp[])
+int	treat_input(char *input, t_shell *shl, int *verif)
+{
+	add_history(input);
+	shl->token_lst = tokenize(input);
+	*verif = verify_tokens(shl->token_lst);
+	if (!*verif)
+	{
+		ft_dlstclear(&(shl->token_lst), del_tkn_node);
+		clean_shell_instance(shl);
+		shl->last_ret = 2;
+		return (1);
+	}
+	shl->ast = parse_tokens(shl->token_lst);
+	if (!shl->ast || expand_ast(shl->ast, shl))
+	{
+		shl->last_ret = 1;
+		clean_shell_instance(shl);
+		return (1);
+	}
+	shl->last_ret = exec_ast(shl->ast, shl);
+	clean_shell_instance(shl);
+	return (0);
+}
+
+int get_and_treat_input(t_shell *shl, int *verif)
 {
 	char	*input;
+
+	input = prompted_readline();
+	if (!input)
+		return (1) ;
+	if (input && *input)
+	{
+		if (treat_input(input, shl, verif))
+		{
+			free(input);
+			return (2) ;
+		}
+	}
+	free(input);
+	return (0);
+}
+
+int	main(int argc, char *argv[], char *envp[])
+{
 	t_shell	shl;
 	int		verif;
+	int		status;
 
 	if (argc > 1)
-		printf("Usage : %s. point. pas d'argument quoi.\n", argv[0]);
+		printf("Usage : %s (No args)\n", argv[0]);
 	signal(SIGQUIT, SIG_IGN);
 	setup_signal_handlers();
-	input = NULL;
 	shl.env = set_env(envp);
 	shl.last_ret = 0;
 	shl.ast = NULL;
 	verif = 0;
 	while (1)
 	{
-		if (input)
-			input = ft_strjoin_free(input, readline("> "), 1);
-		else
-			input = prompted_readline();
-		if (!input)
-			break ;
-		if (input && *input)
-		{
-			add_history(input);
-			shl.token_lst = tokenize(input);
-			verif = verify_tokens(shl.token_lst);
-			if (!verif)
-			{
-				ft_dlstclear(&(shl.token_lst), del_tkn_node);
-				clean_shell_instance(&shl);
-				free(input);
-				shl.last_ret = 2;
-				input = NULL;
-				continue ;
-			}
-			shl.ast = parse_tokens(shl.token_lst);
-			if (!shl.ast || expand_ast(shl.ast, &shl))
-			{
-				shl.last_ret = 1;
-				free(input);
-				input = NULL;
-				clean_shell_instance(&shl);
-				continue;
-			}
-			shl.last_ret = exec_ast(shl.ast, &shl);
-			clean_shell_instance(&shl);
-		}
-		free(input);
-		input = NULL;
+		status = get_and_treat_input(&shl, &verif);
+		if (status == 1)
+			break;
+		if (status == 2)
+			continue ;
 	}
 	ft_free_tab(shl.env);
 	return (0);
