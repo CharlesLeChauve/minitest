@@ -28,7 +28,7 @@
 # include "./libft/libft.h"
 # define CWD_BUFF 256
 # define TASH_PROMPT_S "\001\033[0;92m\002tash \001\033[0;94m\002"
-# define TASH_PROMPT_E "\001\033[0;93m\002 > \001\033[0;37m\002"
+# define TASH_PROMPT_E "\001\033[0;93m\002$ \001\033[0;37m\002"
 
 extern volatile sig_atomic_t	g_interrupted;
 
