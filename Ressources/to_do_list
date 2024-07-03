@@ -1,9 +1,0 @@
-
-(cat <<END | wc -l && echo bravo) || echo pas bravo
-
-//Balek ctrl c dans le here doc avec des parentheses (sans parentheses ya pas de leak) cree des still reachable mais en sortie ya pas de leaks.
---->D'ailleurs c'est toujours le pipe qui les provoque ^^
-
-deso mdr ^^
-
-8h45-12h  14h-18h
