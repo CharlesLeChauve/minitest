@@ -8,12 +8,50 @@ LK_FLAG =   -fsanitize=address -fsanitize=leak
 
 NAME    =   minishell
 
-SRCS    =   parsing.c signal.c tokenization.c parser.c utils_check.c env.c dirs_handler.c expansing.c exec.c\
-			pipes.c tab_utils.c path_utils.c redirs.c file_utils.c exec_actions.c export.c\
-			env_utils.c exit.c echo.c new_heredoc.c expand_wildcard.c tab_utils2.c exec_utils.c type_utils.c\
-			ft_sort_wordlist.c match_pattern.c wildcards_get_utils.c parser_utils.c expansing_redirs.c expansing_redirs_utils.c\
-			expansing_extrapolation.c expansing_cmd.c expansing_subtoken.c tokenization_subshell.c tokenization_utils.c tokenization_setup.c\
-			utils.c export_utils.c heredoc_signal.c heredoc_utils.c exit_utils.c core_utils.c clean.c
+SRCS	=	srcs/parsing.c \
+			srcs/signal.c \
+			srcs/tokenization.c \
+			srcs/parser.c \
+			srcs/utils_check.c \
+			srcs/env.c \
+			srcs/dirs_handler.c \
+			srcs/expansing.c \
+			srcs/exec.c \
+			srcs/pipes.c \
+			srcs/tab_utils.c \
+			srcs/path_utils.c \
+			srcs/redirs.c \
+			srcs/file_utils.c \
+			srcs/exec_actions.c \
+			srcs/export.c \
+			srcs/env_utils.c \
+			srcs/exit.c \
+			srcs/echo.c \
+			srcs/new_heredoc.c \
+			srcs/expand_wildcard.c \
+			srcs/tab_utils2.c \
+			srcs/exec_utils.c \
+			srcs/type_utils.c \
+			srcs/ft_sort_wordlist.c \
+			srcs/match_pattern.c \
+			srcs/wildcards_get_utils.c \
+			srcs/parser_utils.c \
+			srcs/expansing_redirs.c \
+			srcs/expansing_redirs_utils.c \
+			srcs/expansing_extrapolation.c \
+			srcs/expansing_cmd.c \
+			srcs/expansing_subtoken.c \
+			srcs/tokenization_subshell.c \
+			srcs/tokenization_utils.c \
+			srcs/tokenization_setup.c \
+			srcs/utils.c \
+			srcs/export_utils.c \
+			srcs/heredoc_signal.c \
+			srcs/heredoc_utils.c \
+			srcs/exit_utils.c \
+			srcs/core_utils.c \
+			srcs/clean.c
+
 
 BNS_SRC =   pipex_bonus.c utils.c utils_bonus.c
 
