@@ -69,7 +69,6 @@ bonus   :  	${OBJS}
 
 sanit   :   ${OBJS}
 			@${MAKE} -C libft
-			# Correction de LK_FLAG en LK_FLAGS et ajout des flags pour Readline
 			@${CC} ${CFLAGS} ${LK_FLAG} ${OBJS} -o ${NAME} ${READLINE_INC} ${READLINE_LIB} -L./libft/ -lft
 
 %.o     :   %.c
