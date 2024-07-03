@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:17:36 by tgibert           #+#    #+#             */
-/*   Updated: 2024/07/02 16:30:47 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/03 07:36:32 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,7 @@ void	act_env_pwd(char ***env)
 
 int	cd_err(void)
 {
-	char	err[128];
-
-	ft_bzero(err, 128);
-	ft_sprintf(err, "tash: cd: too many arguments\n");
-	ft_putstr_fd(err, STDERR_FILENO);
+	ft_putstr_fd("tash: cd: too many arguments\n", STDERR_FILENO);
 	return (1);
 }
 
@@ -70,10 +66,10 @@ int	change_directory(char **args, char ***env)
 {
 	DIR		*directory;
 
-	if (args[1] != NULL)
+	if (args[0] && args[1] != NULL)
 		return (cd_err());
 	if (!*args)
-		*args = "/home";
+		*args = ft_strdup("/home");
 	directory = opendir(*args);
 	if (!directory)
 	{
