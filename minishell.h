@@ -313,5 +313,7 @@ char	**ft_cpy_strtab(char **tab);
 char	*extract_var_id(char *arg);
 int		get_last_full_dir_idx(char *ptr);
 int		path_start(char *str);
+char	*prompted_readline(void);
+char	**set_env(char **envp);
 
 #endif
