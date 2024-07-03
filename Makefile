@@ -53,11 +53,7 @@ SRCS	=	srcs/parsing.c \
 			srcs/clean.c
 
 
-BNS_SRC =   pipex_bonus.c utils.c utils_bonus.c
-
 OBJS    =   ${SRCS:.c=.o}
-
-BNS_OBJ =   ${BNS_SRC:.c=.o}
 
 all     :   ${NAME}
 
@@ -66,10 +62,10 @@ ${NAME} :   ${OBJS}
 			@${CC} ${CFLAGS} ${OBJS} -o ${NAME} ${READLINE_INC} ${READLINE_LIB} -L./libft/ -lft
 			@echo "\033[92mProgram Compiled Successfully\033[0m"
 
-bonus   :   ${BNS_OBJ}
+bonus   :  	${OBJS}
 			@${MAKE} -C libft
-			@${CC} ${CFLAGS} ${BNS_OBJ} -o ${NAME} ${READLINE_INC} ${READLINE_LIB} -L./libft/ -lft
-			@echo "\033[92mBonus program successfully compiled\033[0m"
+			@${CC} ${CFLAGS} ${OBJS} -o ${NAME} ${READLINE_INC} ${READLINE_LIB} -L./libft/ -lft
+			@echo "\033[92mProgram Compiled Successfully\033[0m"
 
 sanit   :   ${OBJS}
 			@${MAKE} -C libft
