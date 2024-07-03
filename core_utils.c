@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   core_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/03 15:33:30 by tgibert           #+#    #+#             */
+/*   Updated: 2024/07/03 15:37:49 by tgibert          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	incr_shlvl(char **var)
@@ -59,7 +71,7 @@ char	*build_prompt(void)
 char	*prompted_readline(void)
 {
 	char	*input;
-	char *prompt;
+	char	*prompt;
 
 	prompt = build_prompt();
 	input = readline(prompt);
