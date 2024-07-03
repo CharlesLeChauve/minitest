@@ -6,11 +6,10 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:25:38 by tgibert           #+#    #+#             */
-/*   Updated: 2024/06/27 09:28:51 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/03 14:08:08 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "env.h"
 #include "minishell.h"
 
 int	no_equal(char *var)

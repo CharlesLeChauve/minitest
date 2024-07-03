@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:48:51 by tgibert           #+#    #+#             */
-/*   Updated: 2024/07/02 15:03:31 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/03 14:11:21 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	expand_wildcards_in_block(t_cmd_block *block)
 		next = arg->next;
 		index = get_last_full_dir_idx(arg->content);
 		if (index >= 0)
-		{	
+		{
 			prefix = ft_strndup(arg->content, index);
 			suffix = ft_strdup(arg->content + index);
 			expand_wildcard(prefix, suffix, &arg);

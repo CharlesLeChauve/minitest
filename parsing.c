@@ -42,43 +42,6 @@ char	**set_env(char **envp)
 	return (env);
 }
 
-// void	parse_input(char *input, t_token_lst **token_lst)
-// {
-// 	char	**input_tab;
-// 	int	i;
-
-// 	input_tab = ft_split(input, ' ');
-// 	i = 0;
-// 	while (input_tab[i])
-// 	{
-// 		treat_token(input_tab[i], token_lst);
-// 		i++;
-// 	}
-// }
-
-t_ast_node *build_ast(t_dlist **token)
-{
-	t_dlist		*token_lst;
-	t_ast_node	*ast;
-	t_dlist		*tmp;
-
-	token_lst = tokenize(((t_token_lst *)((*token)->content))->text);
-	tmp = (*token)->next;
-	del_tkn_node((*token)->content);
-	free(*token);
-	*token = tmp;
-	//Changer cette fonction pour ajouter la possibilite d'avoir subshell > operateur > command
-	//Globalement subshell partout ou il pouvait y avoir commande
-	// if (!verify_tokens(token_lst))
-	// {
-	// 	fprintf(stderr, "Error: Syntax error in input\n");
-	// 	free(input);
-	// 	return (NULL);
-	// }
-	ast = parse_tokens(token_lst);
-	return (ast);
-}
-
 char	*build_prompt(void)
 {
 	char	*pwd;

@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 07:18:16 by tgibert           #+#    #+#             */
-/*   Updated: 2024/07/03 10:48:16 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/03 14:03:29 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,18 +77,8 @@ int	get_last_slash(char *ptr)
 	return (idx);
 }
 
-int	open_write(char *file, t_open_mode mode)
+int	open_errors(char *tmp_dir, char *file, char *err)
 {
-	int		fd;
-	int		i;
-	char	err[128];
-	char	*tmp_dir;
-
-	i = get_last_slash(file);
-	tmp_dir = NULL;
-	ft_bzero(err, 128);
-	if (i != -1)
-		tmp_dir = ft_substr(file, 0, i + 1);
 	if (tmp_dir)
 	{
 		if (access(tmp_dir, F_OK) == -1)
@@ -113,6 +103,23 @@ int	open_write(char *file, t_open_mode mode)
 		ft_putstr_fd(err, 2);
 		return (-2);
 	}
+	return (0);
+}
+
+int	open_write(char *file, t_open_mode mode)
+{
+	int		fd;
+	int		i;
+	char	err[128];
+	char	*tmp_dir;
+
+	i = get_last_slash(file);
+	tmp_dir = NULL;
+	ft_bzero(err, 128);
+	if (i != -1)
+		tmp_dir = ft_substr(file, 0, i + 1);
+	if (open_errors(tmp_dir, file, err))
+		return (-2);
 	if (mode == truncate_o)
 		fd = open_mode(file, truncate_o);
 	else if (mode == append_o)

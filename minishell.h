@@ -14,7 +14,7 @@
 # include <dirent.h>
 # include <sys/stat.h>
 # include "./libft/libft.h"
-# include "env.h"
+# define CWD_BUFF 256
 # define WHITE "\001\033[0;37m\002"
 # define GREEN "\001\033[0;32m\002"
 # define BLUE "\001\033[0;34m\002"
