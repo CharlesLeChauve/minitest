@@ -6,7 +6,7 @@
 /*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:11:58 by tgibert           #+#    #+#             */
-/*   Updated: 2024/07/02 15:11:59 by tgibert          ###   ########.fr       */
+/*   Updated: 2024/07/03 10:22:35 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	ft_lstinsert_lst_replace(t_list **target, t_list *lst)
 		free((*target)->content);
 		(*target)->content = lst->content;
 		(*target)->next = lst->next;
-		free(lst);
 		last_node->next = temp;
+		free(lst);
 	}
 }

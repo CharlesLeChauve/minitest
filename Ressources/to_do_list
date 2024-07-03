@@ -1,13 +1,4 @@
 
-- redir "" guillemet vide casse, doit chercher a rediriger vers "" (rien);
-
->>|<< On doit pouvoir regler a la tokenization, si on rencontre un logical op juste derriere un redir_op...
-
-
-
-Leaks permission denied (commande)
-
-
 (cat <<END | wc -l && echo bravo) || echo pas bravo
 
 //Balek ctrl c dans le here doc avec des parentheses (sans parentheses ya pas de leak) cree des still reachable mais en sortie ya pas de leaks.
