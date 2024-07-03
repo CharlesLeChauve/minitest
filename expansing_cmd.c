@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansing_cmd.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tgibert <tgibert@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 17:02:41 by anporced          #+#    #+#             */
-/*   Updated: 2024/07/02 17:02:43 by anporced         ###   ########.fr       */
+/*   Updated: 2024/07/03 07:23:50 by tgibert          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,17 @@ int	same_quote(t_sm *state, char c)
 void	handle_state(char **ptr, t_params *params,
 char **buffer, t_shell *shell)
 {
+	char	*ext;
+
+	ext = NULL;
 	set_quotes_state_in_cmd_block(ptr, &(params->state));
 	if (**ptr == '$' && params->state != quote)
-		ft_strappend(buffer, extrapolate(ptr, shell), &(params->len));
+	{
+		ext = extrapolate(ptr, shell);
+		ft_strappend(buffer, ext, &(params->len));
+		if (ext)
+			free(ext);
+	}
 	else if (same_quote(&(params->state), **ptr))
 	{
 		if (!*buffer)
