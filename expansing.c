@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansing.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anporced <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tulece <tulece@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 17:02:52 by anporced          #+#    #+#             */
-/*   Updated: 2024/07/02 17:02:57 by anporced         ###   ########.fr       */
+/*   Updated: 2024/07/03 10:08:48 by tulece           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,10 @@ int	expand_ast(t_ast_node *node, t_shell *shl)
 	{
 		cmd_block = init_cmd_block();
 		if (fill_cmd_block(cmd_block, node->tokens, shl))
+		{
+			clear_cmd_block(cmd_block);
 			return (1);
+		}
 		create_exec_tab(cmd_block);
 		if (get_heredocs(cmd_block))
 		{
